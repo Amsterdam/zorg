@@ -22,12 +22,23 @@ class Buuv(models.Model):
 
     class Meta(object):
         verbose_name = "API data Buuv"
-        verbose_name_plural = "Woonplaatsen"
+        verbose_name_plural = "Buuv data"
 
     def __str__(self) -> str:
         return self.titel
 
     def import_data(self):
+        """
+        Import BUUV api data
+        query keys for the buuv api url
+        # k = key
+        # z = zipcode (uppercase)
+        # d = distance max=40
+        # q = search
+        # since = time "2015-12-21T12:16:05Z"
+
+        :return:
+        """
         url = "https://api.buuv.org/?k={}&z=1078BG&d=30&q=e".format(os.getenv('APIKEY', 'insecure'))
         res = requests.get(url, auth=HTTPBasicAuth(os.getenv('USER', 'user'), os.getenv('PASS')),
                            headers={'Content-Type': 'text/json'})
@@ -50,11 +61,3 @@ class Buuv(models.Model):
             r.stadsdeel = row['Stadsdeel']
             r.buurt = row['Buurt']
             r.save()
-        return
-
-
-        # k = key
-        # z = zipcode (uppercase)
-        # d = distance max=40
-        # q = search
-        # since = time "2015-12-21T12:16:05Z"
