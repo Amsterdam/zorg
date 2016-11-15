@@ -49,15 +49,14 @@ class Buuv(models.Model):
         res.raise_for_status()
 
         for row in data:
-            r = self.model()
-            r.id = row['ID']
-            r.titel = row['Titel']
-            r.type = row['Type']
-            r.omschrijving = row['Omschriiving']
-            r.deelnemer = row['Deelnemer']
-            r.aangemaakt = row['Aangemaakt']
-            r.gewijzigd = row['gewijzigd']
-            r.gemeente = row['Gemeente']
-            r.stadsdeel = row['Stadsdeel']
-            r.buurt = row['Buurt']
+            r = self.model(id=row['ID'],
+                           titel=row['Titel'],
+                           type=row['Type'],
+                           omschrijving=row['Omschriiving'],
+                           deelnemer=row['Deelnemer'],
+                           aangemaakt=row['Aangemaakt'],
+                           gewijzigd=row['gewijzigd'],
+                           gemeente=row['Gemeente'],
+                           stadsdeel=row['Stadsdeel'],
+                           buurt=row['Buurt'])
             r.save()
