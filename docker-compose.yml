@@ -1,0 +1,28 @@
+database:
+  image: build.datapunt.amsterdam.nl:5000/atlas/postgres
+  ports:
+    - "5435:5432"
+  environment:
+    POSTGRES_PASSWORD: insecure
+    POSTGRES_USER: zorg
+    POSTGRES_DB: zorg
+
+elasticsearch:
+  image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch:latest
+  command: elasticsearch -Des.network.host=0.0.0.0
+  ports:
+    - "9200:9200"
+    - "9300:9300"
+  #volumes:
+  #  - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+
+zorg:
+  build: ./web
+  links:
+    - database:database
+    - elasticsearch:elasticsearch
+  ports:
+    - "8080:8080"
+  environment:
+    DATABASE_NAME: zorg
+    DATABASE_PASSWORD: insecure
