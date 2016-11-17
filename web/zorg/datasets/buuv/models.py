@@ -2,7 +2,10 @@
 import datetime
 # Package
 import requests
+import json
+from requests.auth import HTTPBasicAuth
 from django.db import models
+import os
 
 
 class Buuv(models.Model):
@@ -19,13 +22,41 @@ class Buuv(models.Model):
 
     class Meta(object):
         verbose_name = "API data Buuv"
-        verbose_name_plural = "Woonplaatsen"
+        verbose_name_plural = "Buuv data"
 
     def __str__(self) -> str:
         return self.titel
 
-# k = key
-# z = zipcode (uppercase)
-# d = distance max=40
-# q = search
-# since = time "2015-12-21T12:16:05Z"
+    def import_data(self):
+        """
+        Import BUUV api data
+        query keys for the buuv api url
+        # k = key
+        # z = zipcode (uppercase)
+        # d = distance max=40
+        # q = search
+        # since = time "2015-12-21T12:16:05Z"
+
+        :return:
+        """
+        url = "https://api.buuv.org/?k={}&z=1078BG&d=30&q=e".format(os.getenv('APIKEY', 'insecure'))
+        res = requests.get(url, auth=HTTPBasicAuth(os.getenv('USER', 'user'), os.getenv('PASS')),
+                           headers={'Content-Type': 'text/json'})
+        data = []
+        if res.status_code == 200:
+            # de json string is verborgen in een XML doc, vind de eerste `[` en neem alle tekst tot de laatste `]`
+            data = json.loads(str(res.content)[str(res.content).find('['):str(res.content).rfind(']') + 1])
+        res.raise_for_status()
+
+        for row in data:
+            r = self.model(id=row['ID'],
+                           titel=row['Titel'],
+                           type=row['Type'],
+                           omschrijving=row['Omschriiving'],
+                           deelnemer=row['Deelnemer'],
+                           aangemaakt=row['Aangemaakt'],
+                           gewijzigd=row['gewijzigd'],
+                           gemeente=row['Gemeente'],
+                           stadsdeel=row['Stadsdeel'],
+                           buurt=row['Buurt'])
+            r.save()
