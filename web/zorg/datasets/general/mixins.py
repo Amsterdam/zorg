@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -12,14 +13,21 @@ class EventLogMixin(models.Model):
     sequence = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)  # This makes the field un-editable.
     event_type = models.CharField(max_length=1, choices=EVENT_TYPES)
-    data = models.JsonField()
+    data = JSONField()
 
-    # @TODO write global part, call local part
-    def create(self):
-        pass
+    def save(self, *args, **kwargs):
+        # Making sure that Saving event and model is atomic
+        success = False
+        try:
+            with transaction.atomic():
+                # Saving the event
+                super(OrganisatieEventLog, self).save(args, kwargs)
+                # Updating the Read optimized model
+                success = events.handle_event(self, ref_model)
+        except IntegrityError:
+            pass
 
-    def update(self, data):
-        pass
+        return success
 
     class Meta(object):
         abstract = True

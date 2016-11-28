@@ -6,7 +6,7 @@ This file contains the functionality needed to handle the event
 # Packages
 from django.db import models
 # Project
-from general.mixins import EventLogMixin
+from datasets.general.mixins import EventLogMixin
 
 
 # For now, using a simple implemetation of concatinating the
@@ -67,7 +67,7 @@ def create(data: dict, model: models.Model) -> bool:
     success = True
     try:
         item = model()
-        map(lambda (attr, value): setattr(item, attr, value), data.items())
+        map(lambda attr, value: setattr(item, attr, value), data.items())
         item.save()
     except Exception as exp:
         print(repr(exp))
@@ -85,7 +85,7 @@ def update(guid: str, data: dict, model: models.Model) -> bool:
     success = True
     try:
         item = model.objects.get(pk=guid)
-        map(lambda (attr, value): setattr(item, attr, value), data.items())
+        map(lambda attr, value: setattr(item, attr, value), data.items())
         item.save()
     except Exception as exp:
         print(repr(exp))

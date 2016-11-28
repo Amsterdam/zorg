@@ -1,16 +1,15 @@
 # Packages
 from rest_framework import serializers
 # Projects
-import events
-import models
+from . import events, models
 
 
-class OrganisatieSerialiserCustom(serializers.Serilalizer):
+class OrganisatieSerialiserCustom(serializers.Serializer):
     guid = serializers.CharField()
     naam = serializers.CharField()
     beschrijving = serializers.CharField()
     afdeling = serializers.CharField()
-    contact = serializers.JsonField()  # for tele, fax, emai, www etc.
+    contact = serializers.JSONField()  # for tele, fax, emai, www etc.
 
 
 class OrganisatieSerialiser(serializers.ModelSerializer):
@@ -31,7 +30,6 @@ class OrganisatieSerialiser(serializers.ModelSerializer):
         else:
             # Does not math creation rule
             return False  # @TODO is this enough?
-        sequence = prev_events[-1].sequence + 1 if len(prev_events) > 0 and 
 
         event = models.OrganisatieEventLog(
             guid=guid,
@@ -45,4 +43,4 @@ class OrganisatieSerialiser(serializers.ModelSerializer):
         pass
 
     class Meta(object):
-        model = Organisatie
+        model = models.Organisatie

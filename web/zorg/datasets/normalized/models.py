@@ -2,11 +2,21 @@
 import datetime
 # Package
 from django.contrib.gis.db import models as geo
-from django.db import IntegrityError, models, transaction
-import requests
+from django.contrib.postgres.fields import JSONField
+from django.db import IntegrityError, models
 # Project
-from general.mixins import EventLogMixin
-from general import events
+from . import events
+from datasets.general.mixins import EventLogMixin
+
+
+class Persoon(models.Model):
+    guid = models.CharField(max_length=255, primary_key=True)
+    contact = JSONField()  # See organisation for example
+    naam = models.CharField(max_length=255)
+
+
+class PersoonEventLog(EventLogMixin):
+    ref_model = Persoon
 
 
 class Organisatie(models.Model):
@@ -31,32 +41,19 @@ class Organisatie(models.Model):
     naam = models.CharField(max_length=255)
     beschrijving = models.CharField(max_length=255)
     afdeling = models.CharField(max_length=255)
-    contact = models.JsonField()  # for tele, fax, emai, www etc.
+    contact = JSONField()  # for tele, fax, emai, www etc.
 
 
 class OrganisatieEventLog(EventLogMixin):
     ref_model = Organisatie
 
-    def save(self, *args, **kwargs):
-        # Making sure that Saving event and model is atomic
-        success = False
-        try:
-            with transaction.atomic():
-                # Saving the event
-                super(OrganisatieEventLog, self).save(args, kwargs)
-                # Updating the Read optimized model
-                success = events.handle_event(self)
-        except IntegrityError:
-            pass
-
-        return success
 
 class Activiteit(models.Model):
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
     beschrijving = models.TextField()
     bron_link = models.URLField()
-    contactpersoon = model.CharField(max_length=255)
+    contactpersoon = models.CharField(max_length=255)
     persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten')
     tags = models.CharField(max_length=255)
 
@@ -81,7 +78,7 @@ class ActiviteitEventLog(EventLogMixin):
 class Locatie(models.Model):
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
-    openbare_ruimte_naam = model.CharField(max_length=255)
+    openbare_ruimte_naam = models.CharField(max_length=255)
     huisnummer = models.CharField(max_length=5)
     huisletter = models.CharField(max_length=1)
     huisnummer_toevoeging = models.CharField(max_length=4)
@@ -94,11 +91,3 @@ class LocatieEventLog(EventLogMixin):
     ref_model = Locatie
 
 
-class Persoon(models.Model):
-    guid = models.CharField(max_length=255, primary_key=True)
-    contact = models.JsonField()  # See organisation for example
-    naam = models.CharField(max_length=255)
-
-
-class PersoonEventLog(EventLogMixin):
-    ref_model = Persoon

@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'datasets.general',
+    'datasets.normalized',
 ]
 
 MIDDLEWARE = [
@@ -80,11 +83,11 @@ WSGI_APPLICATION = 'zorg.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('DATABASE_DATASELECTIE_ENV_POSTGRES_DB', 'zorg'),
-        'USER': os.getenv('DATABASE_DATASELECTIE_ENV_POSTGRES_USER', 'zorg'),
-        'PASSWORD': os.getenv('DATABASE_DATASELECTIE_ENV_POSTGRES_PASSWORD', insecure_key),
-        'HOST': os.getenv('DATABASE_DATASELECTIE_PORT_5432_TCP_ADDR', _get_docker_host()),
-        'PORT': os.getenv('DATABASE_DATASELECTIE_PORT_5432_TCP_PORT', '5435'),
+        'NAME': os.getenv('DATABASE_ZORG_ENV_POSTGRES_DB', 'zorg'),
+        'USER': os.getenv('DATABASE_ZORG_ENV_POSTGRES_USER', 'zorg'),
+        'PASSWORD': os.getenv('DATABASE_ZORG_ENV_POSTGRES_PASSWORD', insecure_key),
+        'HOST': os.getenv('DATABASE_ZORG_PORT_5432_TCP_ADDR', _get_docker_host()),
+        'PORT': os.getenv('DATABASE_ZORG_PORT_5432_TCP_PORT', '5435'),
         'CONN_MAX_AGE': 60,
     },
 }
