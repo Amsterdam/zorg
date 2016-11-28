@@ -36,3 +36,4 @@ class OrganisatieSerializer(serializers.ModelSerializer):
 
     class Meta(object):
         model = models.Organisatie
+        fields = '__all__'
