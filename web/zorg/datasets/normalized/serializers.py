@@ -4,15 +4,7 @@ from rest_framework import serializers
 from . import events, models
 
 
-class OrganisatieSerialiserCustom(serializers.Serializer):
-    guid = serializers.CharField()
-    naam = serializers.CharField()
-    beschrijving = serializers.CharField()
-    afdeling = serializers.CharField()
-    contact = serializers.JSONField()  # for tele, fax, emai, www etc.
-
-
-class OrganisatieSerialiser(serializers.ModelSerializer):
+class OrganisatieSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Creating the guid

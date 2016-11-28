@@ -4,5 +4,5 @@ from rest_framework import routers
 from .views import OrganisatieViewSet
 
 nrouter = routers.SimpleRouter()
-nrouter.register('organisatie', OrganisatieViewSet, base_name='organisatie')
+nrouter.register(r'organisatie', OrganisatieViewSet, base_name='organisatie')
 
