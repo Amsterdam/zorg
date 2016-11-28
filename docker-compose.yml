@@ -1,7 +1,7 @@
 database:
   image: build.datapunt.amsterdam.nl:5000/atlas/postgres
   ports:
-    - "5435:5432"
+    - "5432"
   environment:
     POSTGRES_PASSWORD: insecure
     POSTGRES_USER: zorg
@@ -22,7 +22,7 @@ zorg:
     - database:database
     - elasticsearch:elasticsearch
   ports:
-    - "8080:8080"
+    - "8080:8000"
   environment:
     DATABASE_NAME: zorg
     DATABASE_PASSWORD: insecure

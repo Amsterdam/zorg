@@ -2,8 +2,11 @@
 import datetime
 # Package
 from django.contrib.gis.db import models as geo
-from django.db import models
+from django.db import IntegrityError, models, transaction
 import requests
+# Project
+from general.mixins import EventLogMixin
+from general import events
 
 
 class Organisatie(models.Model):
@@ -24,13 +27,32 @@ class Organisatie(models.Model):
     Possible contanct keys:
     telefoon, fax, email, website, mobiel
     """
+    guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
     beschrijving = models.CharField(max_length=255)
     afdeling = models.CharField(max_length=255)
     contact = models.JsonField()  # for tele, fax, emai, www etc.
 
 
+class OrganisatieEventLog(EventLogMixin):
+    ref_model = Organisatie
+
+    def save(self, *args, **kwargs):
+        # Making sure that Saving event and model is atomic
+        success = False
+        try:
+            with transaction.atomic():
+                # Saving the event
+                super(OrganisatieEventLog, self).save(args, kwargs)
+                # Updating the Read optimized model
+                success = events.handle_event(self)
+        except IntegrityError:
+            pass
+
+        return success
+
 class Activiteit(models.Model):
+    guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
     beschrijving = models.TextField()
     bron_link = models.URLField()
@@ -52,9 +74,14 @@ class Activiteit(models.Model):
             return p
 
 
+class ActiviteitEventLog(EventLogMixin):
+    ref_model = Activiteit
+
+
 class Locatie(models.Model):
+    guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
-    openbare_ruimte_naam = model.Charfield(max_length=255)
+    openbare_ruimte_naam = model.CharField(max_length=255)
     huisnummer = models.CharField(max_length=5)
     huisletter = models.CharField(max_length=1)
     huisnummer_toevoeging = models.CharField(max_length=4)
@@ -63,6 +90,15 @@ class Locatie(models.Model):
     objects = geo.GeoManager()
 
 
-class Persoon(models.Model):
-    contact = models.JsonField()  # See organisation for example
+class LocatieEventLog(EventLogMixin):
+    ref_model = Locatie
 
+
+class Persoon(models.Model):
+    guid = models.CharField(max_length=255, primary_key=True)
+    contact = models.JsonField()  # See organisation for example
+    naam = models.CharField(max_length=255)
+
+
+class PersoonEventLog(EventLogMixin):
+    ref_model = Persoon
