@@ -5,14 +5,9 @@ from . import models
 from datasets.general import events
 
 
-class OrganisatieSerializer(serializers.ModelSerializer):
-
-    class Meta(object):
-        model = models.Organisatie
-        exclude = ('guid',)
+class ZorgModelSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        print(validated_data)
         # Creating the guid
         guid = events.guid_from_id('CODE', validated_data['id'])
 
@@ -43,3 +38,23 @@ class OrganisatieSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         pass
 
+
+class OrganisatieSerializer(ZorgModelSerializer):
+
+    class Meta(object):
+        exclude = ('guid',)
+        model = models.Organisatie
+
+
+class ActiviteitSerializer(ZorgModelSerializer):
+
+    class Meta(object):
+        exclude = ('guid',)
+        model = models.Activiteit
+
+
+class LocatieSerializer(ZorgModelSerializer):
+
+    class Meta(object):
+        exclude = ('guid',)
+        model = models.Locatie

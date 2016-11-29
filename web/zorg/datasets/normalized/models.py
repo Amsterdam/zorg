@@ -50,6 +50,7 @@ class OrganisatieEventLog(EventLogMixin):
 
 
 class Activiteit(models.Model):
+    id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
     beschrijving = models.TextField()
@@ -77,6 +78,7 @@ class ActiviteitEventLog(EventLogMixin):
 
 
 class Locatie(models.Model):
+    id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
     openbare_ruimte_naam = models.CharField(max_length=255)
@@ -90,5 +92,3 @@ class Locatie(models.Model):
 
 class LocatieEventLog(EventLogMixin):
     ref_model = Locatie
-
-
