@@ -21,16 +21,14 @@ class EventLogMixin(models.Model):
     def save(self, *args, **kwargs):
         # Making sure that Saving event and model is atomic
         success = False
-        try:
-            with transaction.atomic():
-                # Saving the event
-                super(EventLogMixin, self).save(args, kwargs)
-                # Updating the Read optimized model
-                success = events.handle_event(self, self.ref_model)
-                print('Transaction succesful')
-        except IntegrityError:
-            pass
+        with transaction.atomic():
+            # Saving the event
+            super(EventLogMixin, self).save(args, kwargs)
+            # Updating the Read optimized model
+            success = events.handle_event(self, self.ref_model)
+            print('Transaction succesful')
 
+        print(success)
         return success
 
     class Meta(object):

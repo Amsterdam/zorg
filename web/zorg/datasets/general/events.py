@@ -71,7 +71,7 @@ def create(guid: str, data: dict, model: models.Model) -> bool:
     item = model(guid=guid)
     [setattr(item, attr, value) for (attr, value) in data.items()]
     item.save()
-
+    print(item)
     return item
 
 
