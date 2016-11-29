@@ -8,7 +8,7 @@ from datasets.general import events
 
 class ZorgModelSerializer(serializers.ModelSerializer):
 
-    ref_model = None
+    event_model = None
 
     def create(self, validated_data):
         print('Serilaizer create')
@@ -18,7 +18,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry
         # 2. The laatste event was een delete
-        prev_events = list(self.ref_model.objects.filter(
+        prev_events = list(self.event_model.objects.filter(
                       guid=guid).order_by('sequence'))
         if len(prev_events) == 0:
             sequence = 0
@@ -28,7 +28,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             # Does not match creation rule
             raise ValidationError('Object already exists')
 
-        event = self.ref_model(
+        event = self.event_model(
             guid=guid,
             sequence=sequence,
             event_type='C',
@@ -41,6 +41,9 @@ class ZorgModelSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         print('Serialzier update')
 
+    def retrieve(self, request, pk=None):
+        # Reading the model
+        model = self.event_model
 
 class OrganisatieSerializer(ZorgModelSerializer):
 
@@ -53,7 +56,7 @@ class OrganisatieSerializer(ZorgModelSerializer):
 
 class ActiviteitSerializer(ZorgModelSerializer):
 
-    ref_model = models.ActiviteitEventLog
+    event_model = models.ActiviteitEventLog
 
     class Meta(object):
         exclude = ('guid',)
@@ -62,7 +65,7 @@ class ActiviteitSerializer(ZorgModelSerializer):
 
 class LocatieSerializer(ZorgModelSerializer):
 
-    ref_model = models.LocatieEventLog
+    event_model = models.LocatieEventLog
 
     class Meta(object):
         exclude = ('guid',)

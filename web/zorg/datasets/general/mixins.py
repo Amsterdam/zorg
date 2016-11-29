@@ -4,7 +4,7 @@ from datasets.general import events
 
 
 class EventLogMixin(models.Model):
-    ref_model = None  # This must be overwritten
+    read_model = None  # This must be overwritten
 
     EVENT_TYPES = (
         ('C', 'CREATE'),
@@ -25,7 +25,7 @@ class EventLogMixin(models.Model):
             # Saving the event
             super(EventLogMixin, self).save(args, kwargs)
             # Updating the Read optimized model
-            success = events.handle_event(self, self.ref_model)
+            success = events.handle_event(self, self.read_model)
             print('Transaction succesful')
 
         print(success)

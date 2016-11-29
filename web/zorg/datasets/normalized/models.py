@@ -17,7 +17,7 @@ class Persoon(models.Model):
 
 
 class PersoonEventLog(EventLogMixin):
-    ref_model = Persoon
+    read_model = Persoon
 
 
 class Organisatie(models.Model):
@@ -47,7 +47,7 @@ class Organisatie(models.Model):
 
 
 class OrganisatieEventLog(EventLogMixin):
-    ref_model = Organisatie
+    read_model = Organisatie
 
 
 class Activiteit(models.Model):
@@ -80,7 +80,7 @@ class Activiteit(models.Model):
 
 
 class ActiviteitEventLog(EventLogMixin):
-    ref_model = Activiteit
+    read_model = Activiteit
 
 
 class Locatie(models.Model):
@@ -104,4 +104,4 @@ class Locatie(models.Model):
 
 
 class LocatieEventLog(EventLogMixin):
-    ref_model = Locatie
+    read_model = Locatie
