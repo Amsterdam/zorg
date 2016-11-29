@@ -1,14 +1,20 @@
 # Packages
 from rest_framework import serializers
 # Projects
-from . import events, models
+from . import models
+from datasets.general import events
 
 
 class OrganisatieSerializer(serializers.ModelSerializer):
 
+    class Meta(object):
+        model = models.Organisatie
+        exclude = ('guid',)
+
     def create(self, validated_data):
+        print(validated_data)
         # Creating the guid
-        guid = events.guid_from_id(validated_data['id'])
+        guid = events.guid_from_id('CODE', validated_data['id'])
 
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry
@@ -26,14 +32,13 @@ class OrganisatieSerializer(serializers.ModelSerializer):
         event = models.OrganisatieEventLog(
             guid=guid,
             sequence=sequence,
-            action='C',
+            event_type='C',
             data=validated_data
         )
-        return event.save()
+        if event.save():
+            return event
+        return False
 
     def update(self, instance, validated_data):
         pass
 
-    class Meta(object):
-        model = models.Organisatie
-        fields = '__all__'

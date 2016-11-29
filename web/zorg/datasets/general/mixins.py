@@ -1,8 +1,10 @@
 from django.contrib.postgres.fields import JSONField
-from django.db import models
-
+from django.db import IntegrityError, models, transaction
+from datasets.general import events
 
 class EventLogMixin(models.Model):
+    ref_model = None  # This must be overwritten
+
     EVENT_TYPES = (
         ('C', 'CREATE'),
         ('U', 'UPDATE'),
@@ -21,9 +23,10 @@ class EventLogMixin(models.Model):
         try:
             with transaction.atomic():
                 # Saving the event
-                super(OrganisatieEventLog, self).save(args, kwargs)
+                super(EventLogMixin, self).save(args, kwargs)
                 # Updating the Read optimized model
-                success = events.handle_event(self, ref_model)
+                success = events.handle_event(self, self.ref_model)
+                print('Transaction succesful')
         except IntegrityError:
             pass
 

@@ -3,9 +3,9 @@ import datetime
 # Package
 from django.contrib.gis.db import models as geo
 from django.contrib.postgres.fields import JSONField
-from django.db import IntegrityError, models
+from django.db import models
 # Project
-from . import events
+from datasets.general import events
 from datasets.general.mixins import EventLogMixin
 
 
@@ -37,6 +37,7 @@ class Organisatie(models.Model):
     Possible contanct keys:
     telefoon, fax, email, website, mobiel
     """
+    id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
     beschrijving = models.CharField(max_length=255)
