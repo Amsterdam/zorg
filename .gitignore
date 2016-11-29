@@ -89,3 +89,6 @@ ENV/
 .ropeproject
 
 keys.env
+
+.idea
+*.iml
