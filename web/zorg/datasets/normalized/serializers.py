@@ -26,6 +26,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             sequence = prev_events[-1].sequence + 1
         else:
             # Does not match creation rule
+            # @TODO convert to self.fail call
             raise ValidationError('Object already exists')
 
         event = self.event_model(
@@ -40,10 +41,30 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         print('Serialzier update')
+        # Creating the guid
+        guid = events.guid_from_id('CODE', validated_data['id'])
 
-    def retrieve(self, request, pk=None):
-        # Reading the model
-        model = self.event_model
+        # There can bew two cases in which create can be made:
+        # 1. There is no previous entry
+        # 2. The laatste event was een delete
+        prev_events = list(self.event_model.objects.filter(
+                      guid=guid).order_by('sequence'))
+        if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
+            # @TODO convert to self.fail call
+            raise ValidationError('Object not found')
+        else:
+            sequence = prev_events[-1].sequence + 1
+
+        event = self.event_model(
+            guid=guid,
+            sequence=sequence,
+            event_type='U',
+            data=validated_data
+        )
+        item = event.save()
+        print ('item', item)
+        return item
+
 
 class OrganisatieSerializer(ZorgModelSerializer):
 

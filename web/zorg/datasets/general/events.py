@@ -65,13 +65,9 @@ def create(guid: str, data: dict, model: models.Model) -> bool:
     and an entry is created in the read
     optimized table
     """
-    success = True
-    print ('CREATE!')
-
     item = model(guid=guid)
     [setattr(item, attr, value) for (attr, value) in data.items()]
     item.save()
-    print(item)
     return item
 
 
@@ -81,16 +77,10 @@ def update(guid: str, data: dict, model: models.Model) -> bool:
     and the entry in the read optimized
     table is updated with the new value(s)
     """
-    success = True
-    try:
-        item = model.objects.get(pk=guid)
-        map(lambda attr, value: setattr(item, attr, value), data.items())
-        item.save()
-    except Exception as exp:
-        print(repr(exp))
-        success = False
-
-    return success
+    item = model.objects.get(pk=guid)
+    [setattr(item, attr, value) for (attr, value) in data.items()]
+    item.save()
+    return item
 
 
 def delete(guid: str, model: models.Model) -> bool:
