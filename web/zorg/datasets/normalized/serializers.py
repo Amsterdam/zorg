@@ -68,7 +68,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
 class OrganisatieSerializer(ZorgModelSerializer):
 
-    ref_model = models.OrganisatieEventLog
+    event_model = models.OrganisatieEventLog
 
     class Meta(object):
         exclude = ('guid',)
