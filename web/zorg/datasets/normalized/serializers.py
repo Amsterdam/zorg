@@ -35,8 +35,9 @@ class OrganisatieSerializer(serializers.ModelSerializer):
             event_type='C',
             data=validated_data
         )
-        if event.save():
-            return event
+        new_item = event.save()
+        if new_item:
+            return new_item
         return False
 
     def update(self, instance, validated_data):

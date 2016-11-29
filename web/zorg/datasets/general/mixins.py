@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, models, transaction
 from datasets.general import events
 
+
 class EventLogMixin(models.Model):
     ref_model = None  # This must be overwritten
 
