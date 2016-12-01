@@ -31,7 +31,7 @@ insecure_key = 'insecure'
 SECRET_KEY = os.getenv('zorg_SECRET_KEY', insecure_key)
 DEBUG = SECRET_KEY == insecure_key
 
-ALLOWED_HOSTS = []  # type: List[str]
+ALLOWED_HOSTS = ['*']  # type: List[str]
 SITE_ID = 1
 
 INSTALLED_APPS = [
