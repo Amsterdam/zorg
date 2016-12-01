@@ -89,7 +89,7 @@ DATABASES = {
         'USER': os.getenv('DATABASE_ZORG_ENV_POSTGRES_USER', 'zorg'),
         'PASSWORD': os.getenv('DATABASE_ZORG_ENV_POSTGRES_PASSWORD', insecure_key),
         'HOST': os.getenv('DATABASE_ZORG_PORT_5432_TCP_ADDR', _get_docker_host()),
-        'PORT': os.getenv('DATABASE_ZORG_PORT_5432_TCP_PORT', '5435'),
+        'PORT': os.getenv('DATABASE_ZORG_PORT_5432_TCP_PORT', '5445'),
         'CONN_MAX_AGE': 60,
     },
 }
