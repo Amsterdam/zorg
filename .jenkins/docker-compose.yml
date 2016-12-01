@@ -18,7 +18,7 @@ zorg:
     - database:database
     - elasticsearch:elasticsearch
   ports:
-    - "8080:8000"
+    - "8000:8000"
   environment:
     DATABASE_NAME: zorg
     DATABASE_PASSWORD: insecure
