@@ -19,5 +19,6 @@ from datasets.normalized.urls import nrouter as normalized_router
 
 urlpatterns = [
     url(r'data/', include(normalized_router.urls)),
+    uurl(r'^status/', include('health.urls')),
     url(r'^admin/', admin.site.urls),
 ]
