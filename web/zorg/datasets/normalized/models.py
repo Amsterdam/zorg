@@ -2,8 +2,22 @@
 import datetime
 # Package
 from django.contrib.gis.db import models as geo
+from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 from django.db import models
-import requests
+# Project
+from datasets.general import events
+from datasets.general.mixins import EventLogMixin
+
+
+class Persoon(models.Model):
+    guid = models.CharField(max_length=255, primary_key=True)
+    contact = JSONField()  # See organisation for example
+    naam = models.CharField(max_length=255)
+
+
+class PersoonEventLog(EventLogMixin):
+    read_model = Persoon
 
 
 class Organisatie(models.Model):
@@ -24,18 +38,26 @@ class Organisatie(models.Model):
     Possible contanct keys:
     telefoon, fax, email, website, mobiel
     """
+    id = models.CharField(max_length=100)
+    guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
-    beschrijving = models.CharField(max_length=255)
-    afdeling = models.CharField(max_length=255)
-    contact = models.JsonField()  # for tele, fax, emai, www etc.
+    beschrijving = models.CharField(max_length=255, blank=True)
+    afdeling = models.CharField(max_length=255, blank=True)
+    contact = JSONField()  # for tele, fax, emai, www etc.
+
+
+class OrganisatieEventLog(EventLogMixin):
+    read_model = Organisatie
 
 
 class Activiteit(models.Model):
+    id = models.CharField(max_length=100)
+    guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
-    beschrijving = models.TextField()
+    beschrijving = models.TextField(blank=True)
     bron_link = models.URLField()
-    contactpersoon = model.CharField(max_length=255)
-    persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten')
+    contactpersoon = models.CharField(max_length=255, blank=True)
+    persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
     tags = models.CharField(max_length=255)
 
     @property
@@ -51,18 +73,35 @@ class Activiteit(models.Model):
             p.naam = self.contactpersoon
             return p
 
+    def clean(self):
+        # An activity should have either a contactperson or a person
+        if not self.contactpersoon and not self.persoon:
+            raise ValidationError('Give either a contact person\'s name or a refrence to a person')
+
+
+class ActiviteitEventLog(EventLogMixin):
+    read_model = Activiteit
+
 
 class Locatie(models.Model):
+    id = models.CharField(max_length=100)
+    guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
-    openbare_ruimte_naam = model.Charfield(max_length=255)
-    huisnummer = models.CharField(max_length=5)
-    huisletter = models.CharField(max_length=1)
-    huisnummer_toevoeging = models.CharField(max_length=4)
+    openbare_ruimte_naam = models.CharField(max_length=255, blank=True)
+    postcode = models.CharField(max_length=6, blank=True)
+    huisnummer = models.CharField(max_length=5, blank=True)
+    huisletter = models.CharField(max_length=1, blank=True)
+    huisnummer_toevoeging = models.CharField(max_length=4, blank=True)
     bag_link = models.URLField()
+    geometrie = geo.PointField(null=True, srid=28992, blank=True)
 
     objects = geo.GeoManager()
 
+    def clean(self):
+        # Either an addres or a point
+        if not self.geometrie and not self.postcode:
+            raise ValidationError('A geolocation or address is needed')
 
-class Persoon(models.Model):
-    contact = models.JsonField()  # See organisation for example
 
+class LocatieEventLog(EventLogMixin):
+    read_model = Locatie
