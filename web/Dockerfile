@@ -3,7 +3,7 @@ MAINTAINER datapunt.ois@amsterdam.nl
 
 ENV PYTHONUNBUFFERED 1
 
-EXPOSE 8080
+EXPOSE 8000
 
 RUN apt-get update \
 	&& apt-get install -y \
