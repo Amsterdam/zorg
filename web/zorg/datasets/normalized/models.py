@@ -8,7 +8,7 @@ from django.db import models
 # Project
 from datasets.general import events
 from datasets.general.mixins import EventLogMixin
-
+from datasets.normalized import documents
 
 class Persoon(models.Model):
     guid = models.CharField(max_length=255, primary_key=True)
@@ -20,7 +20,7 @@ class PersoonEventLog(EventLogMixin):
     read_model = Persoon
 
 
-class Organisatie(models.Model):
+class Organisatie(models.Model, SaveToElasticMixin):
     """
 
     Contact json example:
@@ -38,6 +38,8 @@ class Organisatie(models.Model):
     Possible contanct keys:
     telefoon, fax, email, website, mobiel
     """
+    create_doc = documents.Organisatie
+
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
@@ -50,7 +52,9 @@ class OrganisatieEventLog(EventLogMixin):
     read_model = Organisatie
 
 
-class Activiteit(models.Model):
+class Activiteit(models.Model. SaveToElasticMixin):
+    create_doc = documents.Activiteit
+
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)
@@ -83,7 +87,9 @@ class ActiviteitEventLog(EventLogMixin):
     read_model = Activiteit
 
 
-class Locatie(models.Model):
+class Locatie(models.Model, SaveToElasticMixin):
+    create_doc = documents.Locatie
+
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
     naam = models.CharField(max_length=255)

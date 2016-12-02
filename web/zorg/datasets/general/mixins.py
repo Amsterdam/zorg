@@ -27,7 +27,11 @@ class EventLogMixin(models.Model):
             # Updating the Read optimized model
             success = events.handle_event(self, self.read_model)
             print('Transaction succesful')
-
+            try:
+                self.send_to_elastic()
+                print('Sent to elastic')
+            except Exception as exp:
+                print(exp)
         print(success)
         return success
 
@@ -36,14 +40,12 @@ class EventLogMixin(models.Model):
         unique_together = ['guid', 'sequence']
 
 
-class IndexOnSaveMixin(models.Model):
+class SaveToElasticMixin(object):
     create_doc = None  # To overwrite
 
-    def save(self):
-        # First save the object
-        super(IndexOnSaveMixin, self).save()
+    def send_to_elastic(self):
         try:
             doc = create_doc(self)
-            # Send to elastic
+            doc.save()
         except Exception as exp:
-            pass
+            print(exp)

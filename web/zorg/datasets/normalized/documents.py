@@ -14,6 +14,9 @@ class Organisatie(es.DocType):
     beschrijving = es.String()
     afdeling = es.String()
 
+    class Meta(object):
+        index = settings.ELASTIC_INDEX
+
 
 class Activiteit(es.DocType):
 
@@ -23,6 +26,9 @@ class Activiteit(es.DocType):
     website = es.String()
     tijdstip = es.String()
     tags = es.String()
+
+    class Meta(object):
+        index = settings.ELASTIC_INDEX
 
 
 class Locatie(es.DocType):
@@ -34,6 +40,9 @@ class Locatie(es.DocType):
     huisnummer = es.String()
     huisnummer_toevoeging = es.String()
     postcode = es.String()
+
+    class Meta(object):
+        index = settings.ELASTIC_INDEX
 
 
 def doc_from_organisatie(n: models.Organisatie) -> Organisatie:
