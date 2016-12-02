@@ -7,8 +7,9 @@ from django.core.exceptions import ValidationError
 from django.db import models
 # Project
 from datasets.general import events
-from datasets.general.mixins import EventLogMixin
+from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
 from datasets.normalized import documents
+
 
 class Persoon(models.Model):
     guid = models.CharField(max_length=255, primary_key=True)
@@ -20,7 +21,7 @@ class PersoonEventLog(EventLogMixin):
     read_model = Persoon
 
 
-class Organisatie(models.Model, SaveToElasticMixin):
+class Organisatie(ReadOptimizedModel):
     """
 
     Contact json example:
@@ -38,7 +39,7 @@ class Organisatie(models.Model, SaveToElasticMixin):
     Possible contanct keys:
     telefoon, fax, email, website, mobiel
     """
-    create_doc = documents.Organisatie
+    create_doc = documents.doc_from_organisatie
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
@@ -52,8 +53,8 @@ class OrganisatieEventLog(EventLogMixin):
     read_model = Organisatie
 
 
-class Activiteit(models.Model. SaveToElasticMixin):
-    create_doc = documents.Activiteit
+class Activiteit(ReadOptimizedModel):
+    create_doc = documents.doc_from_activiteit
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
@@ -87,8 +88,8 @@ class ActiviteitEventLog(EventLogMixin):
     read_model = Activiteit
 
 
-class Locatie(models.Model, SaveToElasticMixin):
-    create_doc = documents.Locatie
+class Locatie(ReadOptimizedModel):
+    create_doc = documents.doc_from_locatie
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)

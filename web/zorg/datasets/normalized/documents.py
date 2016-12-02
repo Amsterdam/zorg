@@ -2,9 +2,9 @@
 from typing import List, cast
 # Packages
 from django.conf import settings
+from django.db import models
 import elasticsearch_dsl as es
 # Project
-import datasets.normalized.models as models
 
 
 class Organisatie(es.DocType):
@@ -45,7 +45,7 @@ class Locatie(es.DocType):
         index = settings.ELASTIC_INDEX
 
 
-def doc_from_organisatie(n: models.Organisatie) -> Organisatie:
+def doc_from_organisatie(n: models.Model) -> Organisatie:
     """
     Create an elastic Organisate doc
     """
@@ -56,7 +56,7 @@ def doc_from_organisatie(n: models.Organisatie) -> Organisatie:
     return doc
 
 
-def doc_from_activiteit(n: models.Activiteit) -> Activiteit:
+def doc_from_activiteit(n: models.Model) -> Activiteit:
     """
     Create an elastic Activiteit doc
     """
@@ -67,7 +67,7 @@ def doc_from_activiteit(n: models.Activiteit) -> Activiteit:
     return doc
 
 
-def doc_from_locatie(n: models.Locatie) -> Locatie:
+def doc_from_locatie(n: models.Model) -> Locatie:
     """
     Create an elastic Locatie doc
     """
