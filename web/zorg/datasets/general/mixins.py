@@ -34,3 +34,16 @@ class EventLogMixin(models.Model):
     class Meta(object):
         abstract = True
         unique_together = ['guid', 'sequence']
+
+
+class IndexOnSaveMixin(models.Model):
+    create_doc = None  # To overwrite
+
+    def save(self):
+        # First save the object
+        super(IndexOnSaveMixin, self).save()
+        try:
+            doc = create_doc(self)
+            # Send to elastic
+        except Exception as exp:
+            pass

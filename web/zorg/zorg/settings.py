@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Packages
     'rest_framework',
     # Project
+    'api',
     'datasets.normalized',
     'datasets.general',
 ]
