@@ -5,6 +5,7 @@ from datasets.general import events
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
 
+
 class ReadOptimizedModel(models.Model):
 
     create_doc = None

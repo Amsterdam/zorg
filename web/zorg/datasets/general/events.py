@@ -97,4 +97,3 @@ def delete(guid: str, model: models.Model) -> bool:
         success = False
 
     return success
-

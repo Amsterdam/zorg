@@ -52,14 +52,6 @@ def check_data(request):
         message += "\nNo BAG data found."
         status = 500
 
-    # try:
-    #     assert DataSelectie.objects.count() > 10
-    # except:
-    #     log.exception("No HR data found")
-    #     message += "\nNo HR data found."
-    #     status = 500
-
-
     # check elastic
     try:
         client = Elasticsearch(settings.ELASTIC_SEARCH_HOSTS)
