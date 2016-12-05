@@ -1,5 +1,7 @@
 # Packages
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.views.generic import ListView
 from rest_framework import viewsets
 from rest_framework.response import Response
 # Project
@@ -43,3 +45,16 @@ class LocatieViewSet(ZorgViewSet):
 
     def get_queryset(self):
         return Locatie.objects.all()
+
+
+class TagsApiView(ListView):
+
+    def get_queryset(self):
+        try:
+            return Activiteit.objects.filter(tags__icontains=self.args[0])
+        except IndexError:
+            return Activiteit.objects.all()
+
+    def render_to_response(self, context, **response_kwargs):
+        resp = ActiviteitSerializer(list(context['object_list']), many=True)
+        return JsonResponse(resp.data, status=200, safe=False)

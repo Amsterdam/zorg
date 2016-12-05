@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from datasets.normalized.urls import nrouter as normalized_router
+from datasets.normalized.urls import urlpatterns as n_urlpatterns
 
 urlpatterns = [
-    url(r'data/', include(normalized_router.urls)),
     url(r'^status/', include('health.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+urlpatterns += n_urlpatterns
