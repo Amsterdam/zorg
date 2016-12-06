@@ -19,7 +19,7 @@ from datasets.normalized.urls import urlpatterns as n_urlpatterns
 
 urlpatterns = [
     url(r'^status/', include('health.urls')),
-    url(r'^admin/', admin.site.urls),
+    url(r'^zorg/admin/', admin.site.urls),
 ]
 
 urlpatterns += n_urlpatterns

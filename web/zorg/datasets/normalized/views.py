@@ -48,7 +48,10 @@ class LocatieViewSet(ZorgViewSet):
 
 
 class TagsApiView(ListView):
-
+    """
+    Read only api endpoint for tags
+    Works for listing all tags and for specific tag name
+    """
     def get_queryset(self):
         try:
             return Activiteit.objects.filter(tags__icontains=self.args[0])
