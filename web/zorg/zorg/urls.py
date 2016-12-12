@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from datasets.normalized.urls import urlpatterns as n_urlpatterns
+from api.urls import urlpatterns as a_urlpatterns
+
 
 urlpatterns = [
     url(r'^status/', include('health.urls')),
@@ -23,3 +25,4 @@ urlpatterns = [
 ]
 
 urlpatterns += n_urlpatterns
+urlpatterns += a_urlpatterns
