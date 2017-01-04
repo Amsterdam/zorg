@@ -13,7 +13,7 @@ class StatusViewsTest(TestCase):
         response = self.client.get('/status/health')
         # Making sure its a 200
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Connectivity OK')
+        self.assertEqual(response.content, b'Health OK')
 
     def test_status_data(self):
         """check data status url"""
