@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^zorg/admin/', admin.site.urls),
 ]
 
-urlpatterns += n_urlpatterns
 urlpatterns += a_urlpatterns
+urlpatterns += n_urlpatterns

@@ -21,58 +21,33 @@ OFFESET_STEP = 100
 URLS = {
     'activiteiten':  'http://amsterdam.jekuntmeer.nl/beheer/eigen-projecten/projects/inforing?c-Offset={offset}',
     'activiteitenDetails': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/detail/{activiteit_id}/2/inforing',
+    'activiteitenLink': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/detail/{activiteit_id}/',
     'organisaties': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orglist/inforing',
     'organisatieDetails': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orgdetail/{location_id}/inforing',
+    'organisatieLink': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orgdetail/{location_id}/',
 }
 
 
 def normalize_location(data):
-    """
-    <ORGANISATION> 
-   <ID>1367</ID> 
-   <NAAM>Humanitas afdeling Amsterdam</NAAM> 
-       <ADRES>Sarphatistraat 4</ADRES> 
-   <POSTCODE>1017 WS</POSTCODE> 
-   <PLAATS>Amsterdam</PLAATS> 
-   <TELEFOON>020-7735742</TELEFOON> 
-   <EMAIL>kantoor.amsterdan@humanitas.nl</EMAIL> 
-   <WEBSITE>www.humanitas.nl/afdeling/amsterdam</WEBSITE> 
-       <BACKOFFICES AANTAL="5"> 
-              <BACKOFFICE> 
-         <ID>1179</ID> 
-         <NAAM>Humanitas</NAAM> 
-      </BACKOFFICE> 
-              <BACKOFFICE> 
-         <ID>4726</ID> 
-         <NAAM>Humanitas</NAAM> 
-      </BACKOFFICE> 
-              <BACKOFFICE> 
-         <ID>6145</ID> 
-         <NAAM>Humanitas Amsterdam en Diemen</NAAM> 
-      </BACKOFFICE> 
-              <BACKOFFICE> 
-         <ID>1743</ID> 
-         <NAAM>Sarphatistraat 4</NAAM> 
-      </BACKOFFICE> 
-              <BACKOFFICE> 
-         <ID>1736</ID> 
-         <NAAM>spreekuur vrijdag van 10 uur tot 12 uur</NAAM> 
-      </BACKOFFICE> 
-
-   </BACKOFFICES> 
-
-    </ORGANISATION>
-    """
     # Normalizing postcode to be 6 chars long
     try:
-        postcode = data['ORGANISATION'].get('POSTCODE', '').replace(' ', '')
+        postcode = data.get('POSTCODE', '').replace(' ', '')
     except AttributeError:
         postcode = None
     return {
-        'id': data['ORGANISATION']['ID'],
-        'naam': data['ORGANISATION']['NAAM'],
-        'openbare_ruimte_naam': data['ORGANISATION']['ADRES'],
+        'id': data['ID'],
+        'naam': data['NAAM'],
+        'openbare_ruimte_naam': data['ADRES'],
         'postcode': postcode,
+    }
+
+
+def normalize_activity(data):
+    return {
+        'locatie_id': f"{USER_GUID}-{data['ORGANISATIEID']}",
+        'naam': data['NAAM'],
+        'beschrijving': data['OMSCHRIJVING'],
+        'bron_link': URLS['activiteitenLink'].format(activiteit_id=data['ID'])
     }
 
 
@@ -90,10 +65,7 @@ def load_org():
         jekuntmeer.save()
 
 
-def import_data():
-    # Loading the organisatie
-    org = load_org()
-
+def import_location():
     # Retriving the locations, refered to as organistaie in the xml
     xml_resp = requests.get(URLS['organisaties'])
     locations = xmltodict.parse(xml_resp.text)
@@ -102,17 +74,16 @@ def import_data():
         # Creating a location event
         try:
             location_xml = requests.get(URLS['organisatieDetails'].format(location_id=location_id))
-            location_data = xmltodict.parse(location_xml.text)
+            location_data = xmltodict.parse(location_xml.text)['ORGANISATION']
         except Exception as e:
-            print(repr(e))
             continue
         guid = f'{USER_GUID}-{location_id}'
-        print(guid)
         data = normalize_location(location_data)
         event = models.LocatieEventLog(event_type='C', guid=guid, data=data)
         event.save()
 
-    # Retriving the locations, refered to as organistaie in the xml
+
+def import_activities():
     # Making sure at least one request is sent
     offset = 0
     total = 1
@@ -127,16 +98,9 @@ def import_data():
             try:
                 activiteit_data = xmltodict.parse(activiteit_xml.text)['PRODUCT']
             except Exception as e:
-                print(repr(e))
                 continue
             guid = f"{USER_GUID}-{activiteit['ID']}"
-            print(guid)
-            data = {
-                'locatie_id': f"{USER_GUID}-{activiteit_data['ORGANISATIEID']}",
-                'naam': activiteit_data['NAAM'],
-                'beschrijving': activiteit_data['OMSCHRIJVING'],
-                'bron_link': URLS['activiteitenDetails'].format(activiteit_id=activiteit_data['ID'])
-            }
+            data = normalize_activity(activiteit_data)
             event = models.ActiviteitEventLog(event_type='C', guid=guid, data=data)
             event.save()
 
@@ -144,3 +108,12 @@ def import_data():
         if total == 1:
             total = int(activiteiten['PRODUCTEN']['@MAXAANTAL'])
         offset += OFFESET_STEP
+
+
+def import_data():
+    # Loading the organisatie
+    org = load_org()
+    # Retriving the locations, refered to as organistaie in the xml
+    import_location()
+    # Retriving the activities
+    import_activities()
