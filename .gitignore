@@ -92,3 +92,5 @@ keys.env
 
 .idea
 *.iml
+.project
+.pydevproject
