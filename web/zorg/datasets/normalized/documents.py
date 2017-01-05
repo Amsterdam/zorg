@@ -23,7 +23,7 @@ class Activiteit(es.DocType):
     ext_id = es.String()
     naam = es.String()
     beschrijving = es.String()
-    website = es.String()
+    bron_link = es.String()
     tijdstip = es.String()
     tags = es.String()
 
@@ -61,7 +61,7 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
     Create an elastic Activiteit doc
     """
     doc = Activiteit(_id=n.guid)
-    for key in ('naam', 'beschrijving', 'website', 'tags'):
+    for key in ('naam', 'beschrijving', 'bron_link', 'tags'):
         setattr(doc, key, getattr(n, key))
     doc.ext_id = n.id
     return doc

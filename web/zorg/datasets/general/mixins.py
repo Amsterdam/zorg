@@ -53,10 +53,9 @@ class EventLogMixin(models.Model):
                 super(EventLogMixin, self).save(args, kwargs)
                 # Updating the Read optimized model
                 success = events.handle_event(self, self.read_model)
-        except DatabaseError:
-            print('Database error, rolling back')
+        except DatabaseError as e:
+            print('Database error, rolling back', repr(e))
             return False
-        print('Transaction succesful')
         return True
 
     def __repr__(self):

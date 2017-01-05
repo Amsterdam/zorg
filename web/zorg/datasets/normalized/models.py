@@ -56,44 +56,6 @@ class OrganisatieEventLog(EventLogMixin):
     read_model = Organisatie
 
 
-class Activiteit(ReadOptimizedModel):
-    create_doc = documents.doc_from_activiteit
-
-    id = models.CharField(max_length=100)
-    guid = models.CharField(max_length=255, primary_key=True)
-    naam = models.CharField(max_length=255)
-    beschrijving = models.TextField(blank=True)
-    bron_link = models.URLField()
-    contactpersoon = models.CharField(max_length=255, blank=True)
-    persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
-    tags = models.CharField(max_length=255)
-
-    @property
-    def contact(self):
-        """
-        Always return a Persoon object as
-        a representation of the contact person
-        """
-        if self.persoon:
-            return self.persoon
-        else:
-            p = Persoon()
-            p.naam = self.contactpersoon
-            return p
-
-    def clean(self):
-        # An activity should have either a contactperson or a person
-        if not self.contactpersoon and not self.persoon:
-            raise ValidationError('Give either a contact person\'s name or a refrence to a person')
-
-    def __repr__(self):
-        return f'<{self.naam}>'
-
-
-class ActiviteitEventLog(EventLogMixin):
-    read_model = Activiteit
-
-
 class Locatie(ReadOptimizedModel):
     create_doc = documents.doc_from_locatie
 
@@ -127,8 +89,64 @@ class LocatieEventLog(EventLogMixin):
         try:
             prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
             self.sequence = prev.sequence + 1
+        except IndexError:
+            print('No event found, setting sequence to 0')
+            self.sequence = 0
         except Exception as exp:
             print(repr(exp))
             self.sequence = 0
         # Saving
         super(LocatieEventLog, self).save(args, kwargs)
+
+
+class Activiteit(ReadOptimizedModel):
+    create_doc = documents.doc_from_activiteit
+
+    id = models.CharField(max_length=100)
+    guid = models.CharField(max_length=255, primary_key=True)
+    naam = models.CharField(max_length=255)
+    beschrijving = models.TextField(blank=True)
+    bron_link = models.URLField()
+    contactpersoon = models.CharField(max_length=255, blank=True)
+    persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
+    tags = models.CharField(max_length=255)
+    locatie = models.ForeignKey(Locatie, related_name='activiteiten')
+
+    @property
+    def contact(self):
+        """
+        Always return a Persoon object as
+        a representation of the contact person
+        """
+        if self.persoon:
+            return self.persoon
+        else:
+            p = Persoon()
+            p.naam = self.contactpersoon
+            return p
+
+    def clean(self):
+        # An activity should have either a contactperson or a person
+        if not self.contactpersoon and not self.persoon:
+            raise ValidationError('Give either a contact person\'s name or a refrence to a person')
+
+    def __repr__(self):
+        return f'<{self.naam} {self.guid}>'
+
+
+class ActiviteitEventLog(EventLogMixin):
+    read_model = Activiteit
+
+    def save(self, *args, **kwargs):
+        # Setting sequence
+        try:
+            prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
+            self.sequence = prev.sequence + 1
+        except IndexError:
+            print('No event found, setting sequence to 0')
+            self.sequence = 0
+        except Exception as exp:
+            print(repr(exp))
+            self.sequence = 0
+        # Saving
+        super(ActiviteitEventLog, self).save(args, kwargs)
