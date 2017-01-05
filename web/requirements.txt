@@ -1,8 +1,10 @@
-Django==1.10.3
+Django==1.10.4
 djangorestframework==3.5.3
 elasticsearch==2.4.0
 elasticsearch-dsl==2.1.0
 psycopg2==2.6.2
 python-dateutil==2.6.0
+requests==2.12.4
 six==1.10.0
 urllib3==1.19.1
+xmltodict==0.10.2

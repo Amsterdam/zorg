@@ -48,6 +48,9 @@ class Organisatie(ReadOptimizedModel):
     afdeling = models.CharField(max_length=255, blank=True)
     contact = JSONField()  # for tele, fax, emai, www etc.
 
+    def __repr__(self):
+        return f'<{self.naam}>'
+
 
 class OrganisatieEventLog(EventLogMixin):
     read_model = Organisatie
@@ -83,6 +86,9 @@ class Activiteit(ReadOptimizedModel):
         if not self.contactpersoon and not self.persoon:
             raise ValidationError('Give either a contact person\'s name or a refrence to a person')
 
+    def __repr__(self):
+        return f'<{self.naam}>'
+
 
 class ActiviteitEventLog(EventLogMixin):
     read_model = Activiteit
@@ -109,6 +115,20 @@ class Locatie(ReadOptimizedModel):
         if not self.geometrie and not self.postcode:
             raise ValidationError('A geolocation or address is needed')
 
+    def __repr__(self):
+        return f'<{self.naam}>'
+
 
 class LocatieEventLog(EventLogMixin):
     read_model = Locatie
+
+    def save(self, *args, **kwargs):
+        # Setting sequence
+        try:
+            prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
+            self.sequence = prev.sequence + 1
+        except Exception as exp:
+            print(repr(exp))
+            self.sequence = 0
+        # Saving
+        super(LocatieEventLog, self).save(args, kwargs)

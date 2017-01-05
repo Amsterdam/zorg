@@ -67,7 +67,7 @@ def create(guid: str, data: dict, model: models.Model) -> bool:
     """
     item = model(guid=guid)
     [setattr(item, attr, value) for (attr, value) in data.items()]
-    item.save()
+    item.save(force_insert=True)
     return item
 
 
@@ -79,7 +79,7 @@ def update(guid: str, data: dict, model: models.Model) -> bool:
     """
     item = model.objects.get(pk=guid)
     [setattr(item, attr, value) for (attr, value) in data.items()]
-    item.save()
+    item.save(force_update=True)
     return item
 
 

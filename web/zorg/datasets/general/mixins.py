@@ -1,5 +1,5 @@
 from django.contrib.postgres.fields import JSONField
-from django.db import IntegrityError, models, transaction
+from django.db import IntegrityError, DatabaseError, models, transaction
 from datasets.general import events
 
 from django.conf import settings
@@ -45,15 +45,22 @@ class EventLogMixin(models.Model):
 
     def save(self, *args, **kwargs):
         # Making sure that Saving event and model is atomic
-        success = False
-        with transaction.atomic():
-            # Saving the event
-            super(EventLogMixin, self).save(args, kwargs)
-            # Updating the Read optimized model
-            success = events.handle_event(self, self.read_model)
-            print('Transaction succesful')
-        print(success)
-        return success
+        try:
+            # @TODO atomic does not seem to work as expected
+            # The event log is ceated even if procssing fails
+            with transaction.atomic(savepoint=False):
+                # Saving the event
+                super(EventLogMixin, self).save(args, kwargs)
+                # Updating the Read optimized model
+                success = events.handle_event(self, self.read_model)
+        except DatabaseError:
+            print('Database error, rolling back')
+            return False
+        print('Transaction succesful')
+        return True
+
+    def __repr__(self):
+        return f'<{self.guid} {self.sequence} {self.get_event_type_display}>'
 
     class Meta(object):
         abstract = True

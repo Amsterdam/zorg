@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'api',
     'datasets.normalized',
     'datasets.general',
+    'datasets.jekuntmeer',
 ]
 
 MIDDLEWARE = [

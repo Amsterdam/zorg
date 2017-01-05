@@ -36,7 +36,7 @@ class Locatie(es.DocType):
     ext_id = es.String()
     naam = es.String()
     centroid = es.GeoPoint()
-    straatnaam = es.String()
+    openbare_ruimte_naam = es.String()
     huisnummer = es.String()
     huisnummer_toevoeging = es.String()
     postcode = es.String()
@@ -72,9 +72,12 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     Create an elastic Locatie doc
     """
     doc = Locatie(_id=n.guid)
-    for key in ('naam', 'straatnaam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
+    for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
         setattr(doc, key, getattr(n, key))
     # Adding geometrie
-    doc.centroid = n.centroid.coords
+    try:
+        doc.centroid = n.centroid.coords
+    except AttributeError:
+        pass
     doc.ext_id = n.id
     return doc
