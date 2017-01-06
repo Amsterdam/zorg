@@ -2,7 +2,7 @@
 Bij jekuntmeer is een organisatie een lokatie van een activiteit
 
 from datasets.jekuntmeer import batch
-batch.import_data()
+batch.run()
 
 from datasets.normalized import models
 models.LocatieEventLog.objects.count()
@@ -110,7 +110,7 @@ def import_activities():
         offset += OFFESET_STEP
 
 
-def import_data():
+def run(dry=False):
     # Loading the organisatie
     org = load_org()
     # Retriving the locations, refered to as organistaie in the xml
