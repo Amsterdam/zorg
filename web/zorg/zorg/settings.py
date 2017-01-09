@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # Project
     'api',
-    'batch',
     'datasets.normalized',
     'datasets.general',
     'datasets.jekuntmeer',
