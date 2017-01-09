@@ -20,17 +20,8 @@ class Command(BaseCommand):
             help="Dataset to use, choose from {}. Defaults to all teh datasets.".format(', '.join(self.import_datasets))
         )
 
-        parser.add_argument(
-            '--dry',
-            action='store_true',
-            dest='dry_run',
-            default=False,
-            help='Make a dry run, not actually creating any data'
-        )
-
     def handle(self, *args, **options):
         start = time.time()
-        dry = True if options['dry_run'] else False
 
         datasets = options['dataset']
 
@@ -43,7 +34,7 @@ class Command(BaseCommand):
         for dataset in datasets:
             module_path = f'datasets.{dataset}.batch'
             batch = importlib.import_module(module_path)
-            batch.run(dry)
+            batch.run()
 
         self.stdout.write(
             "Total Duration: %.2f seconds" % (time.time() - start)

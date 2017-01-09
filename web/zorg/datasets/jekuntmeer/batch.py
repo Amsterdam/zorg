@@ -44,6 +44,7 @@ def normalize_location(data):
 
 def normalize_activity(data):
     return {
+        'id': data['ID'],
         'locatie_id': f"{USER_GUID}-{data['ORGANISATIEID']}",
         'naam': data['NAAM'],
         'beschrijving': data['OMSCHRIJVING'],
@@ -110,9 +111,9 @@ def import_activities():
         offset += OFFESET_STEP
 
 
-def run(dry=False):
+def run():
     # Loading the organisatie
-    org = load_org()
+    load_org()
     # Retriving the locations, refered to as organistaie in the xml
     import_location()
     # Retriving the activities
