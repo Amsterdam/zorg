@@ -46,6 +46,7 @@ def normalize_activity(data):
     return {
         'id': data['ID'],
         'locatie_id': f"{USER_GUID}-{data['ORGANISATIEID']}",
+        'organisatie_id': f'{USER_GUID}',
         'naam': data['NAAM'],
         'beschrijving': data['OMSCHRIJVING'],
         'bron_link': URLS['activiteitenLink'].format(activiteit_id=data['ID'])

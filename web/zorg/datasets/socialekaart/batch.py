@@ -29,6 +29,7 @@ def normalize_activity(data, location_guid, activity_id):
     return {
         'id': activity_id,
         'locatie_id': location_guid,
+        'organisatie_id': f'{USER_GUID}',
         'naam': data['kaart'],
         'beschrijving': data['bijzonderheden'],
         'bron_link': data['www'],
