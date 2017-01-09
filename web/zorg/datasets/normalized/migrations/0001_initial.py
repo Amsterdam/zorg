@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('postcode', models.CharField(blank=True, max_length=6)),
                 ('huisnummer', models.CharField(blank=True, max_length=5)),
                 ('huisletter', models.CharField(blank=True, max_length=1)),
-                ('huisnummer_toevoeging', models.CharField(blank=True, max_length=4)),
+                ('huisnummer_toevoeging', models.CharField(blank=True, max_length=32)),
                 ('bag_link', models.URLField()),
                 ('geometrie', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=28992)),
             ],

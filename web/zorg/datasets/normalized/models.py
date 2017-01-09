@@ -66,7 +66,7 @@ class Locatie(ReadOptimizedModel):
     postcode = models.CharField(max_length=6, blank=True)
     huisnummer = models.CharField(max_length=5, blank=True)
     huisletter = models.CharField(max_length=1, blank=True)
-    huisnummer_toevoeging = models.CharField(max_length=4, blank=True)
+    huisnummer_toevoeging = models.CharField(max_length=32, blank=True)
     bag_link = models.URLField()
     geometrie = geo.PointField(null=True, srid=28992, blank=True)
 
