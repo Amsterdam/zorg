@@ -9,7 +9,7 @@ from datasets.normalized import queries
 
 
 class ZoekApiView(View):
-    
+
     def __init__(self, *args, **kwargs):
         super(ZoekApiView, self).__init__(*args, **kwargs)
         self.elastic = Elasticsearch(

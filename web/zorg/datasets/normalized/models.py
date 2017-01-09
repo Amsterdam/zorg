@@ -87,10 +87,9 @@ class LocatieEventLog(EventLogMixin):
     def save(self, *args, **kwargs):
         # Setting sequence
         try:
-            prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
+            prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
         except IndexError:
-            #print('No event found, setting sequence to 0')
             self.sequence = 0
         except Exception as exp:
             print(repr(exp))
@@ -141,10 +140,9 @@ class ActiviteitEventLog(EventLogMixin):
     def save(self, *args, **kwargs):
         # Setting sequence
         try:
-            prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
+            prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
         except IndexError:
-            #print('No event found, setting sequence to 0')
             self.sequence = 0
         except Exception as exp:
             print(repr(exp))

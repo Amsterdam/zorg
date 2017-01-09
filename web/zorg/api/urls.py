@@ -7,4 +7,3 @@ from api.views import ZoekApiView
 urlpatterns = [
     url(r'^zorg/zoek/activiteit/', ZoekApiView.as_view(), {'search_for': 'activiteit'}),
 ]
-

@@ -20,4 +20,3 @@ class StatusViewsTest(TestCase):
         response = self.client.get('/status/data')
         # Making sure its a 200
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(response.content, b'Data Ok')
