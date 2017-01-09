@@ -90,7 +90,7 @@ class LocatieEventLog(EventLogMixin):
             prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
             self.sequence = prev.sequence + 1
         except IndexError:
-            print('No event found, setting sequence to 0')
+            #print('No event found, setting sequence to 0')
             self.sequence = 0
         except Exception as exp:
             print(repr(exp))
@@ -111,6 +111,7 @@ class Activiteit(ReadOptimizedModel):
     persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
     tags = models.CharField(max_length=255)
     locatie = models.ForeignKey(Locatie, related_name='activiteiten')
+    organisatie = models.ForeignKey(Organisatie, related_name='activiteiten')
 
     @property
     def contact(self):
@@ -143,7 +144,7 @@ class ActiviteitEventLog(EventLogMixin):
             prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0] 
             self.sequence = prev.sequence + 1
         except IndexError:
-            print('No event found, setting sequence to 0')
+            #print('No event found, setting sequence to 0')
             self.sequence = 0
         except Exception as exp:
             print(repr(exp))
