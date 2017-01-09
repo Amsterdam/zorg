@@ -76,11 +76,9 @@ def load_csv(path=None):
     # If no path is given switching to default
     if not path:
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data/ska_export.csv')
-        print(path)
         with open(path, encoding='latin-1') as csv_file:
             csv_data = csv.DictReader(csv_file, delimiter=';')
             for row in csv_data:
-                print(row)
                 location_guid = import_location(row)
                 import_activity(row, location_guid)
         return csv_data
