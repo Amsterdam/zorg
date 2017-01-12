@@ -11,7 +11,6 @@ class ZorgModelSerializer(serializers.ModelSerializer):
     event_model = None
 
     def create(self, validated_data):
-        print('Serilaizer create')
         # Creating the guid
         guid = events.guid_from_id('CODE', validated_data['id'])
 
@@ -36,11 +35,9 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             data=validated_data
         )
         new_item = event.save()
-        print ('new_item', new_item)
         return new_item
 
     def update(self, instance, validated_data):
-        print('Serialzier update')
         # Creating the guid
         guid = events.guid_from_id('CODE', validated_data['id'])
 
@@ -62,7 +59,6 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             data=validated_data
         )
         item = event.save()
-        print ('item', item)
         return item
 
 

@@ -12,8 +12,6 @@ from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSer
 class ZorgViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
-        print(self.kwargs)
-
         queryset = self.get_queryset()
         filter = {
             self.lookup_field: 'CODE-' + self.kwargs[self.lookup_field]

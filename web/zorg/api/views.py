@@ -42,7 +42,6 @@ class ZoekApiView(View):
         return HttpResponse(json.dumps(response))
 
     def get(self, *args, **kwargs):
-        print(self.request.GET.get('query', 'MISSING'))
         return self.search_elastic(kwargs.get('search_for', None), self.request.GET.get('query', ''))
 
     def post(self, *args, **kwargs):

@@ -1,5 +1,6 @@
 # Python
 import datetime
+import logging
 # Package
 from django.contrib.gis.db import models as geo
 from django.contrib.postgres.fields import JSONField
@@ -10,6 +11,9 @@ import requests
 from datasets.general import events
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
 from datasets.normalized import documents
+
+
+log = logging.getLogger(__name__)
 
 
 class Persoon(models.Model):
@@ -84,13 +88,13 @@ class Locatie(ReadOptimizedModel):
                 huisnummer = ''
             self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
         except Exception as exp:
-            print(repr(exp))
+            log.error(repr(exp))
         # If no geolocation is geven, retrivint that as well
         try:
             if not self.geometrie:
                 self.geometrie = requests.get(self.bag_link).json()['_geometrie']
         except Exception as exp:
-            print(repr(exp))
+            log.error(repr(exp))
 
         # Saving
         super(Locatie, self).save(args, kwargs)
@@ -115,7 +119,7 @@ class LocatieEventLog(EventLogMixin):
         except IndexError:
             self.sequence = 0
         except Exception as exp:
-            print(repr(exp))
+            log.error(repr(exp))
             self.sequence = 0
         # Saving
         super(LocatieEventLog, self).save(args, kwargs)
@@ -168,7 +172,7 @@ class ActiviteitEventLog(EventLogMixin):
         except IndexError:
             self.sequence = 0
         except Exception as exp:
-            print(repr(exp))
+            log.error(repr(exp))
             self.sequence = 0
         # Saving
         super(ActiviteitEventLog, self).save(args, kwargs)

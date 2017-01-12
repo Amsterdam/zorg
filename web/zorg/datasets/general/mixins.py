@@ -1,9 +1,15 @@
+# Python
+import logging
+# Packages
 from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, DatabaseError, models, transaction
 from datasets.general import events
-
+# Project
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
+
+
+log = logging.getLogger(__name__)
 
 
 class ReadOptimizedModel(models.Model):
@@ -22,7 +28,7 @@ class ReadOptimizedModel(models.Model):
             doc = self.create_doc()
             doc.save()
         except Exception as exp:
-            print('Failed to send to elastic:', repr(exp))
+            log.error(f'Failed to send to elastic: {exp}')
 
     class Meta(object):
         abstract = True
@@ -54,7 +60,7 @@ class EventLogMixin(models.Model):
                 # Updating the Read optimized model
                 success = events.handle_event(self, self.read_model)
         except DatabaseError as e:
-            print('Database error, rolling back', repr(e))
+            log.error(f'Database error, rolling back: {e}')
             return False
         return success
 

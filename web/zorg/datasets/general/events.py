@@ -3,10 +3,15 @@ Event handling code
 
 This file contains the functionality needed to handle the event
 """
+# Python
+import logging
 # Packages
 from django.db import models
 # Project
 from datasets.general.mixins import EventLogMixin
+
+
+log = logging.getLogger(__name__)
 
 
 # For now, using a simple implemetation of concatinating the
@@ -55,7 +60,7 @@ def handle_event(event: EventLogMixin, model: models.Model) -> bool:
     elif event.event_type == 'D':
         return delete(event.guid, model)
     # Unknown command
-    print('Unknown command', event.event_type)
+    log.error(f'Unknown command {event.event_type}')
     return False
 
 
@@ -93,7 +98,7 @@ def delete(guid: str, model: models.Model) -> bool:
         item = model.objects.get(pk=guid)
         item.delete()
     except Exception as exp:
-        print(repr(exp))
+        log.error(repr(exp))
         success = False
 
     return success
