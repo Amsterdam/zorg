@@ -5,6 +5,7 @@ from django.contrib.gis.db import models as geo
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
+import requests
 # Project
 from datasets.general import events
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
@@ -57,6 +58,7 @@ class OrganisatieEventLog(EventLogMixin):
 
 
 class Locatie(ReadOptimizedModel):
+    bag_url = "https://https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/?"
     create_doc = documents.doc_from_locatie
 
     id = models.CharField(max_length=100)
@@ -71,6 +73,27 @@ class Locatie(ReadOptimizedModel):
     geometrie = geo.PointField(null=True, srid=28992, blank=True)
 
     objects = geo.GeoManager()
+
+    def save(self, *args, **kwargs):
+        # Finding the bag object
+        try:
+            postcode = f'postcode={self.postcode}'
+            if self.huisnummer:
+                huisnummer = f'&huisnummer={self.huisnummer}'
+            else:
+                huisnummer = ''
+            self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
+        except Exception as exp:
+            print(repr(exp))
+        # If no geolocation is geven, retrivint that as well
+        try:
+            if not self.geometrie:
+                self.geometrie = requests.get(self.bag_link).json()['_geometrie']
+        except Exception as exp:
+            print(repr(exp))
+
+        # Saving
+        super(Locatie, self).save(args, kwargs)
 
     def clean(self):
         # Either an addres or a point

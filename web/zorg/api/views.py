@@ -36,10 +36,8 @@ class ZoekApiView(View):
         response = self.elastic.search(
             index=settings.ELASTIC_INDEX,
             body=query
-            #_source_include=['centroid']
         )
         # Format resuts
-        print(response)
         # return
         return HttpResponse(json.dumps(response))
 

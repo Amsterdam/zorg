@@ -6,8 +6,8 @@ database:
     POSTGRES_DB: zorg
 
 elasticsearch:
-  image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch:latest
-  command: elasticsearch -Des.network.host=0.0.0.0
+  image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5
+  command: elasticsearch -Enetwork.host=0.0.0.0
   volumes:
    - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 

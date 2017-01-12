@@ -8,8 +8,8 @@ database:
     POSTGRES_DB: zorg
 
 elasticsearch:
-  image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch:latest
-  command: elasticsearch -Des.network.host=0.0.0.0
+  image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5
+  command: elasticsearch -Enetwork.host=0.0.0.0
   ports:
     - "9200:9200"
     - "9300:9300"

@@ -1,6 +1,6 @@
 django
 djangorestframework
-elasticsearch-dsl==2.1.0
+elasticsearch-dsl
 psycopg2
 requests
 xmltodict

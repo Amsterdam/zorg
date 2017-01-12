@@ -56,7 +56,7 @@ class EventLogMixin(models.Model):
         except DatabaseError as e:
             print('Database error, rolling back', repr(e))
             return False
-        return True
+        return success
 
     def __repr__(self):
         return f'<{self.guid} {self.sequence} {self.get_event_type_display}>'
