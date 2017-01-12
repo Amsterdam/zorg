@@ -85,8 +85,7 @@ class LocatieSerializer(ZorgModelSerializer):
 
 
 class ActiviteitSerializer(ZorgModelSerializer):
-    locatie = LocatieSerializer()
-    organisatie = OrganisatieSerializer()
+
     event_model = models.ActiviteitEventLog
 
     class Meta(object):
