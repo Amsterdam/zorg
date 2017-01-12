@@ -71,17 +71,8 @@ class OrganisatieSerializer(ZorgModelSerializer):
     event_model = models.OrganisatieEventLog
 
     class Meta(object):
-        exclude = ('guid',)
+        fields = '__all__'
         model = models.Organisatie
-
-
-class ActiviteitSerializer(ZorgModelSerializer):
-
-    event_model = models.ActiviteitEventLog
-
-    class Meta(object):
-        exclude = ('guid',)
-        model = models.Activiteit
 
 
 class LocatieSerializer(ZorgModelSerializer):
@@ -89,5 +80,15 @@ class LocatieSerializer(ZorgModelSerializer):
     event_model = models.LocatieEventLog
 
     class Meta(object):
-        exclude = ('guid',)
+        fields = '__all__'
         model = models.Locatie
+
+
+class ActiviteitSerializer(ZorgModelSerializer):
+    locatie = LocatieSerializer()
+    organisatie = OrganisatieSerializer()
+    event_model = models.ActiviteitEventLog
+
+    class Meta(object):
+        fields = '__all__'
+        model = models.Activiteit

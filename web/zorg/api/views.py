@@ -1,3 +1,5 @@
+# Python
+import json
 # Packages
 from django.conf import settings
 from django.http import HttpResponse
@@ -39,11 +41,11 @@ class ZoekApiView(View):
         # Format resuts
         print(response)
         # return
-        return HttpResponse('')
+        return HttpResponse(json.dumps(response))
 
     def get(self, *args, **kwargs):
         print(self.request.GET.get('query', 'MISSING'))
-        return self.search_elastic(kwargs['search_for'], self.request.GET.get('query', ''))
+        return self.search_elastic(kwargs.get('search_for', None), self.request.GET.get('query', ''))
 
     def post(self, *args, **kwargs):
-        return self.search_elastic(kwargs['search_for'])
+        return self.search_elastic(kwargs.get('search_for', None), self.request.GET.get('query', ''))

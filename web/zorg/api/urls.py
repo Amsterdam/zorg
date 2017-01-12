@@ -5,5 +5,8 @@ from django.contrib import admin
 from api.views import ZoekApiView
 
 urlpatterns = [
-    url(r'^zorg/zoek/activiteit/', ZoekApiView.as_view(), {'search_for': 'activiteit'}),
+    url(r'^zorg/zoek/activiteit/$', ZoekApiView.as_view(), {'search_for': 'activiteit'}),
+    url(r'^zorg/zoek/locatie/$', ZoekApiView.as_view(), {'search_for': 'locatie'}),
+    url(r'^zorg/zoek/organisatie/$', ZoekApiView.as_view(), {'search_for': 'organisatie'}),
+    url(r'zorg/zoek/$', ZoekApiView.as_view()),
 ]

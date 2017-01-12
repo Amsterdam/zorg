@@ -8,22 +8,20 @@ log = logging.getLogger(__name__)
 
 
 def zorg_Q(doc_type, query_string):
-    return {
-        "bool": {
-            "must": {
-                "match_phrase_prefix": {
-                    "naam": {
-                        "query": "query_string"
-                    }
+    q = {
+            "match": {
+                "naam": {
+                    "query": query_string
                 }
             },
-            "filter": {
+    }
+    if doc_type:
+        q['filter'] = {
                 "type": {
                     "value": doc_type
                 }
             }
-        }
-    }
+    return q
 
 
 def location_Q():
