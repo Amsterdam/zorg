@@ -30,7 +30,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 insecure_key = 'insecure'
 SECRET_KEY = os.getenv('ZORG_SECRET_KEY', insecure_key)
 DEBUG = SECRET_KEY == insecure_key
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']  # type: List[str]
 SITE_ID = 1
 

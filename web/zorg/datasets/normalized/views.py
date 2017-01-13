@@ -11,9 +11,6 @@ from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSer
 
 class ZorgViewSet(viewsets.ModelViewSet):
 
-    def get_serializer_context(self):
-        return {'request': self.request}
-
     def get_object(self):
         queryset = self.get_queryset()
         filter = {

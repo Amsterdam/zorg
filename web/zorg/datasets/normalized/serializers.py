@@ -10,16 +10,17 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     event_model = None
 
-    def __init__(self, *args, **kwargs):
-        print(args, kwargs)
-        super(ZorgModelSerializer, self).__init__(*args, **kwargs)
-
-    def validate_guid(self, value):
-        print(value)
-        return value
+    def get_extra_kwargs(self):
+        # On create guid should be empty
+        extra_kwargs = super(ZorgModelSerializer, self).get_extra_kwargs()
+        action = self.context['view'].action
+        if action == 'create':
+            kwargs = extra_kwargs.get('guid', {})
+            kwargs['required'] = False
+            extra_kwargs['guid'] = kwargs
+        return extra_kwargs
 
     def create(self, validated_data):
-        print(validated_data)
         # Creating the guid
         guid = events.guid_from_id('CODE', validated_data['id'])
 
@@ -78,6 +79,7 @@ class OrganisatieSerializer(ZorgModelSerializer):
     class Meta(object):
         fields = '__all__'
         model = models.Organisatie
+        extra_kwargs = {'client': {'required': 'False'}}
 
 
 class LocatieSerializer(ZorgModelSerializer):
