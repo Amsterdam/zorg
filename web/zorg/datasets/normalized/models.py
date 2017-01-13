@@ -3,6 +3,7 @@ import datetime
 import logging
 # Package
 from django.contrib.gis.db import models as geo
+from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -14,6 +15,7 @@ from datasets.normalized import documents
 
 
 log = logging.getLogger(__name__)
+bag_url = "https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/?"
 
 
 class Persoon(models.Model):
@@ -62,7 +64,6 @@ class OrganisatieEventLog(EventLogMixin):
 
 
 class Locatie(ReadOptimizedModel):
-    bag_url = "https://https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/?"
     create_doc = documents.doc_from_locatie
 
     id = models.CharField(max_length=100)
@@ -87,12 +88,18 @@ class Locatie(ReadOptimizedModel):
             else:
                 huisnummer = ''
             self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
+        except IndexError:
+            # No results found
+            self.bag_link = ''
         except Exception as exp:
+            print('call error')
             log.error(repr(exp))
         # If no geolocation is geven, retrivint that as well
         try:
-            if not self.geometrie:
-                self.geometrie = requests.get(self.bag_link).json()['_geometrie']
+            if not self.geometrie and self.bag_link:
+                geo = requests.get(self.bag_link).json()['_geometrie']
+                point = Point(geo['coordinates'], srid=28992)
+                self.geometrie = point
         except Exception as exp:
             log.error(repr(exp))
 

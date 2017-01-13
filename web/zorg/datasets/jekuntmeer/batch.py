@@ -34,10 +34,31 @@ def normalize_location(data):
         postcode = data.get('POSTCODE', '').replace(' ', '')
     except AttributeError:
         postcode = None
+    try:
+        # Retrieve house number from the adres field
+        huisnummer_potentials = data['ADRES'].split(' ')
+        # No point in starting in the first location
+        pos = 1
+        huisnummer = None
+        openbare_ruimte_naam = None
+        while len(huisnummer_potentials):
+            if huisnummer_potentials[pos].isdigit():
+                huisnummer = huisnummer_potentials[pos]
+                openbare_ruimte_naam = ' '.join(huisnummer_potentials[:pos])
+                break
+        # If nothing was found taking the last part to be house number
+        if not huisnummer:
+            huisnummer = huisnummer_potentials[-1]
+            openbare_ruimte_naam = ' '.join(huisnummer_potentials[:-1])
+    except AttributeError:
+        huisnummer = None
+        openbare_ruimte_naam = None
+
     return {
         'id': data['ID'],
         'naam': data['NAAM'],
-        'openbare_ruimte_naam': data['ADRES'],
+        'openbare_ruimte_naam': openbare_ruimte_naam,
+        'huisnummer': huisnummer,
         'postcode': postcode,
     }
 
