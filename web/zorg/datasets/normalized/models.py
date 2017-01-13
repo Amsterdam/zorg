@@ -92,7 +92,6 @@ class Locatie(ReadOptimizedModel):
             # No results found
             self.bag_link = ''
         except Exception as exp:
-            print('call error')
             log.error(repr(exp))
         # If no geolocation is geven, retrivint that as well
         try:
@@ -104,7 +103,7 @@ class Locatie(ReadOptimizedModel):
             log.error(repr(exp))
 
         # Saving
-        super(Locatie, self).save(args, kwargs)
+        return super(Locatie, self).save(*args, **kwargs)
 
     def clean(self):
         # Either an addres or a point
@@ -129,7 +128,7 @@ class LocatieEventLog(EventLogMixin):
             log.error(repr(exp))
             self.sequence = 0
         # Saving
-        super(LocatieEventLog, self).save(args, kwargs)
+        return super(LocatieEventLog, self).save(args, kwargs)
 
 
 class Activiteit(ReadOptimizedModel):
@@ -182,4 +181,4 @@ class ActiviteitEventLog(EventLogMixin):
             log.error(repr(exp))
             self.sequence = 0
         # Saving
-        super(ActiviteitEventLog, self).save(args, kwargs)
+        return super(ActiviteitEventLog, self).save(args, kwargs)

@@ -27,7 +27,7 @@ def guid_from_id(user_identifier: str, ext_id: str) -> str:
     others data, while mainting a reversible reference to the own
     user's id
     """
-    return "{}-{}".format(user_identifier, ext_id)
+    return f"{user_identifier}-{ext_id}"
 
 
 def id_from_guid(user_identifier_len: int, guid: str) -> str:
@@ -64,7 +64,7 @@ def handle_event(event: EventLogMixin, model: models.Model) -> bool:
     return False
 
 
-def create(guid: str, data: dict, model: models.Model) -> bool:
+def create(guid: str, data: dict, model: models.Model) -> models.Model:
     """
     In a create the event is logged
     and an entry is created in the read
@@ -76,7 +76,7 @@ def create(guid: str, data: dict, model: models.Model) -> bool:
     return item
 
 
-def update(guid: str, data: dict, model: models.Model) -> bool:
+def update(guid: str, data: dict, model: models.Model) -> models.Model:
     """
     In an update the event is logged
     and the entry in the read optimized
@@ -84,7 +84,7 @@ def update(guid: str, data: dict, model: models.Model) -> bool:
     """
     item = model.objects.get(pk=guid)
     [setattr(item, attr, value) for (attr, value) in data.items()]
-    item.save(force_update=True)
+    item.save()
     return item
 
 

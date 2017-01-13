@@ -40,7 +40,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # Creating the guid
-        guid = events.guid_from_id('CODE', validated_data['id'])
+        guid = instance.guid
 
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry

@@ -18,7 +18,7 @@ class ReadOptimizedModel(models.Model):
 
     def save(self, *args, **kwargs):
         # Saving the model
-        super(ReadOptimizedModel, self).save(args, kwargs)
+        item = super(ReadOptimizedModel, self).save(args, kwargs)
         # Adding to elastic
         try:
             connections.create_connection(
@@ -29,6 +29,7 @@ class ReadOptimizedModel(models.Model):
             doc.save()
         except Exception as exp:
             log.error(f'Failed to send to elastic: {exp}')
+        return item
 
     class Meta(object):
         abstract = True
@@ -56,7 +57,7 @@ class EventLogMixin(models.Model):
             # The event log is ceated even if procssing fails
             with transaction.atomic(savepoint=False):
                 # Saving the event
-                super(EventLogMixin, self).save(args, kwargs)
+                super(EventLogMixin, self).save(*args, **kwargs)
                 # Updating the Read optimized model
                 success = events.handle_event(self, self.read_model)
         except DatabaseError as e:
