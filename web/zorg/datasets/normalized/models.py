@@ -55,7 +55,7 @@ class Organisatie(ReadOptimizedModel):
     afdeling = models.CharField(max_length=255, blank=True)
     contact = JSONField()  # for tele, fax, emai, www etc.
 
-    def __repr__(self):
+    def __str__(self):
         return f'<{self.naam}>'
 
 
@@ -110,7 +110,7 @@ class Locatie(ReadOptimizedModel):
         if not self.geometrie and not self.postcode:
             raise ValidationError('A geolocation or address is needed')
 
-    def __repr__(self):
+    def __str__(self):
         return f'<{self.naam}>'
 
 
@@ -163,7 +163,7 @@ class Activiteit(ReadOptimizedModel):
         if not self.contactpersoon and not self.persoon:
             raise ValidationError('Give either a contact person\'s name or a refrence to a person')
 
-    def __repr__(self):
+    def __str__(self):
         return f'<{self.naam} {self.guid}>'
 
 
