@@ -142,8 +142,8 @@ class Activiteit(ReadOptimizedModel):
     contactpersoon = models.CharField(max_length=255, blank=True)
     persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
     tags = models.CharField(max_length=255)
-    locatie = models.ForeignKey(Locatie, related_name='activiteiten')
-    organisatie = models.ForeignKey(Organisatie, related_name='activiteiten')
+    locatie = models.ForeignKey(Locatie, related_name='activiteiten', blank=True, null=True)
+    organisatie = models.ForeignKey(Organisatie, related_name='activiteiten', blank=True, null=True)
 
     @property
     def contact(self):
