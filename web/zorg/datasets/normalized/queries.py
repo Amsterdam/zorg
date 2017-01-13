@@ -9,18 +9,14 @@ log = logging.getLogger(__name__)
 
 def zorg_Q(doc_type, query_string):
     q = {
-            "match": {
-                "naam": {
-                    "query": query_string
-                }
-            },
+        "match": {"naam":  query_string},
     }
     if doc_type:
         q['filter'] = {
-                "type": {
-                    "value": doc_type
-                }
+            "type": {
+                "value": doc_type
             }
+        }
     return q
 
 
