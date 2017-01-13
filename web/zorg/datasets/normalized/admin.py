@@ -1,5 +1,5 @@
 from django.contrib import admin
-form models import Locatie, Organisatie, Activiteit
+from .models import Locatie, Organisatie, Activiteit
 
 
 class LocatieAdmin(admin.ModelAdmin):

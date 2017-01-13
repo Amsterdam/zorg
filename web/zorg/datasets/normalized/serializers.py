@@ -10,6 +10,14 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     event_model = None
 
+    def __init__(self, *args, **kwargs):
+        print(args, kwargs)
+        super(ZorgModelSerializer, self).__init__(*args, **kwargs)
+
+    def validate_guid(self, value):
+        print(value)
+        return value
+
     def create(self, validated_data):
         print(validated_data)
         # Creating the guid

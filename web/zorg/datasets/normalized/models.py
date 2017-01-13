@@ -74,7 +74,7 @@ class Locatie(ReadOptimizedModel):
     huisnummer = models.CharField(max_length=5, blank=True)
     huisletter = models.CharField(max_length=1, blank=True)
     huisnummer_toevoeging = models.CharField(max_length=32, blank=True)
-    bag_link = models.URLField()
+    bag_link = models.URLField(blank=True)
     geometrie = geo.PointField(null=True, srid=28992, blank=True)
 
     objects = geo.GeoManager()
