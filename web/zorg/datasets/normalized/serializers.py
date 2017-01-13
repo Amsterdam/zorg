@@ -11,6 +11,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
     event_model = None
 
     def create(self, validated_data):
+        print(validated_data)
         # Creating the guid
         guid = events.guid_from_id('CODE', validated_data['id'])
 

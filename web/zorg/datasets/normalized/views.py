@@ -11,10 +11,13 @@ from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSer
 
 class ZorgViewSet(viewsets.ModelViewSet):
 
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     def get_object(self):
         queryset = self.get_queryset()
         filter = {
-            self.lookup_field: 'CODE-' + self.kwargs[self.lookup_field]
+            self.lookup_field: self.kwargs[self.lookup_field]
         }
         obj = get_object_or_404(queryset, **filter)
         self.check_object_permissions(self.request, obj)
