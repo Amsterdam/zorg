@@ -1,6 +1,7 @@
 # Python
 import logging
 import time
+import requests
 # Packages
 from django.core.management import BaseCommand
 from django.conf import settings
@@ -8,6 +9,7 @@ from elasticsearch.exceptions import NotFoundError
 import elasticsearch_dsl as es
 from elasticsearch_dsl.connections import connections
 # Project
+from datasets.normalized import models
 from datasets.normalized.documents import Activiteit, Locatie, Organisatie
 
 
@@ -34,14 +36,22 @@ class Command(BaseCommand):
             default=False,
             help='Delete elastic indexes from elastic')
 
+        parser.add_argument(
+            '--reindex',
+            action='store_true',
+            dest='reindex_data',
+            default=False,
+            help='Reindex all the data to elastic')
+
     def handle(self, *args, **options):
         start = time.time()
 
         if options['delete_indexes']:
             self.delete_index()
-
         elif options['build_index']:
             self.create_index()
+        elif options['reindex_data']:
+            self.reindex_data()
         else:
             self.stdout.write("Unkown command")
 
@@ -54,19 +64,11 @@ class Command(BaseCommand):
             hosts=settings.ELASTIC_SEARCH_HOSTS,
             retry_on_timeout=True,
         )
-
         return es.Index(self.index)
 
     def delete_index(self):
         # Deleteing the index
-        idx = self.__connect_to_elastic()
-        try:
-            idx.delete(ignore=404)
-            log.info("Deleted index %s", self.index)
-        except AttributeError:
-            log.warning("Could not delete index '%s', ignoring", self.index)
-        except NotFoundError:
-            log.warning("Index '%s' not found, ignoring", self.index)
+        requests.delete('http://{}/{}'.format(settings.ELASTIC_SEARCH_HOSTS[0], self.index))
 
     def create_index(self):
         # Creating a a new index and adding
@@ -75,3 +77,20 @@ class Command(BaseCommand):
         for dt in self.doc_types:
             idx.doc_type(dt)
         idx.create()
+
+    def reindex_data(self):
+        """
+        This will work for now but needs to replace with a better system after the poc
+        with a 'replay' mechanism
+        """
+        connections.create_connection(
+            hosts=settings.ELASTIC_SEARCH_HOSTS,
+            retry_on_timeout=True,
+        )
+        locations = models.Locatie.objects.all()
+        actions = models.Activiteit.objects.all()
+        organsiations = models.Organisatie.objects.all()
+        for dataset in [locations, actions, organsiations]:
+            for item in dataset:
+                doc = item.create_doc()
+                doc.save()

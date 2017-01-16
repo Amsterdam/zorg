@@ -4,15 +4,22 @@ from typing import List, cast
 from django.conf import settings
 from django.db import models
 import elasticsearch_dsl as es
+from elasticsearch_dsl import analyzer, tokenizer
 # Project
+
+
+base_analyzer = analyzer('zorg_base_txt',
+                         tokenizer=tokenizer('trigram', 'nGram', min_gram=2, max_gram=20),
+                         filter=['lowercase']
+                         )
 
 
 class Organisatie(es.DocType):
 
-    ext_id = es.String()
-    naam = es.String()  # ngram
-    beschrijving = es.String()
-    afdeling = es.String()
+    ext_id = es.String(index='not_analyzed')
+    naam = es.String(analyzer=base_analyzer)  # ngram
+    beschrijving = es.String(analyzer=base_analyzer)
+    afdeling = es.String(index='not_analyzed')
 
     class Meta(object):
         index = settings.ELASTIC_INDEX
@@ -20,12 +27,12 @@ class Organisatie(es.DocType):
 
 class Activiteit(es.DocType):
 
-    ext_id = es.String()
-    naam = es.String()
-    beschrijving = es.String()
-    bron_link = es.String()
-    tijdstip = es.String()
-    tags = es.String()
+    ext_id = es.String(index='not_analyzed')
+    naam = es.String(analyzer=base_analyzer)
+    beschrijving = es.String(analyzer=base_analyzer)
+    bron_link = es.String(index='not_analyzed')
+    tijdstip = es.String(index='not_analyzed')
+    tags = es.String(index='not_analyzed')
 
     class Meta(object):
         index = settings.ELASTIC_INDEX
@@ -33,13 +40,13 @@ class Activiteit(es.DocType):
 
 class Locatie(es.DocType):
 
-    ext_id = es.String()
-    naam = es.String()
+    ext_id = es.String(index='not_analyzed')
+    naam = es.String(analyzer=base_analyzer)
     centroid = es.GeoPoint()
-    openbare_ruimte_naam = es.String()
-    huisnummer = es.String()
-    huisnummer_toevoeging = es.String()
-    postcode = es.String()
+    openbare_ruimte_naam = es.String(index='not_analyzed')
+    huisnummer = es.String(index='not_analyzed')
+    huisnummer_toevoeging = es.String(index='not_analyzed')
+    postcode = es.String(index='not_analyzed')
 
     class Meta(object):
         index = settings.ELASTIC_INDEX
