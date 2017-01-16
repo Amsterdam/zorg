@@ -3,4 +3,4 @@
 set -u   # crash on missing env variables
 set -e   # stop on any error
 
-yes yes | python manage.py runimport
+python manage.py runimport
