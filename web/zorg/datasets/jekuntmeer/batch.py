@@ -39,21 +39,22 @@ def normalize_location(data):
         huisnummer_potentials = data['ADRES'].split(' ')
         # No point in starting in the first location
         pos = 1
-        huisnummer = None
-        openbare_ruimte_naam = None
+        huisnummer = ''
+        openbare_ruimte_naam = ''
         while pos < len(huisnummer_potentials):
             if huisnummer_potentials[pos].isdigit():
                 huisnummer = huisnummer_potentials[pos]
                 openbare_ruimte_naam = ' '.join(huisnummer_potentials[:pos])
                 break
             pos += 1
-        # If nothing was found taking the last part to be house number
-        if not huisnummer:
+        # If nothing was found taking and the last part starts with a digit
+        # Take that as house number. This will account for 34-36, 15D, etc
+        if not huisnummer and huisnummer_potentials[-1][0].isdigit() and len(huisnummer_potentials) > 1:
             huisnummer = huisnummer_potentials[-1]
             openbare_ruimte_naam = ' '.join(huisnummer_potentials[:-1])
     except AttributeError:
-        huisnummer = None
-        openbare_ruimte_naam = None
+        huisnummer = ''
+        openbare_ruimte_naam = ''
 
     return {
         'id': data['ID'],

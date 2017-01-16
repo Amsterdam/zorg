@@ -1,5 +1,6 @@
 # Python
 import datetime
+import json
 import logging
 # Package
 from django.contrib.gis.db import models as geo
@@ -71,7 +72,7 @@ class Locatie(ReadOptimizedModel):
     naam = models.CharField(max_length=255)
     openbare_ruimte_naam = models.CharField(max_length=255, blank=True)
     postcode = models.CharField(max_length=6, blank=True)
-    huisnummer = models.CharField(max_length=5, blank=True)
+    huisnummer = models.CharField(max_length=64, blank=True)
     huisletter = models.CharField(max_length=1, blank=True)
     huisnummer_toevoeging = models.CharField(max_length=32, blank=True)
     bag_link = models.URLField(blank=True)
@@ -79,20 +80,28 @@ class Locatie(ReadOptimizedModel):
 
     objects = geo.GeoManager()
 
-    def save(self, *args, **kwargs):
-        # Finding the bag object
+    def __get_bag_link(self, postcode_param, huisnummer_param):
+        # Tries to retrieve the bag link
         try:
-            postcode = f'postcode={self.postcode}'
-            if self.huisnummer:
-                huisnummer = f'&huisnummer={self.huisnummer}'
+            postcode = f'postcode={postcode_param}'
+            if huisnummer_param:
+                huisnummer = f'&huisnummer={huisnummer_param}'
             else:
                 huisnummer = ''
             self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
+        except json.JSONDecodeError:
+            # Trying without house number
+            self.__get_bag_link(postcode_param, None)
         except IndexError:
             # No results found
             self.bag_link = ''
         except Exception as exp:
-            log.error(repr(exp))
+            err = repr(exp) 
+            log.error(f'Faild to find bag link: {err}')
+
+    def save(self, *args, **kwargs):
+        # Finding the bag object
+        self.__get_bag_link(self.postcode, self.huisnummer)
         # If no geolocation is geven, retrivint that as well
         try:
             if not self.geometrie and self.bag_link:
