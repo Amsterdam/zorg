@@ -41,11 +41,12 @@ def normalize_location(data):
         pos = 1
         huisnummer = None
         openbare_ruimte_naam = None
-        while len(huisnummer_potentials):
+        while pos < len(huisnummer_potentials):
             if huisnummer_potentials[pos].isdigit():
                 huisnummer = huisnummer_potentials[pos]
                 openbare_ruimte_naam = ' '.join(huisnummer_potentials[:pos])
                 break
+            pos += 1
         # If nothing was found taking the last part to be house number
         if not huisnummer:
             huisnummer = huisnummer_potentials[-1]

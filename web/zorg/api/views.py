@@ -24,14 +24,6 @@ class ZoekApiView(View):
             'query': queries.zorg_Q(search_for, query_string)
         }
 
-        # if search_for == 'organisatie':
-        #     query = queries.organisatie_Q(query_string)
-        # elif search_for == 'activiteit':
-        #     query = queries.activiteit_Q(query_string)
-        # elif search_for == 'locatie':
-        #     query = queries.location_Q(query_string)
-        # else:
-        #     return None
         # Perform search
         response = self.elastic.search(
             index=settings.ELASTIC_INDEX,

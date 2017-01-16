@@ -101,7 +101,6 @@ class Locatie(ReadOptimizedModel):
                 self.geometrie = point
         except Exception as exp:
             log.error(repr(exp))
-
         # Saving
         return super(Locatie, self).save(*args, **kwargs)
 
@@ -141,7 +140,7 @@ class Activiteit(ReadOptimizedModel):
     bron_link = models.URLField()
     contactpersoon = models.CharField(max_length=255, blank=True)
     persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
-    tags = models.CharField(max_length=255)
+    tags = models.CharField(max_length=255, blank=True)
     locatie = models.ForeignKey(Locatie, related_name='activiteiten', blank=True, null=True)
     organisatie = models.ForeignKey(Organisatie, related_name='activiteiten', blank=True, null=True)
 
