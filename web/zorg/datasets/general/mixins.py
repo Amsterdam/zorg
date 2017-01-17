@@ -66,7 +66,7 @@ class EventLogMixin(models.Model):
         return success
 
     def __repr__(self):
-        return f'<{self.guid} {self.sequence} {self.get_event_type_display}>'
+        return f'<{self.guid} {self.sequence} {self.get_event_type_display()}>'
 
     class Meta(object):
         abstract = True

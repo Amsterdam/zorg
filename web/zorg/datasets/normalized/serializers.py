@@ -22,13 +22,12 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Creating the guid
-        guid = events.guid_from_id('CODE', validated_data['id'])
+        guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
 
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry
         # 2. The laatste event was een delete
-        prev_events = list(self.event_model.objects.filter(
-                      guid=guid).order_by('sequence'))
+        prev_events = list(self.event_model.objects.filter(guid=guid).order_by('sequence'))
         if len(prev_events) == 0:
             sequence = 0
         elif prev_events[-1].event_type == 'D':

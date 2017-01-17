@@ -7,6 +7,7 @@ from rest_framework.response import Response
 # Project
 from .models import Organisatie, Activiteit, Locatie
 from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSerializer
+from datasets.general import events
 
 
 class ZorgViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,22 @@ class ZorgViewSet(viewsets.ModelViewSet):
         obj = get_object_or_404(queryset, **filter)
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def destroy(self, request, pk=None):
+        prev_events = list(self.serializer_class.event_model.objects.filter(
+                      guid=pk).order_by('sequence'))
+        if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
+            raise ValidationError('Object not found')
+        else:
+            sequence = prev_events[-1].sequence + 1
+
+        event = self.serializer_class.event_model(
+            guid=pk,
+            sequence=sequence,
+            event_type='D',
+            data={}
+        )
+        item = event.save()
 
 
 class OrganisatieViewSet(ZorgViewSet):
