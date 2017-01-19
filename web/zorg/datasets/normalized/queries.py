@@ -27,7 +27,6 @@ def zorg_Q(doc_type, query_string):
                 "fields": ["naam^1.5", "beschrijving"]
             }
         }
-    print(q)
     return q
 
 

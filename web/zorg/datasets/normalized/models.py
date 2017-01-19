@@ -96,7 +96,7 @@ class Locatie(ReadOptimizedModel):
             # No results found
             self.bag_link = ''
         except Exception as exp:
-            err = repr(exp) 
+            err = repr(exp)
             log.error(f'Faild to find bag link: {err}')
 
     def save(self, *args, **kwargs):

@@ -12,7 +12,6 @@ class Command(BaseCommand):
     import_datasets = ['jekuntmeer', 'socialekaart']
 
     def add_arguments(self, parser):
-
         parser.add_argument(
             'dataset',
             nargs='*',
