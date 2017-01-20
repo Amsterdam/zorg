@@ -27,7 +27,7 @@ class ZoekApiView(View):
         query = {
             'query': queries.zorg_Q(search_for, query_string)
         }
-        log.debug(f'query for elastic {query!s}')
+        print(f'query for elastic {query!s}')
         # Perform search
         try:
             response = self.elastic.search(
@@ -35,12 +35,14 @@ class ZoekApiView(View):
                 body=query
             )
         except Exception as exp:
+            print(f'{exp!r}')
             log.error(f'{exp!r}')
         # Format resuts
         # return
         return HttpResponse(json.dumps(response))
 
     def get(self, *args, **kwargs):
+        print('get call to search')
         return self.search_elastic(kwargs.get('search_for', None), self.request.GET.get('query', ''))
 
     def post(self, *args, **kwargs):
