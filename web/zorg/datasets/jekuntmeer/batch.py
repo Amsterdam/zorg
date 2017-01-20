@@ -1,14 +1,5 @@
-"""
-Bij jekuntmeer is een organisatie een lokatie van een activiteit
+"""Bij jekuntmeer is een organisatie een lokatie van een activiteit"""
 
-from datasets.jekuntmeer import batch
-batch.run()
-
-from datasets.normalized import models
-models.LocatieEventLog.objects.count()
-"""
-# Python
-import json
 # Packages
 import requests
 import xmltodict

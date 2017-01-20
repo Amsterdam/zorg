@@ -1,5 +1,6 @@
 # Python
 import json
+import logging
 # Packages
 from django.conf import settings
 from django.http import HttpResponse
@@ -8,6 +9,9 @@ from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
 # Project
 from datasets.normalized import queries
+
+
+log = logging.getLogger(__name__)
 
 
 class ZoekApiView(View):
@@ -23,12 +27,15 @@ class ZoekApiView(View):
         query = {
             'query': queries.zorg_Q(search_for, query_string)
         }
-
+        log.debug('query recived')
         # Perform search
-        response = self.elastic.search(
-            index=settings.ELASTIC_INDEX,
-            body=query
-        )
+        try:
+            response = self.elastic.search(
+                index=settings.ELASTIC_INDEX,
+                body=query
+            )
+        except Exception as exp:
+            log.error(f'{exp!r}')
         # Format resuts
         # return
         return HttpResponse(json.dumps(response))
