@@ -7,8 +7,8 @@ cd /app
 
 source docker-wait.sh
 source docker-migrate.sh || echo "Could not migrate, ignoring"
-source docker-import.sh || echo "Failed to import"
-source docker-elastic.sh || echo "Failed to create index"
+#source docker-import.sh || echo "Failed to import"
+#source docker-elastic.sh || echo "Failed to create index"
 #source docker-import.sh || echo "Failed to run custom import"
 
 # run uwsgi

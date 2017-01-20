@@ -27,7 +27,7 @@ class ZoekApiView(View):
         query = {
             'query': queries.zorg_Q(search_for, query_string)
         }
-        log.debug('query recived')
+        log.debug(f'query for elastic {query!s}')
         # Perform search
         try:
             response = self.elastic.search(
