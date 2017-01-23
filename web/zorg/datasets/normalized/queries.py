@@ -11,12 +11,14 @@ def zorg_Q(doc_type, query_string):
     if doc_type:
         q = {
             "bool": {
-                "multi_match": {
-                    "query":  query_string,
-                    "fields": ["naam^1.5", "beschrijving"]
+                "must": {
+                    "multi_match": {
+                        "query":  query_string,
+                        "fields": ["naam^1.5", "beschrijving"]
+                    }
                 },
                 "filter": {
-                    {"type": {"value": doc_type}}
+                    "type": {"value": doc_type}
                 }
             }
         }
