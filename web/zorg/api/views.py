@@ -16,6 +16,8 @@ log = logging.getLogger(__name__)
 
 class ZoekApiView(View):
 
+    zoek_functie = queries.zorg_Q
+
     def __init__(self, *args, **kwargs):
         super(ZoekApiView, self).__init__(*args, **kwargs)
         self.elastic = Elasticsearch(
@@ -25,7 +27,8 @@ class ZoekApiView(View):
 
     def search_elastic(self, search_for, query_string):
         query = {
-            'query': queries.zorg_Q(search_for, query_string)
+            'query': self.__class__.zoek_functie(search_for, query_string),
+            'size': 1000
         }
         # Perform search
         try:
@@ -46,3 +49,9 @@ class ZoekApiView(View):
 
     def post(self, *args, **kwargs):
         return self.search_elastic(kwargs.get('search_for', None), self.request.GET.get('query', ''))
+
+
+# Voor na de poc moet beter
+class TermsZoekView(ZoekApiView):
+
+    zoek_functie = queries.terms_Q
