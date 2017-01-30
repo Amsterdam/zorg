@@ -63,6 +63,19 @@ class Organisatie(ReadOptimizedModel):
 class OrganisatieEventLog(EventLogMixin):
     read_model = Organisatie
 
+    def save(self, *args, **kwargs):
+        # Setting sequence
+        try:
+            prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
+            self.sequence = prev.sequence + 1
+        except IndexError:
+            self.sequence = 0
+        except Exception as exp:
+            log.error(repr(exp))
+            self.sequence = 0
+        # Saving
+        return super(OrganisatieEventLog, self).save(args, kwargs)
+
 
 class Locatie(ReadOptimizedModel):
     create_doc = documents.doc_from_locatie
@@ -89,15 +102,17 @@ class Locatie(ReadOptimizedModel):
             else:
                 huisnummer = ''
             self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
+            print(f'{bag_url}{postcode}{huisnummer}')
         except json.JSONDecodeError:
             # Trying without house number
             self.__get_bag_link(postcode_param, None)
         except IndexError:
             # No results found
+            print(f'No results, {postcode_param}, {huisnummer_param}')
             self.bag_link = ''
         except Exception as exp:
             err = repr(exp)
-            log.error(f'Faild to find bag link: {err}')
+            log.error(f'Faild to find bag link: {err}, {postcode_param}, {huisnummer_param}')
 
     def save(self, *args, **kwargs):
         # Finding the bag object

@@ -9,7 +9,7 @@ from django.conf import settings
 from elasticsearch_dsl.connections import connections
 
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class ReadOptimizedModel(models.Model):
@@ -28,7 +28,7 @@ class ReadOptimizedModel(models.Model):
             doc = self.create_doc()
             doc.save()
         except Exception as exp:
-            log.error(f'Failed to send to elastic: {exp}')
+            LOG.error(f'Failed to send to elastic: {exp}')
         return item
 
     class Meta(object):
@@ -54,18 +54,18 @@ class EventLogMixin(models.Model):
         # Making sure that Saving event and model is atomic
         try:
             # @TODO atomic does not seem to work as expected
-            # The event log is ceated even if procssing fails
+            # The event LOG is ceated even if procssing fails
             with transaction.atomic(savepoint=False):
                 # Saving the event
                 super(EventLogMixin, self).save(*args, **kwargs)
                 # Updating the Read optimized model
                 success = events.handle_event(self, self.read_model)
         except DatabaseError as e:
-            log.error(f'Database error, rolling back: {e}')
+            LOG.error(f'Database error, rolling back: {e}')
             return False
         return success
 
-    def __repr__(self):
+    def __str__(self):
         return f'<{self.guid} {self.sequence} {self.get_event_type_display()}>'
 
     class Meta(object):

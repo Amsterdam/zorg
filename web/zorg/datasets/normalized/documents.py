@@ -83,8 +83,8 @@ def doc_from_locatie(n: models.Model) -> Locatie:
         setattr(doc, key, getattr(n, key))
     # Adding geometrie
     try:
-        doc.centroid = n.centroid.coords
+        doc.centroid = n.geometrie.transform('wgs84', clone=True).coords
     except AttributeError:
-        pass
+        doc.centroid
     doc.ext_id = n.id
     return doc
