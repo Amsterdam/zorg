@@ -102,13 +102,11 @@ class Locatie(ReadOptimizedModel):
             else:
                 huisnummer = ''
             self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
-            print(f'{bag_url}{postcode}{huisnummer}')
         except json.JSONDecodeError:
             # Trying without house number
             self.__get_bag_link(postcode_param, None)
         except IndexError:
             # No results found
-            print(f'No results, {postcode_param}, {huisnummer_param}')
             self.bag_link = ''
         except Exception as exp:
             err = repr(exp)

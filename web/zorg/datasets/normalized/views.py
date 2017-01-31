@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from rest_framework import viewsets
-from rest_framework.response import Response
 # Project
 from .models import Organisatie, Activiteit, Locatie
 from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSerializer
@@ -37,6 +36,14 @@ class ZorgViewSet(viewsets.ModelViewSet):
             data={}
         )
         item = event.save()
+        data = {
+            'success': True,
+            'guid': pk,
+        }
+        return JsonResponse(data, status=200, safe=False)
+
+    def update(self, request, pk=None):
+        return super(ZorgViewSet, self).update(request, pk, partial=True)
 
 
 class OrganisatieViewSet(ZorgViewSet):
