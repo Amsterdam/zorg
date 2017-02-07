@@ -105,9 +105,7 @@ def geo_Q(query: dict, doc_type=None) -> dict:
                             "lon" : query['lon']
                         }
                     },
-                    {
-                        "type": {"value": 'activiteit'}
-                    }
+                    "type": {"value": 'activiteit'}
                 }
             }
         },
