@@ -112,7 +112,7 @@ def geo_Q(query: dict, doc_type=None) -> dict:
          "sort" : [
             {
                 "_geo_distance" : {
-                    "centroid" :{
+                    "locatie.centroid" :{
                         "lat" : query['lat'],
                         "lon" : query['lon']
                     },
