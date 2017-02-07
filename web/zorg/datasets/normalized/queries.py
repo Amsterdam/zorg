@@ -97,16 +97,15 @@ def geo_Q(query: dict, doc_type=None) -> dict:
         "query": {
             "bool" : {
                 "must" : match,
-                "filter" : [
-                    {"geo_distance" : {
+                "filter" : {
+                    "geo_distance" : {
                         "distance" : default_distance,
                         "centroid" : {
                             "lat" : query['lat'],
                             "lon" : query['lon']
                         }
-                    }},
-                    {"type": {"value": 'activiteit'}}
-                ]
+                    }
+                }
             }
         },
          "sort" : [
