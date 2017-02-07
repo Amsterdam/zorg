@@ -102,7 +102,7 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
     # Loading locatie
     try:
         locatie_doc = doc_from_locatie(n.locatie)
-        doc.Locatie = locatie_doc
+        doc.locatie = locatie_doc
     except Exception as e:
         print(e)
     return doc

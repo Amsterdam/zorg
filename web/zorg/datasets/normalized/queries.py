@@ -100,7 +100,7 @@ def geo_Q(query: dict, doc_type=None) -> dict:
                 "filter" : {
                     "geo_distance" : {
                         "distance" : default_distance,
-                        "centroid" : {
+                        "locatie.centroid" : {
                             "lat" : query['lat'],
                             "lon" : query['lon']
                         }
