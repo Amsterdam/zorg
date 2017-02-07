@@ -6,6 +6,7 @@ from django.db import models
 import elasticsearch_dsl as es
 from elasticsearch_dsl import analyzer, tokenizer
 # Project
+from datasets.normalized import models as norm_models
 
 
 base_analyzer = analyzer('zorg_base_txt',
@@ -25,19 +26,6 @@ class Organisatie(es.DocType):
         index = settings.ELASTIC_INDEX
 
 
-class Activiteit(es.DocType):
-
-    ext_id = es.String(index='not_analyzed')
-    naam = es.String(analyzer=base_analyzer)
-    beschrijving = es.String(analyzer=base_analyzer)
-    bron_link = es.String(index='not_analyzed')
-    tijdstip = es.String(index='not_analyzed')
-    tags = es.String(index='not_analyzed')
-
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
-
-
 class Locatie(es.DocType):
 
     ext_id = es.String(index='not_analyzed')
@@ -52,23 +40,36 @@ class Locatie(es.DocType):
         index = settings.ELASTIC_INDEX
 
 
+class Activiteit(es.DocType):
+
+    ext_id = es.String(index='not_analyzed')
+    naam = es.String(analyzer=base_analyzer)
+    beschrijving = es.String(analyzer=base_analyzer)
+    bron_link = es.String(index='not_analyzed')
+    tijdstip = es.String(index='not_analyzed')
+    tags = es.String(index='not_analyzed')
+    locatie = es.Object(
+        doc_class=Locatie,
+        properties={
+            'ext_id': es.String(index='not_analyzed'),
+            'naam': es.String(analyzer=base_analyzer),
+            'centroid': es.GeoPoint(),
+            'openbare_ruimte_naam': es.String(index='not_analyzed'),
+            'huisnummer': es.String(index='not_analyzed'),
+            'huisnummer_toevoeging': es.String(index='not_analyzed'),
+            'postcode': es.String(index='not_analyzed')
+        }
+    )
+    class Meta(object):
+        index = settings.ELASTIC_INDEX
+
+
 def doc_from_organisatie(n: models.Model) -> Organisatie:
     """
     Create an elastic Organisate doc
     """
     doc = Organisatie(_id=n.guid)
     for key in ('naam', 'beschrijving', 'afdeling'):
-        setattr(doc, key, getattr(n, key))
-    doc.ext_id = n.id
-    return doc
-
-
-def doc_from_activiteit(n: models.Model) -> Activiteit:
-    """
-    Create an elastic Activiteit doc
-    """
-    doc = Activiteit(_id=n.guid)
-    for key in ('naam', 'beschrijving', 'bron_link', 'tags'):
         setattr(doc, key, getattr(n, key))
     doc.ext_id = n.id
     return doc
@@ -87,4 +88,21 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     except AttributeError:
         doc.centroid
     doc.ext_id = n.id
+    return doc
+
+
+def doc_from_activiteit(n: models.Model) -> Activiteit:
+    """
+    Create an elastic Activiteit doc
+    """
+    doc = Activiteit(_id=n.guid)
+    for key in ('naam', 'beschrijving', 'bron_link', 'tags'):
+        setattr(doc, key, getattr(n, key))
+    doc.ext_id = n.id
+    # Loading locatie
+    try:
+        locatie_doc = doc_from_locatie(n.locatie)
+        doc.Locatie = locatie_doc
+    except Exception as e:
+        print(e)
     return doc
