@@ -49,7 +49,6 @@ class ZoekApiView(View):
                 body=query
             )
         except RequestError:
-            log.error(f'Request error: {response!r}')
             return HttpResponse("Search encounterd an error in the request")
         except Exception as exp:
             log.error(f'{exp!r}')

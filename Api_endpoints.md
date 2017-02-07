@@ -16,6 +16,9 @@ Zie eind van de document voor velden specificaties
 
 De tekst zoek url verwacht een `query` get parameter met de query string.
 
+**Geolocatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/geo/
+
+De geolocatie heeft een lat & lon parameters nodig. Hiernaast kan ook nog de query parameter gebruikt worden.
 
 ### Authenticatie
 
@@ -24,7 +27,7 @@ Voor het ophalen van data via get, is er geen authenticatie nodig. Voor het toev
 
 
 #### Nog aan gewerkt zoek eindpunten
-- **Geolocatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/geolocatie/
+
 - **Organisatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/organisatie/
 - **Locatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/locatie/
 - **Activiteit**: https://api.datapunt.amsterdam.nl/zorg/zoek/activiteit/
