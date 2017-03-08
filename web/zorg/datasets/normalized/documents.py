@@ -104,5 +104,6 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
         locatie_doc = doc_from_locatie(n.locatie)
         doc.locatie = locatie_doc
     except Exception as e:
-        print(e)
+        pass
+
     return doc

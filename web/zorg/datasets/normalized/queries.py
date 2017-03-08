@@ -90,38 +90,53 @@ def geo_Q(query: dict, doc_type=None) -> dict:
             }
         }
     except KeyError:
-        match = {"match_all" : {}}
+        match = {'match_all': {}}
 
-    # Creating query dict
+    geo_distance = {
+        "geo_distance":  {
+            "distance" : default_distance,
+            "locatie.centroid" : {
+                "lat" : query['lat'],
+                "lon" : query['lon']
+            }
+        }
+    }
+
+    # Sorting by geo-distance add it to the results
+    # Since sorting by _score is the intention, sorting first
+    # by score and then by distance
     q = {
         "query": {
-            "bool" : {
-                "must" : match,
-                "filter" : {
-                    "geo_distance" : {
-                        "distance" : default_distance,
-                        "locatie.centroid" : {
-                            "lat" : query['lat'],
-                            "lon" : query['lon']
+            "bool": {
+                "must": [
+                    match,
+                    {
+                        "geo_distance":  {
+                            "distance" : default_distance,
+                            "locatie.centroid" : {
+                                "lat" : query['lat'],
+                                "lon" : query['lon']
+                            }
                         }
                     }
-                }
+                ]
             }
         },
-         "sort" : [
+        "sort": [
+            "_score",
             {
                 "_geo_distance" : {
-                    "locatie.centroid" :{
+                    "locatie.centroid" : {
                         "lat" : query['lat'],
                         "lon" : query['lon']
                     },
                     "order" : "asc",
-                    "unit" : "m",
+                    "unit" : "km",
                     "mode" : "min",
-                    "distance_type" : "sloppy_arc"
+                    "distance_type" : "plane"
                 }
             }
-        ],
+        ]
     }
 
     return q
