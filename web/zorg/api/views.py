@@ -48,8 +48,9 @@ class ZoekApiView(View):
                 index=settings.ELASTIC_INDEX,
                 body=query
             )
-        except RequestError:
-            return HttpResponse("Search encounterd an error in the request")
+        except RequestError as exp:
+            log.error(f'{exp!r}')
+            return HttpResponse(f"Search encounterd an error in the request, {exp}")
         except Exception as exp:
             log.error(f'{exp!r}')
             return HttpResponse("Error processing request")
