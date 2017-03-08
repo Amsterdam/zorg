@@ -1,15 +1,15 @@
-# Python
 import datetime
 import json
 import logging
-# Package
+
+from django.contrib.auth.models import User
 from django.contrib.gis.db import models as geo
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
 import requests
-# Project
+
 from datasets.general import events
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
 from datasets.normalized import documents
@@ -17,6 +17,20 @@ from datasets.normalized import documents
 
 log = logging.getLogger(__name__)
 bag_url = "https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/?"
+
+
+class Profile(models.Model):
+    """
+    Contain all the non auth information about
+    the user.
+    """
+    auth_user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Contain the GUID initial code used in GUID generation
+    guid = models.CharField(max_length=4, unique=True)
+    naam = models.CharField(max_length=255, unique=True)
+    beschrijving = models.CharField(max_length=255, blank=True)
+    afdeling = models.CharField(max_length=255, blank=True)
+    contact = JSONField()  # for tele, fax, emai, www etc.
 
 
 class Persoon(models.Model):
@@ -51,13 +65,16 @@ class Organisatie(ReadOptimizedModel):
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
-    naam = models.CharField(max_length=255)
+    naam = models.CharField(max_length=255, unique=True)
     beschrijving = models.CharField(max_length=255, blank=True)
     afdeling = models.CharField(max_length=255, blank=True)
     contact = JSONField()  # for tele, fax, emai, www etc.
 
     def __str__(self):
         return f'<{self.naam}>'
+
+    def __repr(self):
+        return f'<{self.guid}>'
 
 
 class OrganisatieEventLog(EventLogMixin):
@@ -134,6 +151,9 @@ class Locatie(ReadOptimizedModel):
     def __str__(self):
         return f'<{self.naam}>'
 
+    def __repr(self):
+        return f'<{self.guid}>'
+
 
 class LocatieEventLog(EventLogMixin):
     read_model = Locatie
@@ -157,7 +177,7 @@ class Activiteit(ReadOptimizedModel):
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
-    naam = models.CharField(max_length=255)
+    naam = models.CharField(max_length=255, unique=True)
     beschrijving = models.TextField(blank=True)
     bron_link = models.URLField()
     contactpersoon = models.CharField(max_length=255, blank=True)
@@ -185,7 +205,10 @@ class Activiteit(ReadOptimizedModel):
             raise ValidationError('Give either a contact person\'s name or a refrence to a person')
 
     def __str__(self):
-        return f'<{self.naam} {self.guid}>'
+        return f'<{self.naam}>'
+
+    def __repr(self):
+        return f'<{self.guid}>'
 
 
 class ActiviteitEventLog(EventLogMixin):

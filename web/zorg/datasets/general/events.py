@@ -3,13 +3,13 @@ Event handling code
 
 This file contains the functionality needed to handle the event
 """
-# Python
 import logging
-# Packages
-from django.db import models
-# Project
-from datasets.general.mixins import EventLogMixin
 
+from django.contrib.auth.models import User
+from django.db import models
+
+from datasets.general.mixins import EventLogMixin
+import datasets.normalized as normalized
 
 log = logging.getLogger(__name__)
 
@@ -18,16 +18,17 @@ log = logging.getLogger(__name__)
 # user identifier with the external id, using a dash to
 # connect the two. Since we have control over the user identifier
 # its possible to guarantee that a dash wont be in it.
-def guid_from_id(user_identifier: str, ext_id: str) -> str:
+def guid_from_id(user_identifier: User, ext_id: str) -> str:
     """
     Generating the systems own guid from the external id
     and the user identifier. The GUID needs to be associated with
     the user and not easily representable. This allows us to know
-    which user ded what, and prevent users from overwriting each
+    which user did what, and prevent users from overwriting each
     others data, while mainting a reversible reference to the own
     user's id
     """
-    return f"{user_identifier}-{ext_id}"
+    profile = normalized.models.Profile.objects.get(auth_user=user)
+    return f"{profile.guid}-{ext_id}"
 
 
 def id_from_guid(user_identifier_len: int, guid: str) -> str:
@@ -71,7 +72,8 @@ def create(guid: str, data: dict, model: models.Model) -> models.Model:
     optimized table
     """
     item = model(guid=guid)
-    [setattr(item, attr, value) for (attr, value) in data.items()]
+    for (attr, value) in data.items():
+        setattr(item, attr, value)
     item.save()
     return item
 
@@ -83,7 +85,8 @@ def update(guid: str, data: dict, model: models.Model) -> models.Model:
     table is updated with the new value(s)
     """
     item = model.objects.get(pk=guid)
-    [setattr(item, attr, value) for (attr, value) in data.items()]
+    for (attr, value) in data.items():
+        setattr(item, attr, value)
     item.save()
     return item
 

@@ -68,6 +68,9 @@ class EventLogMixin(models.Model):
     def __str__(self):
         return f'<{self.guid} {self.sequence} {self.get_event_type_display()}>'
 
+    def __repr__(self):
+        return f'<{self.guid} {self.sequence} {self.get_event_type_display()}>'
+
     class Meta(object):
         abstract = True
         unique_together = ['guid', 'sequence']

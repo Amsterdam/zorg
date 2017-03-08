@@ -26,9 +26,9 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         # If a guid is given, remove it from the data
         if 'guid' in validated_data:
             del(validated_data['guid'])
-        # There can bew two cases in which create can be made:
+        # There can be two cases in which create can be made:
         # 1. There is no previous entry
-        # 2. The laatste event was een delete
+        # 2. The last event was  delete
         prev_events = list(self.event_model.objects.filter(guid=guid).order_by('sequence'))
         if len(prev_events) == 0:
             sequence = 0
@@ -50,7 +50,10 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # Creating the guid
-        guid = instance.guid
+        guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
+        # Checking for authorized access
+        if guid != instance.guid:
+            raise ValidationError('Access not allowed')
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry
         # 2. The laatste event was een delete
