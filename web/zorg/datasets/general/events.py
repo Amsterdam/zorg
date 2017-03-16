@@ -27,7 +27,7 @@ def guid_from_id(user_identifier: User, ext_id: str) -> str:
     others data, while mainting a reversible reference to the own
     user's id
     """
-    profile = normalized.models.Profile.objects.get(auth_user=user)
+    profile = normalized.models.Profile.objects.get(auth_user=user_identifier)
     return f"{profile.guid}-{ext_id}"
 
 
