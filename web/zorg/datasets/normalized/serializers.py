@@ -15,9 +15,9 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         extra_kwargs = super(ZorgModelSerializer, self).get_extra_kwargs()
         action = self.context['view'].action
         if action == 'create':
-            kwargs = extra_kwargs.get('guid', {})
-            kwargs['required'] = False
-            extra_kwargs['guid'] = kwargs
+            guid = extra_kwargs.get('guid', {})
+            guid['required'] = False
+            extra_kwargs['guid'] = guid
         return extra_kwargs
 
     def create(self, validated_data):
@@ -77,10 +77,11 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
 class OrganisatieSerializer(ZorgModelSerializer):
 
+    locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
     event_model = models.OrganisatieEventLog
 
     class Meta(object):
-        fields = '__all__'
+        exclude = ('locatie', )
         model = models.Organisatie
         extra_kwargs = {'client': {'required': 'False'}}
 
@@ -96,8 +97,10 @@ class LocatieSerializer(ZorgModelSerializer):
 
 class ActiviteitSerializer(ZorgModelSerializer):
 
+    locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
+    organisatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Organisatie.objects, allow_null=True, required=False)
     event_model = models.ActiviteitEventLog
 
     class Meta(object):
-        fields = '__all__'
+        exclude = ('locatie', 'organisatie', )
         model = models.Activiteit

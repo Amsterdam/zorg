@@ -28,7 +28,7 @@ def create_token(user):
 
     return token
 
-def create_organisate(naam='Org', id=1, beschrijving='Dit is een lang verhaal', contact={'tel': '123'}, guid=None):
+def create_organisate(naam='Org', id=1, beschrijving='Dit is een lang verhaal', contact={'tel': '123'}, **kwargs):
     """
     Create a dict that can be passed to the api to create a dict
     """
@@ -38,7 +38,18 @@ def create_organisate(naam='Org', id=1, beschrijving='Dit is een lang verhaal', 
         'beschrijving': beschrijving,
         'contact': contact
     }
-    if guid:
-        org['guid'] = guid
+    org.update(kwargs)
 
     return org
+
+def create_locatie(naam='Loc', id=1, openbare_ruimte_naam='Straat', postcode='1111AA',huisnummer='1', **kwargs):
+    loc = {
+        'naam': naam,
+        'id': id,
+        'openbare_ruimte_naam': openbare_ruimte_naam,
+        'postcode': postcode,
+        'huisnummer': huisnummer
+    }
+    loc.update(kwargs)
+
+    return loc

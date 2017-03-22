@@ -87,6 +87,8 @@ def update(guid: str, data: dict, model: models.Model) -> models.Model:
     item = model.objects.get(pk=guid)
     for (attr, value) in data.items():
         setattr(item, attr, value)
+        if attr.endswith('_id'):
+            print (f'Foreign key {value} set on {item}: {getattr(item, attr)}')
     item.save()
     return item
 

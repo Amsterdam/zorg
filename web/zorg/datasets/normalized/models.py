@@ -43,57 +43,6 @@ class PersoonEventLog(EventLogMixin):
     read_model = Persoon
 
 
-class Organisatie(ReadOptimizedModel):
-    """
-
-    Contact json example:
-    {
-        telefoon: {
-            'main': 12345678,
-            'jelink algemeen':23456789
-        },
-        email: {
-            'main': 12345678,
-            'jelink algemeen':23456789
-        }
-    }
-
-    Possible contanct keys:
-    telefoon, fax, email, website, mobiel
-    """
-    create_doc = documents.doc_from_organisatie
-
-    id = models.CharField(max_length=100)
-    guid = models.CharField(max_length=255, primary_key=True)
-    naam = models.CharField(max_length=255, unique=True)
-    beschrijving = models.CharField(max_length=255, blank=True)
-    afdeling = models.CharField(max_length=255, blank=True)
-    contact = JSONField()  # for tele, fax, emai, www etc.
-
-    def __str__(self):
-        return f'<{self.naam}>'
-
-    def __repr(self):
-        return f'<{self.guid}>'
-
-
-class OrganisatieEventLog(EventLogMixin):
-    read_model = Organisatie
-
-    def save(self, *args, **kwargs):
-        # Setting sequence
-        try:
-            prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
-            self.sequence = prev.sequence + 1
-        except IndexError:
-            self.sequence = 0
-        except Exception as exp:
-            log.error(repr(exp))
-            self.sequence = 0
-        # Saving
-        return super(OrganisatieEventLog, self).save(args, kwargs)
-
-
 class Locatie(ReadOptimizedModel):
     create_doc = documents.doc_from_locatie
 
@@ -169,7 +118,65 @@ class LocatieEventLog(EventLogMixin):
             log.error(repr(exp))
             self.sequence = 0
         # Saving
-        return super(LocatieEventLog, self).save(args, kwargs)
+        return super(LocatieEventLog, self).save(*args, **kwargs)
+
+
+
+class Organisatie(ReadOptimizedModel):
+    """
+
+    Contact json example:
+    {
+        telefoon: {
+            'main': 12345678,
+            'jelink algemeen':23456789
+        },
+        email: {
+            'main': 12345678,
+            'jelink algemeen':23456789
+        }
+    }
+
+    Possible contanct keys:
+    telefoon, fax, email, website, mobiel
+    """
+    create_doc = documents.doc_from_organisatie
+
+    id = models.CharField(max_length=100)
+    guid = models.CharField(max_length=255, primary_key=True)
+    naam = models.CharField(max_length=255, unique=True)
+    beschrijving = models.CharField(max_length=255, blank=True)
+    afdeling = models.CharField(max_length=255, blank=True)
+    contact = JSONField()  # for tele, fax, emai, www etc.
+    locatie = models.ForeignKey(Locatie, related_name='locatie', blank=True, null=True)
+
+    def __str__(self):
+        return f'<{self.naam}>'
+
+    def __repr(self):
+        return f'<{self.guid}>'
+
+
+class OrganisatieEventLog(EventLogMixin):
+    read_model = Organisatie
+
+    def save(self, *args, **kwargs):
+        # Setting sequence
+        try:
+            prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
+            self.sequence = prev.sequence + 1
+        except IndexError:
+            self.sequence = 0
+        except Exception as exp:
+            log.error(repr(exp))
+            self.sequence = 0
+        # Handling foreign key relations
+        if 'locatie_id' in self.data:
+            location = self.data['locatie_id']
+            self.data['locatie_id'] = location.guid
+            kwargs['locatie'] = location
+        # Saving
+        return super(OrganisatieEventLog, self).save(*args, **kwargs)
 
 
 class Activiteit(ReadOptimizedModel):
@@ -183,6 +190,8 @@ class Activiteit(ReadOptimizedModel):
     contactpersoon = models.CharField(max_length=255, blank=True)
     persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
     tags = models.CharField(max_length=255, blank=True)
+    start_time = models.DateTimeField(null=True)
+    end_time = models.DateTimeField(null=True)
     locatie = models.ForeignKey(Locatie, related_name='activiteiten', blank=True, null=True)
     organisatie = models.ForeignKey(Organisatie, related_name='activiteiten', blank=True, null=True)
 
@@ -225,4 +234,4 @@ class ActiviteitEventLog(EventLogMixin):
             log.error(repr(exp))
             self.sequence = 0
         # Saving
-        return super(ActiviteitEventLog, self).save(args, kwargs)
+        return super(ActiviteitEventLog, self).save(*args, **kwargs)

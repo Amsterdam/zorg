@@ -13,7 +13,6 @@ from datasets.general import events
 class ZorgViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
-        print('get object')
         queryset = self.get_queryset()
         filter = {
             self.lookup_field: self.kwargs[self.lookup_field]
