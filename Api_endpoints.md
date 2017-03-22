@@ -4,19 +4,19 @@ Er zijn 2 soorten van endpoints: Data en zoek
 
 ### Data endpoints:
 
-- **Organisatie**: https://api.datapunt.amsterdam.nl/zorg/organisatie/
-- **Locatie**: https://api.datapunt.amsterdam.nl/zorg/locatie/
-- **Activiteit**: https://api.datapunt.amsterdam.nl/zorg/activiteit/
+- **Organisatie**: https://api.data.amsterdam.nl/zorg/organisatie/
+- **Locatie**: https://api.data.amsterdam.nl/zorg/locatie/
+- **Activiteit**: https://api.data.amsterdam.nl/zorg/activiteit/
 
 Zie eind van de document voor velden specificaties
 
 ### Zoek endpoints:
 
-**Naam/Omschrijving**: https://api.datapunt.amsterdam.nl/zorg/zoek/
+**Naam/Omschrijving**: https://api.data.amsterdam.nl/zorg/zoek/
 
 De tekst zoek url verwacht een `query` get parameter met de query string.
 
-**Geolocatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/geo/
+**Geolocatie**: https://api.data.amsterdam.nl/zorg/zoek/geo/
 
 De geolocatie heeft een lat & lon parameters nodig. Hiernaast kan ook nog de query parameter gebruikt worden.
 
@@ -28,9 +28,9 @@ Voor het ophalen van data via get, is er geen authenticatie nodig. Voor het toev
 
 #### Nog aan gewerkt zoek eindpunten
 
-- **Organisatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/organisatie/
-- **Locatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/locatie/
-- **Activiteit**: https://api.datapunt.amsterdam.nl/zorg/zoek/activiteit/
+- **Organisatie**: https://api.data.amsterdam.nl/zorg/zoek/organisatie/
+- **Locatie**: https://api.data.amsterdam.nl/zorg/zoek/locatie/
+- **Activiteit**: https://api.data.amsterdam.nl/zorg/zoek/activiteit/
 
 Deze eindpunten zijn nog niet geïmplementeerd. De data dat ze terug geven zit hetzelfde uit als de tekst zoek url eindpunt
 

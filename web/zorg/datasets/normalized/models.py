@@ -1,22 +1,20 @@
-import datetime
 import json
 import logging
 
+import requests
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models as geo
-from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
-import requests
 
-from datasets.general import events
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
 from datasets.normalized import documents
 
-
 log = logging.getLogger(__name__)
-bag_url = "https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/?"
+bag_url = f"{settings.DATAPUNT_API_URL}bag/nummeraanduiding/?"
 
 
 class Profile(models.Model):
@@ -25,8 +23,8 @@ class Profile(models.Model):
     the user.
     """
     auth_user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # Contain the GUID initial code used in GUID generation
-    guid = models.CharField(max_length=4, unique=True)
+    # Contains the GUID initial code used in GUID generation
+    guid = models.CharField(max_length=4, unique=True)  # prefix for related guids
     naam = models.CharField(max_length=255, unique=True)
     beschrijving = models.CharField(max_length=255, blank=True)
     afdeling = models.CharField(max_length=255, blank=True)

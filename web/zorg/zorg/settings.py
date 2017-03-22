@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 import os
 import re
-import sys
 
 
 def _get_docker_host() -> str:
@@ -19,6 +18,9 @@ def _get_docker_host() -> str:
     if d_host:
         return re.match(r'tcp://(.*?):\d+', d_host).group(1)
     return '127.0.0.1'
+
+
+DATAPUNT_API_URL = os.getenv('DATAPUNT_API_URL', 'https://api.data.amsterdam.nl/')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +33,6 @@ insecure_key = 'insecure'
 SECRET_KEY = os.getenv('ZORG_SECRET_KEY', insecure_key)
 DEBUG = SECRET_KEY == insecure_key
 ALLOWED_HOSTS = ['*']  # type: List[str]
-SITE_ID = 1
 
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -12,12 +12,10 @@ Test the flow of the app. Steps taken:
 - Do crazy stuff
 """
 
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
-
-import datasets.normalized as normalized
+from django.conf import settings
 from datasets.normalized.tests import factories
 
 class OrganisatieTests(APITestCase):
@@ -119,7 +117,7 @@ class LocatieTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'guid': 'test-2', 'id': '2', 'naam': 'Ergens Anders',
             'openbare_ruimte_naam': 'Dam', 'postcode': '1012JS', 'huisnummer': '1', 'huisletter': '',
-            'huisnummer_toevoeging': '', 'bag_link': 'https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/03630003761447/',
+            'huisnummer_toevoeging': '', 'bag_link': f'{settings.DATAPUNT_API_URL}bag/nummeraanduiding/03630003761447/',
             'geometrie': 'SRID=28992;POINT (121394 487383)'}
         )
 
