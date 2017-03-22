@@ -53,3 +53,16 @@ def create_locatie(naam='Loc', id=1, openbare_ruimte_naam='Straat', postcode='11
     loc.update(kwargs)
 
     return loc
+
+def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_link='http://amsterdam.nl', contactpersoon='Ik', **kwargs):
+    act = {
+        'naam': naam,
+        'id': id,
+        'beschrijving': beschrijving,
+        'bron_link': bron_link,
+        'contactpersoon': contactpersoon,
+    }
+    act.update(kwargs)
+
+    return act
+

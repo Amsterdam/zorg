@@ -135,5 +135,63 @@ class LocatieTests(APITestCase):
         update_resp = response.data
         response = client.get(f"{self.org_url}{self.org['guid']}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response.data)
+        self.assertEqual(response.data, update_resp)
+
+class ActiviteitenTests(APITestCase):
+    loc_url = reverse('locatie-list')
+    org_url = reverse('organisatie-list')
+    url = reverse('activiteit-list')
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = factories.create_user()
+        cls.token = factories.create_token(cls.user.auth_user)
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + cls.token.key)
+
+        # Creating organisation
+        cls.org = factories.create_organisate()
+        response = client.post(cls.org_url, cls.org)
+        cls.org['guid'] = response.data['guid']
+        # Creating location
+        cls.loc = factories.create_locatie()
+        response = client.post(cls.loc_url, cls.org)
+        cls.loc['guid'] = response.data['guid']
+
+    def _get_client(self, token):
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        return client
+
+    def test_create_activiteiten(self):
+        client = self._get_client(self.token)
+
+        act = factories.create_activiteit()
+        response = client.post(self.url, act)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data, {'guid': 'test-1', 'locatie_id': None, 'organisatie_id': None, 'id': '1',
+            'naam': 'Activiteit', 'beschrijving': 'Dingen doen', 'bron_link': 'http://amsterdam.nl',
+            'contactpersoon': 'Ik', 'tags': '', 'start_time': None, 'end_time': None, 'persoon': []}
+        )
+
+        act = factories.create_activiteit(naam='Doe nog eens wat', id=2, bron_link='http://amsterdam.nl/actie', locatie_id=self.loc['guid'])
+        response = client.post(self.url, act)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data, {'guid': 'test-2', 'locatie_id': 'test-1', 'organisatie_id': None, 'id': '2',
+            'naam': 'Doe nog eens wat', 'beschrijving': 'Dingen doen', 'bron_link': 'http://amsterdam.nl/actie',
+            'contactpersoon': 'Ik', 'tags': '', 'start_time': None, 'end_time': None, 'persoon': []}
+        )
+
+    def test_add_location_to_activiteit(self):
+        client = self._get_client(self.token)
+
+        act = factories.create_activiteit()
+        response = client.post(self.url, act)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Adding the loc to the org
+        response = client.put(f"{self.org_url}{self.org['guid']}/", {'id': '1', 'locatie_id': response.data['guid']})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        update_resp = response.data
+        response = client.get(f"{self.org_url}{self.org['guid']}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, update_resp)
