@@ -22,7 +22,7 @@ services:
       - database
       - elasticsearch
     ports:
-      - "8085:8000"
+      - "8005:8000"
     environment:
       DATABASE_NAME: zorg
       DATABASE_PASSWORD: insecure
