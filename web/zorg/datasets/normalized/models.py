@@ -1,19 +1,16 @@
-import datetime
 import json
 import logging
 
+import requests
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models as geo
-from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.geos import Point
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
-import requests
 
-from datasets.general import events
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
 from datasets.normalized import documents
-
 
 log = logging.getLogger(__name__)
 bag_url = "https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/?"
@@ -67,7 +64,8 @@ class Locatie(ReadOptimizedModel):
                 huisnummer = f'&huisnummer={huisnummer_param}'
             else:
                 huisnummer = ''
-            self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
+            self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self'][
+                'href']
         except json.JSONDecodeError:
             # Trying without house number
             self.__get_bag_link(postcode_param, None)
@@ -119,7 +117,6 @@ class LocatieEventLog(EventLogMixin):
             self.sequence = 0
         # Saving
         return super(LocatieEventLog, self).save(*args, **kwargs)
-
 
 
 class Organisatie(ReadOptimizedModel):
