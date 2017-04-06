@@ -26,3 +26,8 @@ services:
     environment:
       DATABASE_NAME: zorg
       DATABASE_PASSWORD: insecure
+      UWSGI_HTTP: ":8000"
+      UWSGI_MODULE: "zorg.wsgi:application"
+      UWSGI_MASTER: 1
+      UWSGI_STATIC_MAP: "/static=/static"
+      UWSGI_PROCESSES: 4
