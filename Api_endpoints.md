@@ -1,6 +1,6 @@
 ## Api endpoints
 
-Er zijn 2 soorten van endpoints: Data en zoek
+De zorg api beschikt over twee soorten endpoints, nl. Data en zoek
 
 ### Data endpoints:
 
@@ -8,22 +8,27 @@ Er zijn 2 soorten van endpoints: Data en zoek
 - **Locatie**: https://api.datapunt.amsterdam.nl/zorg/locatie/
 - **Activiteit**: https://api.datapunt.amsterdam.nl/zorg/activiteit/
 
-Zie eind van de document voor velden specificaties
+Voor detailspecificaties van velden zie einde van dit document.
 
 ### Zoek endpoints:
 
 **Naam/Omschrijving**: https://api.datapunt.amsterdam.nl/zorg/zoek/
 
-De tekst zoek url verwacht een `query` get parameter met de query string.
+De tekstzoek url verwacht een `query` parameter met de querystring.
+bijvoorbeeld: `<url>?query=zoektekst`.
 
 **Geolocatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/geo/
 
-De geolocatie heeft een lat & lon parameters nodig. Hiernaast kan ook nog de query parameter gebruikt worden.
+De geolocatie heeft lat & lon parameters nodig. Optioneel kan hier ook gebruik gemaakt worden van de `query` parameter.
+
 
 ### Authenticatie
 
-Voor het ophalen van data via get, is er geen authenticatie nodig. Voor het toevegen en updaten van data is er een API token voor nodig.
-[Hier](https://scotch.io/tutorials/the-ins-and-outs-of-token-based-authentication) is een uitleg over wat een API token is en [hier](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication) is hoe dit te implementeren.
+Voor het ophalen van data via een `http GET request` is geen authenticatie nodig. 
+Het toevoegen en wijzigen van data vereist een API token.
+
+[Voor meer informatie over API tokens](https://scotch.io/tutorials/the-ins-and-outs-of-token-based-authentication) en 
+[hoe deze te implemeteren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
 
 #### Nog aan gewerkt zoek eindpunten
@@ -32,7 +37,7 @@ Voor het ophalen van data via get, is er geen authenticatie nodig. Voor het toev
 - **Locatie**: https://api.datapunt.amsterdam.nl/zorg/zoek/locatie/
 - **Activiteit**: https://api.datapunt.amsterdam.nl/zorg/zoek/activiteit/
 
-Deze eindpunten zijn nog niet geïmplementeerd. De data dat ze terug geven zit hetzelfde uit als de tekst zoek url eindpunt
+Deze eindpunten zijn nog niet geïmplementeerd. De data dat ze terug geven ziet hetzelfde uit als de tekst zoek url eindpunt
 
 ## Data model
 
