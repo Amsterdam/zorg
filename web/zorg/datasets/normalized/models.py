@@ -225,19 +225,22 @@ class ActiviteitEventLog(EventLogMixin):
         try:
             prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
+
+            # Handling foreign key relations
+            if 'locatie_id' in self.data:
+                location = self.data['locatie_id']
+                self.data['locatie_id'] = location.guid
+                kwargs['locatie'] = location
+            if 'organisatie_id' in self.data:
+                organisatie = self.data['organisatie_id']
+                self.data['organisatie_id'] = organisatie.guid
+                kwargs['organisatie'] = organisatie
+
         except IndexError:
             self.sequence = 0
         except Exception as exp:
             log.error(repr(exp))
             self.sequence = 0
-        # Handling foreign key relations
-        if 'locatie_id' in self.data:
-            location = self.data['locatie_id']
-            self.data['locatie_id'] = location.guid
-            kwargs['locatie'] = location
-        if 'organisatie_id' in self.data:
-            organisatie = self.data['organisatie_id']
-            self.data['organisatie_id'] = organisatie.guid
-            kwargs['organisatie'] = organisatie
+
         # Saving
         return super(ActiviteitEventLog, self).save(*args, **kwargs)

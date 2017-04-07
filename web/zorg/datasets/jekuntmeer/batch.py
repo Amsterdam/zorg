@@ -1,4 +1,4 @@
-"""Bij jekuntmeer is een organisatie een lokatie van een activiteit"""
+"""Bij jekuntmeer is een organisatie de locatie van een activiteit"""
 
 # Packages
 import requests
@@ -82,13 +82,14 @@ def load_org():
 
 
 def import_location():
-    # Retriving the locations, refered to as organistaie in the xml
+    # Retrieving the locations, refered to as organistaie in the xml
     xml_resp = requests.get(URLS['organisaties'])
     locations = xmltodict.parse(xml_resp.text)
     for location in locations['ORGANISATIONS']['ORGANISATION']:
         location_id = location['ID']
         # Creating a location event
         try:
+
             location_xml = requests.get(URLS['organisatieDetails'].format(location_id=location_id))
             location_data = xmltodict.parse(location_xml.text)['ORGANISATION']
         except Exception as e:
@@ -129,7 +130,7 @@ def import_activities():
 def run():
     # Loading the organisatie
     load_org()
-    # Retriving the locations, refered to as organistaie in the xml
+    # Retrieving the locations, refered to as organistaie in the xml
     import_location()
-    # Retriving the activities
+    # Retrieving the activities
     import_activities()

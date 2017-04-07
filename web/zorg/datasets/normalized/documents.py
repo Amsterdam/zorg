@@ -1,12 +1,9 @@
 # Python
-from typing import List, cast
 # Packages
+import elasticsearch_dsl as es
 from django.conf import settings
 from django.db import models
-import elasticsearch_dsl as es
 from elasticsearch_dsl import analyzer, tokenizer
-# Project
-from datasets.normalized import models as norm_models
 
 
 base_analyzer = analyzer('zorg_base_txt',
@@ -16,7 +13,6 @@ base_analyzer = analyzer('zorg_base_txt',
 
 
 class Organisatie(es.DocType):
-
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)  # ngram
     beschrijving = es.String(analyzer=base_analyzer)
@@ -27,7 +23,6 @@ class Organisatie(es.DocType):
 
 
 class Locatie(es.DocType):
-
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)
     centroid = es.GeoPoint()
@@ -41,7 +36,6 @@ class Locatie(es.DocType):
 
 
 class Activiteit(es.DocType):
-
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)
     beschrijving = es.String(analyzer=base_analyzer)
@@ -60,6 +54,7 @@ class Activiteit(es.DocType):
             'postcode': es.String(index='not_analyzed')
         }
     )
+
     class Meta(object):
         index = settings.ELASTIC_INDEX
 
