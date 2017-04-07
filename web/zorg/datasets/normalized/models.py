@@ -162,16 +162,18 @@ class OrganisatieEventLog(EventLogMixin):
         try:
             prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
+
+            # Handling foreign key relations
+            if 'locatie_id' in self.data:
+                location = self.data['locatie_id']
+                self.data['locatie_id'] = location.guid
+                kwargs['locatie'] = location
+
         except IndexError:
             self.sequence = 0
         except Exception as exp:
             log.error(repr(exp))
             self.sequence = 0
-        # Handling foreign key relations
-        if 'locatie_id' in self.data:
-            location = self.data['locatie_id']
-            self.data['locatie_id'] = location.guid
-            kwargs['locatie'] = location
         # Saving
         return super(OrganisatieEventLog, self).save(*args, **kwargs)
 
