@@ -1,14 +1,12 @@
 # Python
-import logging
 import importlib
 import time
+
 # Packages
 from django.core.management import BaseCommand
-from django.conf import settings
 
 
 class Command(BaseCommand):
-
     import_datasets = ['jekuntmeer', 'socialekaart']
 
     def add_arguments(self, parser):
@@ -16,7 +14,7 @@ class Command(BaseCommand):
             'dataset',
             nargs='*',
             default=self.import_datasets,
-            help="Dataset to use, choose from {}. Defaults to all teh datasets.".format(', '.join(self.import_datasets))
+            help="Dataset to use, choose from {}. Defaults to all the datasets.".format(', '.join(self.import_datasets))
         )
 
     def handle(self, *args, **options):

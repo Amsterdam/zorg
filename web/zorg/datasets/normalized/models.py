@@ -65,7 +65,8 @@ class Locatie(ReadOptimizedModel):
                 huisnummer = f'&huisnummer={huisnummer_param}'
             else:
                 huisnummer = ''
-            self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self']['href']
+            self.bag_link = requests.get(f'{bag_url}{postcode}{huisnummer}').json()['results'][0]['_links']['self'][
+                'href']
         except json.JSONDecodeError:
             # Trying without house number
             self.__get_bag_link(postcode_param, None)
@@ -119,7 +120,6 @@ class LocatieEventLog(EventLogMixin):
         return super(LocatieEventLog, self).save(*args, **kwargs)
 
 
-
 class Organisatie(ReadOptimizedModel):
     """
 
@@ -163,16 +163,18 @@ class OrganisatieEventLog(EventLogMixin):
         try:
             prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
+
+            # Handling foreign key relations
+            if 'locatie_id' in self.data:
+                location = self.data['locatie_id']
+                self.data['locatie_id'] = location.guid
+                kwargs['locatie'] = location
+
         except IndexError:
             self.sequence = 0
         except Exception as exp:
             log.error(repr(exp))
             self.sequence = 0
-        # Handling foreign key relations
-        if 'locatie_id' in self.data:
-            location = self.data['locatie_id']
-            self.data['locatie_id'] = location.guid
-            kwargs['locatie'] = location
         # Saving
         return super(OrganisatieEventLog, self).save(*args, **kwargs)
 
@@ -226,19 +228,22 @@ class ActiviteitEventLog(EventLogMixin):
         try:
             prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
+
+            # Handling foreign key relations
+            if 'locatie_id' in self.data:
+                location = self.data['locatie_id']
+                self.data['locatie_id'] = location.guid
+                kwargs['locatie'] = location
+            if 'organisatie_id' in self.data:
+                organisatie = self.data['organisatie_id']
+                self.data['organisatie_id'] = organisatie.guid
+                kwargs['organisatie'] = organisatie
+
         except IndexError:
             self.sequence = 0
         except Exception as exp:
             log.error(repr(exp))
             self.sequence = 0
-        # Handling foreign key relations
-        if 'locatie_id' in self.data:
-            location = self.data['locatie_id']
-            self.data['locatie_id'] = location.guid
-            kwargs['locatie'] = location
-        if 'organisatie_id' in self.data:
-            organisatie = self.data['organisatie_id']
-            self.data['organisatie_id'] = organisatie.guid
-            kwargs['organisatie'] = organisatie
+
         # Saving
         return super(ActiviteitEventLog, self).save(*args, **kwargs)

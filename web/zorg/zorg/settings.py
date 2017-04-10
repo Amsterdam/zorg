@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
-import os
 import re
+import os
 
 
 def _get_docker_host() -> str:
@@ -81,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'zorg.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -96,7 +95,6 @@ DATABASES = {
         'CONN_MAX_AGE': 60,
     },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -141,7 +139,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

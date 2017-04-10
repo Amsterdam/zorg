@@ -22,8 +22,13 @@ services:
       - database
       - elasticsearch
     ports:
-      - "8085:8000"
+      - "8005:8000"
     environment:
       DATABASE_NAME: zorg
       DATABASE_PASSWORD: insecure
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
+      UWSGI_HTTP: ":8000"
+      UWSGI_MODULE: "zorg.wsgi:application"
+      UWSGI_MASTER: 1
+      UWSGI_STATIC_MAP: "/static=/static"
+      UWSGI_PROCESSES: 4

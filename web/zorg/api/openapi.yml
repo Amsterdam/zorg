@@ -1,0 +1,106 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: Datapunt Amsterdam Zorg
+
+basePath: /zorg
+schemes:
+  - http
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+################################################################################
+#                                   Parameters                                 #
+################################################################################
+parameters:
+  user-id:
+    name: q
+    in: query
+    description: query string
+    required: false
+    type: string
+  lat:
+    in: query
+    description: latitude
+    required: true
+    type: number
+  lon:
+    in: query
+    description: longitude
+    required: true
+    type: number
+  soort:
+    in: path
+    description: data van het type `organisatie`, `locatie` of `activiteit`
+    type: string
+    required: true
+    pattern: "^organisatie|locatie|activiteit$"
+
+################################################################################
+#                                     Paths                                    #
+################################################################################
+paths:
+  /zoek/{soort}:
+    get:
+      summary: zoek naar `organisatie`, `locatie` of `activiteit`
+      operationId: api.ZoekApiView.as_view
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: a list of results
+          schema:
+            type: array
+            items:
+              $ref '#definitions/organisatie'
+        "404":
+          description: not found
+    parameters:
+      - $ref: '#/parameters/soort'
+      - $ref: '#/parameters/q'
+
+  /zoek/geo:
+    get:
+      summary: zoek op lat, lon en tekst
+      operationId: api.GeoZoekView.as_view
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: a list of results
+          schema:
+            type: array
+            items:
+              $ref '#definitions/locatie'
+        "404":
+          description: not found
+    parameters:
+      - $ref: '#/parameters/lat'
+      - $ref: '#/parameters/lon'
+      - $ref: '#/parameters/q'
+
+
+################################################################################
+#                                  Definitions                                 #
+################################################################################
+definitions:
+  organisatie:
+    type: object
+    required:
+      - guid
+      - naam
+  locatie:
+    type: object
+    required:
+      - guid
+      - naam
+  activiteit:
+    type: object
+    required:
+      - guid
+      - naam

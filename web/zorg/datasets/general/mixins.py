@@ -2,8 +2,7 @@
 import logging
 # Packages
 from django.contrib.postgres.fields import JSONField
-from django.db import IntegrityError, DatabaseError, models, transaction
-from datasets.general import events
+from django.db import DatabaseError, models, transaction
 # Project
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
@@ -13,7 +12,6 @@ LOG = logging.getLogger(__name__)
 
 
 class ReadOptimizedModel(models.Model):
-
     create_doc = None
 
     def save(self, *args, **kwargs):
@@ -52,6 +50,10 @@ class EventLogMixin(models.Model):
 
     def save(self, *args, **kwargs):
         # Making sure that Saving event and model is atomic
+
+        # prevent circular import
+        from datasets.general import events
+
         try:
             # @TODO atomic does not seem to work as expected
             # The event log is created even if procssing fails
@@ -59,7 +61,7 @@ class EventLogMixin(models.Model):
                 # Saving the event
                 super(EventLogMixin, self).save()
                 # Updating the Read optimized model
-                #-----------------------------------
+                # -----------------------------------
                 self.data.update(kwargs)  # Adding kwargs data
                 success = events.handle_event(self, self.read_model)
         except DatabaseError as e:
