@@ -1,13 +1,11 @@
-appdirs==1.4.2
 Django==1.10.6
-djangorestframework==3.5.4
+djangorestframework==3.6.2
 elasticsearch==5.2.0
 elasticsearch-dsl==5.1.0
-packaging==16.8
-psycopg2==2.7
-pyparsing==2.2.0
+psycopg2==2.7.1
 python-dateutil==2.6.0
 requests==2.13.0
 six==1.10.0
 urllib3==1.20
+wheel==0.24.0
 xmltodict==0.10.2

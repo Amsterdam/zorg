@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 import re
-
 import os
 
 
@@ -20,6 +19,8 @@ def _get_docker_host() -> str:
         return re.match(r'tcp://(.*?):\d+', d_host).group(1)
     return '127.0.0.1'
 
+
+DATAPUNT_API_URL = os.getenv('DATAPUNT_API_URL', 'https://api.data.amsterdam.nl/')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

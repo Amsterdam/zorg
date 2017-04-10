@@ -26,6 +26,7 @@ services:
     environment:
       DATABASE_NAME: zorg
       DATABASE_PASSWORD: insecure
+      DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
       UWSGI_HTTP: ":8000"
       UWSGI_MODULE: "zorg.wsgi:application"
       UWSGI_MASTER: 1
