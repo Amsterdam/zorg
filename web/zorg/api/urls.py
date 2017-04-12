@@ -2,8 +2,7 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 # Project
-from api.views import ZoekApiView, TermsZoekView, GeoZoekView
-
+from api.views import ZoekApiView, TermsZoekView, GeoZoekView, OpenApiView
 
 urlpatterns = [
     url(r'^zorg/zoek/activiteit/$', ZoekApiView.as_view(), {'search_for': 'activiteit'}),
@@ -12,4 +11,6 @@ urlpatterns = [
     url(r'zorg/zoek/geo/$', GeoZoekView.as_view()),
     url(r'zorg/zoek/thema/$', TermsZoekView.as_view()),
     url(r'zorg/zoek/$', ZoekApiView.as_view()),
+    url(r'openapi.json', OpenApiView.as_view())
+
 ]

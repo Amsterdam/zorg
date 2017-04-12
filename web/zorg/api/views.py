@@ -1,21 +1,22 @@
 # Python
 import json
 import logging
+
+import os
+import yaml
 # Packages
 from django.conf import settings
 from django.http import HttpResponse
 from django.views import View
 from elasticsearch import Elasticsearch, RequestError
-from elasticsearch_dsl import Search
+
 # Project
 from datasets.normalized import queries
-
 
 log = logging.getLogger(__name__)
 
 
 class ZoekApiView(View):
-
     zoek_functie = queries.zorg_Q
 
     def __init__(self, *args, **kwargs):
@@ -65,12 +66,10 @@ class ZoekApiView(View):
 
 # Voor na de poc moet beter
 class TermsZoekView(ZoekApiView):
-
     zoek_functie = queries.terms_Q
 
 
 class GeoZoekView(ZoekApiView):
-
     zoek_functie = queries.geo_Q
 
     def get_query(self):
@@ -80,3 +79,11 @@ class GeoZoekView(ZoekApiView):
         """
         request_dict = getattr(self.request, self.request.method)
         return request_dict
+
+
+class OpenApiView(View):
+    def get(self, *args, **kwargs):
+        swagger = yaml.load(
+            open(f'{os.path.dirname(os.path.abspath(__file__))}/openapi.yml').read())
+        return HttpResponse(swagger,
+                            content_type='application/yaml')

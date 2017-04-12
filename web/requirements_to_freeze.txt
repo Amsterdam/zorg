@@ -4,3 +4,4 @@ elasticsearch-dsl
 psycopg2
 requests
 xmltodict
+pyyaml

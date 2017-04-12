@@ -1,23 +1,22 @@
 # Python
 import logging
 import time
+
+import elasticsearch_dsl as es
 import requests
+from django.conf import settings
 # Packages
 from django.core.management import BaseCommand
-from django.conf import settings
-from elasticsearch.exceptions import NotFoundError
-import elasticsearch_dsl as es
 from elasticsearch_dsl.connections import connections
+
 # Project
 from datasets.normalized import models
 from datasets.normalized.documents import Activiteit, Locatie, Organisatie
-
 
 log = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-
     doc_types = [Activiteit, Locatie, Organisatie]
     index = settings.ELASTIC_INDEX
 
@@ -89,8 +88,8 @@ class Command(BaseCommand):
         )
         locations = models.Locatie.objects.all()
         actions = models.Activiteit.objects.all()
-        organsiations = models.Organisatie.objects.all()
-        for dataset in [locations, actions, organsiations]:
+        organisations = models.Organisatie.objects.all()
+        for dataset in [locations, actions, organisations]:
             for item in dataset:
                 doc = item.create_doc()
                 doc.save()

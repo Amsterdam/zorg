@@ -3,8 +3,12 @@ swagger: '2.0'
 info:
   version: "1.0.0"
   title: Datapunt Amsterdam Zorg
+  description:
+    De zorg api beschikt over twee soorten endpoints, nl. Data en zoek.
+    De zoek api heeft als basis-path `https://api.data.amsterdam.nl/zorg/`
 
 basePath: /zorg
+
 schemes:
   - http
 
@@ -15,92 +19,341 @@ produces:
   - application/json
 
 ################################################################################
-#                                   Parameters                                 #
-################################################################################
-parameters:
-  user-id:
-    name: q
-    in: query
-    description: query string
-    required: false
-    type: string
-  lat:
-    in: query
-    description: latitude
-    required: true
-    type: number
-  lon:
-    in: query
-    description: longitude
-    required: true
-    type: number
-  soort:
-    in: path
-    description: data van het type `organisatie`, `locatie` of `activiteit`
-    type: string
-    required: true
-    pattern: "^organisatie|locatie|activiteit$"
-
-################################################################################
 #                                     Paths                                    #
 ################################################################################
+
 paths:
-  /zoek/{soort}:
+  /status/health:
     get:
-      summary: zoek naar `organisatie`, `locatie` of `activiteit`
-      operationId: api.ZoekApiView.as_view
-      produces:
-        - application/json
+      tags: [ status ]
+      # operationId: health.views.health
+      summary: returns ok when server is up
       responses:
-        "200":
-          description: a list of results
+        200:
+          description: status health check
           schema:
-            type: array
-            items:
-              $ref '#definitions/organisatie'
-        "404":
-          description: not found
-    parameters:
-      - $ref: '#/parameters/soort'
-      - $ref: '#/parameters/q'
+            type: string
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+  /status/data:
+    get:
+      tags: [ status ]
+      summary: returns ok if data is reachable and sane
+      # operationId: health.views.data
+      responses:
+        200:
+          description: status health check
+          schema:
+            type: string
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+  /zoek:
+    get:
+      tags: [ zoek-endpoint ]
+      summary: Zoek
+      # operationId: api.ZoekApiView.as_view
+      parameters:
+      -
+        name: query
+        in: query
+        description: de woorden / delen van woorden waarop gezocht wordt
+        type: string
+        required: false
+      responses:
+        200:
+          description: Returns a list of search results
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+  /zoek/{search-for}:
+    get:
+      tags: [ zoek-endpoint ]
+      summary: zoek naar `organisatie`, `locatie` of `activiteit`
+      # operationId: api.ZoekApiView.as_view
+      parameters:
+      -
+        name: search-for
+        in: path
+        description: data van het type `organisatie`, `locatie` of `activiteit`
+        type: string
+        required: true
+        enum:
+          - organisatie
+          - locatie
+          - activiteit
+      -
+        name: query
+        in: query
+        description: de woorden / delen van woorden waarop gezocht wordt
+        type: string
+        required: false
+      responses:
+        200:
+          description: Returns a list of search results
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
 
   /zoek/geo:
     get:
+      tags: [ zoek-endpoint ]
       summary: zoek op lat, lon en tekst
-      operationId: api.GeoZoekView.as_view
+      # operationId: api.GeoZoekView.as_view
+      parameters:
+      -
+        name: q
+        in: query
+        description: de woorden / delen van woorden waarop gezocht wordt
+        type: string
+        required: false
+      -
+        name: lat
+        in: query
+        description: latitude
+        required: true
+        type: number
+      -
+        name: lon
+        in: query
+        description: longitude
+        required: true
+        type: number
+      responses:
+        200:
+          description: Returns a list of search results
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+
+  /zoek/thema:
+    get:
+      tags: [ zoek-endpoint ]
+      summary: zoek op thema
+      # operationId: TermsZoekView.as_view
       produces:
         - application/json
       responses:
-        "200":
-          description: a list of results
+        200:
+          description: Returns a list of search results
           schema:
-            type: array
-            items:
-              $ref '#definitions/locatie'
-        "404":
-          description: not found
-    parameters:
-      - $ref: '#/parameters/lat'
-      - $ref: '#/parameters/lon'
-      - $ref: '#/parameters/q'
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+  /organisatie:
+    get:
+      tags: [ data-endpoint ]
+      summary: data organisaties
+      # operationId: api.datasets.normailzed.views.OrganisatieViewSet
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Returns a list of orgaisatie data
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+  /activiteit:
+    get:
+      tags: [ data-endpoint ]
+      summary: data activiteiten
+      # operationId: api.datasets.normailzed.views.OrganisatieViewSet
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Returns a list of activiteiten data
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
+  /locatie:
+    get:
+      tags: [ data-endpoint ]
+      summary: data locatie
+      # operationId: api.datasets.normailzed.views.OrganisatieViewSet
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Returns a list of locatie data
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
 
 
 ################################################################################
 #                                  Definitions                                 #
 ################################################################################
+
 definitions:
+
   organisatie:
     type: object
-    required:
-      - guid
-      - naam
+    properties:
+      guid:
+        type: string
+      naam:
+        type: string
+
   locatie:
     type: object
-    required:
-      - guid
-      - naam
+    properties:
+      guid:
+        type: string
+      naam:
+        type: string
+
   activiteit:
     type: object
     required:
       - guid
       - naam
+    properties:
+      guid:
+        type: string
+      naam:
+        type: string
+      beschrijving:
+        type: string
+      bron_link:
+        type: string
+      contactpersoon:
+        type: string
+      personen:
+        # link to personen query
+        type: string
+      tags:
+        type: string
+      start_time:
+        type: string
+        format: date-time
+      end_time:
+        type: string
+        format: date-time
+      locatie:
+        type: string
+      organisatie:
+        type: string
+
+  persoon:
+    type: object
+    properties:
+      guid:
+        type: string
+      contact:
+        type: string
+      naam:
+        type: string
+
+  href:
+    type: object
+    properties:
+      href:
+        type: string
+
+  _links:
+    type: object
+    properties:
+      self:
+        $ref: '#/definitions/href'
+      next:
+        $ref: '#/definitions/href'
+      prev:
+        $ref: '#/definitions/href'
+
+  results:
+    type: object
+    allOf:
+      - $ref: '#/definitions/activiteit'
+      - $ref: '#/definitions/locatie'
+      - $ref: '#/definitions/organisatie'
+
+  error_response:
+    type: object
+    required:
+      - message
+      - code
+    properties:
+      message:
+        type: string
+      code:
+        type: string

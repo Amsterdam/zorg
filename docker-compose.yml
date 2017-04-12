@@ -15,7 +15,6 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
-
   zorg:
     build: ./web
     links:
@@ -24,6 +23,10 @@ services:
     ports:
       - "8005:8000"
     environment:
+      ELASTICSEARCH_PORT_9200_TCP_ADDR:
+      ELASTICSEARCH_PORT_9200_TCP_PORT:
+      DATABASE_PORT_5432_TCP_ADDR=database:
+      DATABASE_PORT_5432_TCP_PORT:
       DATABASE_NAME: zorg
       DATABASE_PASSWORD: insecure
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
