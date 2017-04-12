@@ -20,7 +20,7 @@ from api.urls import urlpatterns as a_urlpatterns
 
 
 urlpatterns = [
-    url(r'^status/', include('health.urls')),
+    url(r'^zorg/status/', include('health.urls')),
     url(r'^zorg/admin/', admin.site.urls),
 ]
 
