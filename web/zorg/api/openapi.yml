@@ -88,6 +88,13 @@ paths:
       # operationId: api.ZoekApiView.as_view
       parameters:
       -
+        name: page
+        in: query
+        description: pagination the page number to show
+        type: number
+        format: int64
+        required: false
+      -
         name: search-for
         in: path
         description: data van het type `organisatie`, `locatie` of `activiteit`
@@ -127,7 +134,14 @@ paths:
       # operationId: api.GeoZoekView.as_view
       parameters:
       -
-        name: q
+        name: page
+        in: query
+        description: pagination the page number to show
+        type: number
+        format: int64
+        required: false
+      -
+        name: query
         in: query
         description: de woorden / delen van woorden waarop gezocht wordt
         type: string
@@ -169,6 +183,15 @@ paths:
       # operationId: TermsZoekView.as_view
       produces:
         - application/json
+      parameters:
+      -
+        name: page
+        in: query
+        description: pagination the page number to show
+        type: number
+        format: int64
+        required: false
+
       responses:
         200:
           description: Returns a list of search results
@@ -193,6 +216,14 @@ paths:
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
         - application/json
+      parameters:
+      -
+        name: page
+        in: query
+        description: pagination the page number to show
+        type: number
+        format: int64
+        required: false
       responses:
         200:
           description: Returns a list of orgaisatie data
@@ -217,6 +248,14 @@ paths:
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
         - application/json
+      parameters:
+      -
+        name: page
+        in: query
+        description: pagination the page number to show
+        type: number
+        format: int64
+        required: false
       responses:
         200:
           description: Returns a list of activiteiten data
@@ -241,6 +280,14 @@ paths:
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
         - application/json
+      parameters:
+      -
+        name: page
+        in: query
+        description: pagination the page number to show
+        type: number
+        format: int64
+        required: false
       responses:
         200:
           description: Returns a list of locatie data
