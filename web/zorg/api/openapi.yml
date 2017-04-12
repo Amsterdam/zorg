@@ -70,12 +70,17 @@ paths:
           schema:
             type: object
             properties:
-              _links:
-                $ref: '#/definitions/_links'
-              results:
+              took:
+                type: number
+                format: int64
+              timed_out:
+                type: boolean
+              _shards:
+                type: object
+              hits:
                 type: array
                 items:
-                  $ref: '#/definitions/results'
+                  type: object
         500:
           description: server error
           schema:
@@ -87,13 +92,6 @@ paths:
       summary: zoek naar `organisatie`, `locatie` of `activiteit`
       # operationId: api.ZoekApiView.as_view
       parameters:
-      -
-        name: page
-        in: query
-        description: pagination the page number to show
-        type: number
-        format: int64
-        required: false
       -
         name: search-for
         in: path
@@ -116,12 +114,17 @@ paths:
           schema:
             type: object
             properties:
-              _links:
-                $ref: '#/definitions/_links'
-              results:
+              took:
+                type: number
+                format: int64
+              timed_out:
+                type: boolean
+              _shards:
+                type: object
+              hits:
                 type: array
                 items:
-                  $ref: '#/definitions/results'
+                  type: object
         500:
           description: server error
           schema:
@@ -133,13 +136,6 @@ paths:
       summary: zoek op lat, lon en tekst
       # operationId: api.GeoZoekView.as_view
       parameters:
-      -
-        name: page
-        in: query
-        description: pagination the page number to show
-        type: number
-        format: int64
-        required: false
       -
         name: query
         in: query
@@ -164,12 +160,17 @@ paths:
           schema:
             type: object
             properties:
-              _links:
-                $ref: '#/definitions/_links'
-              results:
+              took:
+                type: number
+                format: int64
+              timed_out:
+                type: boolean
+              _shards:
+                type: object
+              hits:
                 type: array
                 items:
-                  $ref: '#/definitions/results'
+                  type: object
         500:
           description: server error
           schema:
@@ -198,12 +199,17 @@ paths:
           schema:
             type: object
             properties:
-              _links:
-                $ref: '#/definitions/_links'
-              results:
+              took:
+                type: number
+                format: int64
+              timed_out:
+                type: boolean
+              _shards:
+                type: object
+              hits:
                 type: array
                 items:
-                  $ref: '#/definitions/results'
+                  type: object
         500:
           description: server error
           schema:
