@@ -3,7 +3,6 @@ import json
 import logging
 
 import os
-import yaml
 # Packages
 from django.conf import settings
 from django.http import HttpResponse
@@ -83,7 +82,5 @@ class GeoZoekView(ZoekApiView):
 
 class OpenApiView(View):
     def get(self, *args, **kwargs):
-        swagger = yaml.load(
-            open(f'{os.path.dirname(os.path.abspath(__file__))}/openapi.yml').read())
-        return HttpResponse(swagger,
+        return HttpResponse(open(f'{os.path.dirname(os.path.abspath(__file__))}/openapi.yml').read(),
                             content_type='application/yaml')
