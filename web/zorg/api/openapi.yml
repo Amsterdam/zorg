@@ -9,7 +9,7 @@ info:
 basePath: /zorg
 
 schemes:
-  - http
+  - https
 
 consumes:
   - application/json
