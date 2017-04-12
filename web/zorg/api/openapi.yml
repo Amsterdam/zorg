@@ -24,7 +24,7 @@ info:
 
     -en-
 
-    [Hoe deze te implemeteren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
+    [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
 basePath: /zorg
 
