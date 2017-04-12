@@ -125,6 +125,17 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    total:
+                      type: number
+                      format: int64
+                    max_score:
+                      type: number
+                      format: float
+                    hits:
+                      type: array
+                      items:
+                        type: object
         500:
           description: server error
           schema:
@@ -171,6 +182,18 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    total:
+                      type: number
+                      format: int64
+                    max_score:
+                      type: number
+                      format: float
+                    hits:
+                      type: array
+                      items:
+                        type: object
+
         500:
           description: server error
           schema:
@@ -210,6 +233,17 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    total:
+                      type: number
+                      format: int64
+                    max_score:
+                      type: number
+                      format: float
+                    hits:
+                      type: array
+                      items:
+                        type: object
         500:
           description: server error
           schema:
