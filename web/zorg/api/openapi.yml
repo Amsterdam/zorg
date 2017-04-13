@@ -343,6 +343,71 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+    post:
+      tags: [ data-endpoint ]
+      summary: Voeg een nieuwe activiteit toe
+      produces:
+        - application/json
+      parameters:
+      -
+        name: id
+        in: formData
+        type: string
+        description: Het `id` van de activiteit zoals aangemaakt door de leverende organisatie.
+      -
+        name: naam
+        in: formData
+        type: string
+        description: De nam van de activiteit.
+      -
+        name: beschrijving
+        in: formData
+        type: string
+        description: Een beschrijving van de activiteit.
+      -
+        name: bron_link
+        in: formData
+        type: string
+        description: Een link naar de pagina waar de activiteit wordt beschreven.
+      -
+        name: contactpersoon
+        in: formData
+        type: string
+        description: Naam van de contactpersoon.
+      -
+        name: tags
+        in: formData
+        type: string
+        description: een door komma gescheiden lijst van labels / tags passend bij deze activiteit.
+      -
+        name: start_time
+        in: formData
+        type: string
+        format: 'date-time'
+        description: Datum / tijd waarop deze activiteit ingaat / aanvangt.
+      -
+        name: end_time
+        in: formData
+        type: string
+        format: 'date-time'
+        description: Datum / tijd waarop deze activiteit stopt.
+      -
+        name: locatie
+        in: formData
+        type: string
+        description: De `locatie-id` zoals het bekend is bij het zorg portaal.
+      -
+        name: organisatie
+        in: formData
+        type: string
+        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
+      responses:
+        201:
+          description: Nieuwe activiteit is toegevoegd
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
 
   /locatie:
     get:
