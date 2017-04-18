@@ -351,9 +351,11 @@ paths:
         "405":
           description: Validation error
         "404":
-          description: `Organisatie` not found
+          description: Organisatie not found
         "400":
           description: Bad request, invalid URL
+        "204":
+          description: Update successful
 
 
   /activiteit:
@@ -427,9 +429,11 @@ paths:
         "405":
           description: Validation error
         "404":
-          description: `Activiteit` not found
+          description: Activiteit not found
         "400":
           description: Bad request, invalid URL
+        "204":
+          description: Update successful
 
   /locatie:
     get:
@@ -504,9 +508,11 @@ paths:
         "405":
           description: Validation error
         "404":
-          description: `Locatie` not found
+          description: Locatie not found
         "400":
           description: Bad request, invalid URL
+        "204":
+          description: Update successful
 
 ################################################################################
 #                                  Definitions                                 #
