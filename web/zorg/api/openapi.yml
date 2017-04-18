@@ -44,7 +44,7 @@ produces:
 paths:
   /status/health:
     get:
-      tags: [ status ]
+      tags: [ status, get ]
       # operationId: health.views.health
       summary: Ok, als de server draait
       responses:
@@ -59,7 +59,7 @@ paths:
 
   /status/data:
     get:
-      tags: [ status ]
+      tags: [ status, get ]
       summary: Ok, als data bereikbaar is en goed uitziet.
       # operationId: health.views.data
       responses:
@@ -74,7 +74,7 @@ paths:
 
   /zoek:
     get:
-      tags: [ zoek-endpoint ]
+      tags: [ zoek-endpoint, get ]
       summary: Zoek
       # operationId: api.ZoekApiView.as_view
       parameters:
@@ -119,7 +119,7 @@ paths:
 
   /zoek/{search-for}:
     get:
-      tags: [ zoek-endpoint ]
+      tags: [ zoek-endpoint, get ]
       summary: zoek naar `organisatie`, `locatie` of `activiteit`
       # operationId: api.ZoekApiView.as_view
       parameters:
@@ -174,7 +174,7 @@ paths:
 
   /zoek/geo:
     get:
-      tags: [ zoek-endpoint ]
+      tags: [ zoek-endpoint, get ]
       summary: zoek op lat, lon en tekst
       # operationId: api.GeoZoekView.as_view
       parameters:
@@ -233,7 +233,7 @@ paths:
 
   /zoek/thema:
     get:
-      tags: [ zoek-endpoint ]
+      tags: [ zoek-endpoint, get ]
       summary: zoek op thema
       # operationId: TermsZoekView.as_view
       produces:
@@ -282,7 +282,7 @@ paths:
 
   /organisatie:
     get:
-      tags: [ data-endpoint ]
+      tags: [ data-endpoint, get]
       summary: data organisaties
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
@@ -312,7 +312,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
     post:
-      tags: [ data-endpoint ]
+      tags: [ data-endpoint, post ]
       summary: Voeg een nieuwe organisatie toe
       produces:
         - application/json
@@ -357,10 +357,9 @@ paths:
         "204":
           description: Update successful
 
-
   /activiteit:
     get:
-      tags: [ data-endpoint ]
+      tags: [ data-endpoint, get ]
       summary: data activiteiten
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
@@ -390,7 +389,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
     post:
-      tags: [ data-endpoint ]
+      tags: [ data-endpoint, post ]
       summary: Voeg een nieuwe activiteit toe
       produces:
         - application/json
