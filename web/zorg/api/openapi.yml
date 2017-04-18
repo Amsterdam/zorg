@@ -8,7 +8,7 @@ info:
 
     Bij het aanmaken van organisaties, locaties en activiteiten genereert de applicatie zelf een `guid` op basis van de gebruiker en de id in de aanroep.
 
-    Indien een `guid` wordt meegestuurd met een `http POSTrequest` wordt deze door het systeem genegeerd en zal het systeem zelf een nieuwe unieke guid genereren.
+    Indien een `guid` wordt meegestuurd met een `http POST request` wordt deze door het systeem genegeerd en zal het systeem zelf een nieuwe unieke guid genereren.
     Bij `lees`, `update` en `verwijder` opdrachten moet de `guid` wel meegestuurd worden.
 
     Het gebruik van een guid maakt het mogelijk om meerdere partijen hun eigen id reeks te laten gebruiken zonder dat dit leidt tot conflicten in het zorg-portaal.
@@ -46,7 +46,7 @@ paths:
     get:
       tags: [ status ]
       # operationId: health.views.health
-      summary: returns ok when server is up
+      summary: Ok, als de server draait
       responses:
         200:
           description: status health check
@@ -60,11 +60,11 @@ paths:
   /status/data:
     get:
       tags: [ status ]
-      summary: returns ok if data is reachable and sane
+      summary: Ok, als data bereikbaar is en goed uitziet.
       # operationId: health.views.data
       responses:
         200:
-          description: status health check
+          description: status data health check
           schema:
             type: string
         500:
@@ -86,7 +86,7 @@ paths:
         required: false
       responses:
         200:
-          description: Returns a list of search results
+          description: Retourneert een lijst met zoekresulaten
           schema:
             type: object
             properties:
@@ -291,13 +291,13 @@ paths:
       -
         name: page
         in: query
-        description: pagination the page number to show
+        description: Paginering, de pagina die getoont moet worden.
         type: number
         format: int64
         required: false
       responses:
         200:
-          description: Returns a list of orgaisatie data
+          description: Retourneert een lijst met organisaties
           schema:
             type: object
             properties:
@@ -307,6 +307,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+    post:
+      tags: [ data-endpoint ]
+      summary: Voeg een nieuwe organisatie toe
+      produces:
+        - application/json
+      parameters:
+      -
+        in: body
+        name: body
+        description: created organsation object
+        required: true
+        schema:
+          $ref: '#/definitions/organisatie'
+      responses:
+        201:
+          description: Nieuwe activiteit is toegevoegd
+          schema:
+            type: object
         500:
           description: server error
           schema:
@@ -323,13 +345,13 @@ paths:
       -
         name: page
         in: query
-        description: pagination the page number to show
+        description: Paginering, de pagina die getoont moet worden.
         type: number
         format: int64
         required: false
       responses:
         200:
-          description: Returns a list of activiteiten data
+          description: Retourneert een lijst met activiteiten.
           schema:
             type: object
             properties:
@@ -350,60 +372,17 @@ paths:
         - application/json
       parameters:
       -
-        name: id
-        in: formData
-        type: string
-        description: Het `id` van de activiteit zoals aangemaakt door de leverende organisatie.
-      -
-        name: naam
-        in: formData
-        type: string
-        description: De nam van de activiteit.
-      -
-        name: beschrijving
-        in: formData
-        type: string
-        description: Een beschrijving van de activiteit.
-      -
-        name: bron_link
-        in: formData
-        type: string
-        description: Een link naar de pagina waar de activiteit wordt beschreven.
-      -
-        name: contactpersoon
-        in: formData
-        type: string
-        description: Naam van de contactpersoon.
-      -
-        name: tags
-        in: formData
-        type: string
-        description: een door komma gescheiden lijst van labels / tags passend bij deze activiteit.
-      -
-        name: start_time
-        in: formData
-        type: string
-        format: 'date-time'
-        description: Datum / tijd waarop deze activiteit ingaat / aanvangt.
-      -
-        name: end_time
-        in: formData
-        type: string
-        format: 'date-time'
-        description: Datum / tijd waarop deze activiteit stopt.
-      -
-        name: locatie
-        in: formData
-        type: string
-        description: De `locatie-id` zoals het bekend is bij het zorg portaal.
-      -
-        name: organisatie
-        in: formData
-        type: string
-        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
+        in: body
+        name: body
+        description: creeeer nieuw activiteit object
+        required: true
+        schema:
+          $ref: '#/definitions/activiteit'
       responses:
         201:
           description: Nieuwe activiteit is toegevoegd
+          schema:
+            type: object
         500:
           description: server error
           schema:
@@ -440,6 +419,28 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+    post:
+      tags: [ data-endpoint ]
+      summary: Voeg een nieuwe locatie toe
+      produces:
+        - application/json
+      parameters:
+      -
+        in: body
+        name: body
+        description: Creeer een nieuw locatie object
+        required: true
+        schema:
+          $ref: '#/definitions/locatie'
+      responses:
+        201:
+          description: Nieuwe activiteit is toegevoegd
+          schema:
+            type: object
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
 
 
 ################################################################################
@@ -450,26 +451,63 @@ definitions:
 
   organisatie:
     type: object
+    required:
+      - id
+      - guid
+      - naam
     properties:
+      id:
+        type: string
       guid:
         type: string
       naam:
+        type: string
+      beschrijving:
+        type: string
+      afdeling:
+        type: string
+      contact:
+        type: string
+      locatie_id:
         type: string
 
   locatie:
     type: object
+    required:
+      - id
+      - guid
+      - naam
     properties:
+      id:
+        type: string
       guid:
         type: string
       naam:
+        type: string
+      openbare_ruimte_naam:
+        type: string
+      postcode:
+        type: string
+      huisnummer:
+        type: string
+      huisletter:
+        type: string
+      huisnummer_toevoeging:
+        type: string
+      bag_link:
+        type: string
+      geometrie:
         type: string
 
   activiteit:
     type: object
     required:
+      - id
       - guid
       - naam
     properties:
+      id:
+        type: string
       guid:
         type: string
       naam:
@@ -485,16 +523,21 @@ definitions:
         type: string
       tags:
         type: string
+        description: een door komma gescheiden lijst van labels / tags passend bij deze activiteit.
       start_time:
         type: string
         format: date-time
+        description: Datum / tijd waarop deze activiteit ingaat / aanvangt.
       end_time:
         type: string
         format: date-time
+        description: Datum / tijd waarop deze activiteit stopt.
       locatie:
         type: string
+        description: De `locatie-id` zoals het bekend is bij het zorg portaal.
       organisatie:
         type: string
+        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
 
   persoon:
     type: object
