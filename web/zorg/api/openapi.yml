@@ -323,7 +323,7 @@ paths:
         description: created organsation object
         required: true
         schema:
-          $ref: '#/definitions/organisatie'
+          $ref: '#/definitions/organisatie-post'
       responses:
         201:
           description: Nieuwe activiteit is toegevoegd
@@ -518,6 +518,25 @@ paths:
 ################################################################################
 
 definitions:
+
+  organisatie-post:
+    type: object
+    required:
+      - id
+      - naam
+    properties:
+      id:
+        type: string
+      naam:
+        type: string
+      beschrijving:
+        type: string
+      afdeling:
+        type: string
+      contact:
+        type: string
+      locatie_id:
+        type: string
 
   organisatie:
     type: object

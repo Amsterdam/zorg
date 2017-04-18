@@ -30,11 +30,19 @@ class Profile(models.Model):
     afdeling = models.CharField(max_length=255, blank=True)
     contact = JSONField()  # for tele, fax, emai, www etc.
 
+    def __str__(self):
+        return self.naam
 
 class Persoon(models.Model):
     guid = models.CharField(max_length=255, primary_key=True)
     contact = JSONField()  # See organisation for example
     naam = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name_plural = "Personen"
+
+    def __str__(self):
+        return self.naam
 
 
 class PersoonEventLog(EventLogMixin):
@@ -102,6 +110,9 @@ class Locatie(ReadOptimizedModel):
     def __repr(self):
         return f'<{self.guid}>'
 
+    class Meta:
+        verbose_name_plural = "Locaties"
+
 
 class LocatieEventLog(EventLogMixin):
     read_model = Locatie
@@ -153,6 +164,9 @@ class Organisatie(ReadOptimizedModel):
 
     def __repr(self):
         return f'<{self.guid}>'
+
+    class Meta:
+        verbose_name_plural = "Organisaties"
 
 
 class OrganisatieEventLog(EventLogMixin):
@@ -218,6 +232,9 @@ class Activiteit(ReadOptimizedModel):
 
     def __repr(self):
         return f'<{self.guid}>'
+
+    class Meta:
+        verbose_name_plural = "Activiteiten"
 
 
 class ActiviteitEventLog(EventLogMixin):

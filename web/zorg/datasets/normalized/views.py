@@ -7,7 +7,6 @@ from rest_framework import viewsets
 # Project
 from .models import Organisatie, Activiteit, Locatie
 from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSerializer
-from datasets.general import events
 
 
 class ZorgViewSet(viewsets.ModelViewSet):

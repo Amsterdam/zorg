@@ -1,6 +1,5 @@
 # Packages
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import url
 # Project
 from api.views import ZoekApiView, TermsZoekView, GeoZoekView, OpenApiView
 
