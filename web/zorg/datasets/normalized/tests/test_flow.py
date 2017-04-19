@@ -115,11 +115,16 @@ class LocatieTests(APITestCase):
         loc = factories.create_locatie(naam='Ergens Anders', id=2, postcode='1012JS', openbare_ruimte_naam='Dam')
         response = client.post(self.url, loc)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-2', 'id': '2', 'naam': 'Ergens Anders',
-            'openbare_ruimte_naam': 'Dam', 'postcode': '1012JS', 'huisnummer': '1', 'huisletter': '',
-            'huisnummer_toevoeging': '', 'bag_link': f'{settings.DATAPUNT_API_URL}bag/nummeraanduiding/03630003761447/',
-            'geometrie': 'SRID=28992;POINT (121394 487383)'}
-        )
+        self.assertEqual(response.data['guid'], 'test-2')
+        self.assertEqual(response.data['id'], '2')
+        self.assertEqual(response.data['naam'], 'Ergens Anders')
+        self.assertEqual(response.data['openbare_ruimte_naam'], 'Dam')
+        self.assertEqual(response.data['postcode'], '1012JS')
+        self.assertEqual(response.data['huisnummer'], '1')
+        self.assertEqual(response.data['huisletter'], '')
+        self.assertEqual(response.data['huisnummer_toevoeging'], '')
+        self.assertEqual(response.data['bag_link'], f'{settings.DATAPUNT_API_URL}bag/nummeraanduiding/0363200003761447/')
+        self.assertEqual(response.data['geometrie'], 'SRID=28992;POINT (121394 487383)')
 
     def test_add_location_to_org(self):
         client = self._get_client(self.token)
@@ -172,7 +177,9 @@ class ActiviteitenTests(APITestCase):
             'contactpersoon': 'Ik', 'tags': '', 'start_time': None, 'end_time': None, 'persoon': []}
         )
 
-        act = factories.create_activiteit(naam='Doe nog eens wat', id=2, bron_link='http://amsterdam.nl/actie', locatie_id=self.loc['guid'])
+        act = factories.create_activiteit(naam='Doe nog eens wat',
+                                          id=2, bron_link='http://amsterdam.nl/actie',
+                                          locatie_id=self.loc['guid'])
         response = client.post(self.url, act)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'guid': 'test-2', 'locatie_id': 'test-1', 'organisatie_id': None, 'id': '2',

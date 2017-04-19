@@ -30,8 +30,6 @@ info:
 
     [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
-basePath: /zorg
-
 schemes:
   - https
 
@@ -76,7 +74,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zoek:
+  /zorg/zoek:
     get:
       tags: [ zoek-endpoint, get ]
       summary: Zoek
@@ -121,7 +119,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zoek/{search-for}:
+  /zorg/zoek/{search-for}:
     get:
       tags: [ zoek-endpoint, get ]
       summary: zoek naar `organisatie`, `locatie` of `activiteit`
@@ -176,7 +174,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zoek/geo:
+  /zorg/zoek/geo:
     get:
       tags: [ zoek-endpoint, get ]
       summary: zoek op lat, lon en tekst
@@ -235,7 +233,7 @@ paths:
             $ref: '#/definitions/error_response'
 
 
-  /zoek/thema:
+  /zorg/zoek/thema:
     get:
       tags: [ zoek-endpoint, get ]
       summary: zoek op thema
@@ -284,7 +282,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /organisatie:
+  /zorg/organisatie:
     get:
       tags: [ data-endpoint, get]
       summary: data organisaties
@@ -361,7 +359,7 @@ paths:
         "204":
           description: Update successful
 
-  /activiteit:
+  /zorg/activiteit:
     get:
       tags: [ data-endpoint, get ]
       summary: data activiteiten
@@ -438,7 +436,7 @@ paths:
         "204":
           description: Update successful
 
-  /locatie:
+  /zorg/locatie:
     get:
       tags: [ data-endpoint, get ]
       summary: data locatie

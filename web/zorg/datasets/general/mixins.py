@@ -54,6 +54,9 @@ class EventLogMixin(models.Model):
         # prevent circular import
         from datasets.general import events
 
+        if 'locatie_id' in self.data.keys():
+            if not isinstance(self.data['locatie_id'], str):
+                self.data['locatie_id'] = self.data['locatie_id'].guid
         try:
             # @TODO atomic does not seem to work as expected
             # The event log is created even if procssing fails
