@@ -6,14 +6,18 @@ info:
   description: |
     ## Guid
 
-    Bij het aanmaken van organisaties, locaties en activiteiten genereert de applicatie zelf een `guid` op basis van de gebruiker en de id in de aanroep.
+    Bij het aanmaken van organisaties, locaties en activiteiten genereert de applicatie zelf een `guid`
+    op basis van de gebruiker en de id in de aanroep.
 
-    Indien een `guid` wordt meegestuurd met een `http POST request` wordt deze door het systeem genegeerd en zal het systeem zelf een nieuwe unieke guid genereren.
+    Indien een `guid` wordt meegestuurd met een `http POST request` wordt deze door het systeem genegeerd en
+    zal het systeem zelf een nieuwe unieke guid genereren.
     Bij `lees`, `update` en `verwijder` opdrachten moet de `guid` wel meegestuurd worden.
 
-    Het gebruik van een guid maakt het mogelijk om meerdere partijen hun eigen id reeks te laten gebruiken zonder dat dit leidt tot conflicten in het zorg-portaal.
+    Het gebruik van een guid maakt het mogelijk om meerdere partijen hun eigen id reeks te laten gebruiken
+    zonder dat dit leidt tot conflicten in het zorg-portaal.
 
-    Op termijn is het de bedoeling om ook gebruik te maken van het eigen id voor lees, update en verwijder opdrachten. Dit ligt voorlopig nog buiten de scope van het project.
+    Op termijn is het de bedoeling om ook gebruik te maken van het eigen id voor lees, update en verwijder
+    opdrachten. Dit ligt voorlopig nog buiten de scope van het project.
 
     ## Authenticatie
 

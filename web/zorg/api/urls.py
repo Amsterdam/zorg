@@ -11,5 +11,4 @@ urlpatterns = [
     url(r'^zorg/zoek/thema/$', TermsZoekView.as_view()),
     url(r'^zorg/zoek/$', ZoekApiView.as_view()),
     url(r'^zorg/openapi.yml', OpenApiView.as_view())
-
 ]
