@@ -1,13 +1,13 @@
 # Packages
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from datasets.general import events
 # Projects
 from . import models
-from datasets.general import events
 
 
 class ZorgModelSerializer(serializers.ModelSerializer):
-
     event_model = None
 
     def get_extra_kwargs(self):
@@ -25,7 +25,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
         # If a guid is given, remove it from the data
         if 'guid' in validated_data:
-            del(validated_data['guid'])
+            del (validated_data['guid'])
         # There can be two cases in which create can be made:
         # 1. There is no previous entry
         # 2. The last event was  delete
@@ -58,7 +58,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         # 1. There is no previous entry
         # 2. The laatste event was een delete
         prev_events = list(self.event_model.objects.filter(
-                      guid=guid).order_by('sequence'))
+            guid=guid).order_by('sequence'))
         if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
             # @TODO convert to self.fail call
             raise ValidationError('Object not found')
@@ -76,18 +76,16 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
 
 class OrganisatieSerializer(ZorgModelSerializer):
-
     locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
     event_model = models.OrganisatieEventLog
 
     class Meta(object):
-        exclude = ('locatie', )
+        exclude = ('locatie',)
         model = models.Organisatie
         extra_kwargs = {'client': {'required': 'False'}}
 
 
 class LocatieSerializer(ZorgModelSerializer):
-
     event_model = models.LocatieEventLog
 
     class Meta(object):
@@ -96,11 +94,11 @@ class LocatieSerializer(ZorgModelSerializer):
 
 
 class ActiviteitSerializer(ZorgModelSerializer):
-
     locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
-    organisatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Organisatie.objects, allow_null=True, required=False)
+    organisatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Organisatie.objects, allow_null=True,
+                                                        required=False)
     event_model = models.ActiviteitEventLog
 
     class Meta(object):
-        exclude = ('locatie', 'organisatie', )
+        exclude = ('locatie', 'organisatie',)
         model = models.Activiteit
