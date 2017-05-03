@@ -44,7 +44,7 @@ produces:
 ################################################################################
 
 paths:
-  /status/health:
+  /zorg/status/health:
     get:
       tags: [ status, get ]
       # operationId: health.views.health
@@ -59,7 +59,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /status/data:
+  /zorg/status/data:
     get:
       tags: [ status, get ]
       summary: Ok, als data bereikbaar is en goed uitziet.
@@ -143,7 +143,7 @@ paths:
         required: false
       responses:
         200:
-          description: Returns a list of search results
+          description: Retourneert een lijst met zoekresultaten
           schema:
             type: object
             properties:
@@ -200,7 +200,7 @@ paths:
         type: number
       responses:
         200:
-          description: Returns a list of search results
+          description: Retourneert een lijst met zoekresultaten
           schema:
             type: object
             properties:
@@ -244,14 +244,14 @@ paths:
       -
         name: page
         in: query
-        description: pagination the page number to show
+        description: Paginering, toont de gevraagde pagina
         type: number
         format: int64
         required: false
 
       responses:
         200:
-          description: Returns a list of search results
+          description: Retourneert een lijst met zoekresultaten
           schema:
             type: object
             properties:
@@ -305,6 +305,57 @@ paths:
         "204":
           description: Update successful
 
+  /zorg/organisatie/{guid}:
+    get:
+      tags: [ data-endpoint, get, by guid ]
+      summary: fetch activiteit by id
+      produces:
+        - application/json
+      parameters:
+      -
+        name: guid
+        in: path
+        description: Paginering, toont de gevraagde pagina.
+        type: string
+        required: true
+      responses:
+        200:
+          description: retourneert een `organisatie` data record
+          schema:
+            $ref: '#/definitions/organisatie'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+    put:
+      tags: [ data-endpoint, put, by guid]
+      summary: Change an `organisatie` object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+      - name: guid
+        in: path
+        description: De guid van het organisatie object dat gewijzigd moet worden
+        type: string
+        required: true
+      - in: body
+        name: body
+        description: wijzig `organisatie` object
+        required: false
+        schema:
+          $ref: '#/definitions/organisatie'
+      responses:
+        "405":
+          description: Validation error
+        "404":
+          description: Activiteit not found
+        "400":
+          description: Bad request, invalid URL
+        "204":
+          description: Update successful
+
   /zorg/organisatie:
     get:
       tags: [ data-endpoint, get]
@@ -316,7 +367,7 @@ paths:
       -
         name: page
         in: query
-        description: Paginering, de pagina die getoont moet worden.
+        description: Paginering, toont de gevraagde pagina.
         type: number
         format: int64
         required: false
@@ -345,13 +396,13 @@ paths:
       -
         in: body
         name: body
-        description: created organsation object
+        description: Creeer een nieuw organsatie object
         required: true
         schema:
           $ref: '#/definitions/organisatie-post'
       responses:
         201:
-          description: Nieuwe activiteit is toegevoegd
+          description: Nieuwe organisatie is toegevoegd
           schema:
             type: object
         500:
@@ -362,19 +413,19 @@ paths:
   /zorg/activiteit/{guid}:
     get:
       tags: [ data-endpoint, get, by guid ]
-      summary: fetch activiteit by id
+      summary: vind activiteit met id
       produces:
         - application/json
       parameters:
       -
         name: guid
         in: path
-        description: pagination the page number to show
+        description: Paginering, toont de gevraagde pagina
         type: string
         required: true
       responses:
         200:
-          description: Returns a locatie data record
+          description: Retourneert een activeit data record
           schema:
             $ref: '#/definitions/activiteit'
         500:
@@ -391,7 +442,7 @@ paths:
       parameters:
       - name: guid
         in: path
-        description: The guid of the activiteit that will be changed
+        description: Het guid van de activiteit die gewijzigd gaat worden
         type: string
         required: true
       - in: body
@@ -421,7 +472,7 @@ paths:
       -
         name: page
         in: query
-        description: Paginering, de pagina die getoont moet worden.
+        description: Paginering, toont de gevraagde pagina.
         type: number
         format: int64
         required: false
@@ -474,12 +525,12 @@ paths:
       -
         name: guid
         in: path
-        description: pagination the page number to show
+        description: Paginering, toont de gevraagde pagina
         type: string
         required: true
       responses:
         200:
-          description: Returns a locatie data record
+          description: retourneert een locatie data record
           schema:
             $ref: '#/definitions/locatie'
         500:
@@ -497,7 +548,7 @@ paths:
       parameters:
       - name: guid
         in: path
-        description: The guid of the locatie that will be changed
+        description: Het guid van de locatie die gewijzigd gaat worden
         type: string
         required: true
       - in: body
@@ -527,13 +578,13 @@ paths:
       -
         name: page
         in: query
-        description: pagination the page number to show
+        description: Paginering, toont de gevraagde pagina
         type: number
         format: int64
         required: false
       responses:
         200:
-          description: Returns a list of locatie data
+          description: Retourneert een liojst met locatie data
           schema:
             type: object
             properties:
