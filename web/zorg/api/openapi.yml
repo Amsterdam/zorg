@@ -612,7 +612,7 @@ paths:
         description: Creeer een nieuw locatie object
         required: true
         schema:
-          $ref: '#/definitions/locatie'
+          $ref: '#/definitions/locatie-post'
       responses:
         201:
           description: Nieuwe activiteit is toegevoegd
@@ -668,6 +668,28 @@ definitions:
       contact:
         type: string
       locatie_id:
+        type: string
+
+  locatie-post:
+    type: object
+    required:
+      - id
+      - naam
+      - postcode
+    properties:
+      id:
+        type: string
+      naam:
+        type: string
+      openbare_ruimte_naam:
+        type: string
+      postcode:
+        type: string
+      huisnummer:
+        type: string
+      huisletter:
+        type: string
+      huisnummer_toevoeging:
         type: string
 
   locatie:
