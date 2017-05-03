@@ -404,7 +404,7 @@ paths:
         201:
           description: Nieuwe organisatie is toegevoegd
           schema:
-            type: object
+            $ref: '#/definitions/organisatie'
         500:
           description: server error
           schema:
