@@ -6,6 +6,7 @@ from django.db import DatabaseError, models, transaction
 # Project
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
+from datetime import datetime
 
 
 LOG = logging.getLogger(__name__)
@@ -57,6 +58,12 @@ class EventLogMixin(models.Model):
         if 'locatie_id' in self.data.keys():
             if not isinstance(self.data['locatie_id'], str):
                 self.data['locatie_id'] = self.data['locatie_id'].guid
+
+        # make sure datetime fields are serialized to strings
+        for k, v in self.data.items():
+            if isinstance(v, datetime):
+                self.data[k] = str(self.data[k])
+        print(self.data)
         try:
             # @TODO atomic does not seem to work as expected
             # The event log is created even if procssing fails

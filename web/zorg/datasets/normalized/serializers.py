@@ -98,6 +98,8 @@ class ActiviteitSerializer(ZorgModelSerializer):
     organisatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Organisatie.objects, allow_null=True,
                                                         required=False)
     event_model = models.ActiviteitEventLog
+    start_time = serializers.DateTimeField()
+    end_time = serializers.DateTimeField()
 
     class Meta(object):
         exclude = ('locatie', 'organisatie',)

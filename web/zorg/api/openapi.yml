@@ -504,7 +504,7 @@ paths:
         description: creeeer nieuw activiteit object
         required: true
         schema:
-          $ref: '#/definitions/activiteit'
+          $ref: '#/definitions/activiteit-post'
       responses:
         201:
           description: Nieuwe activiteit is toegevoegd
@@ -719,6 +719,40 @@ definitions:
         type: string
       geometrie:
         type: string
+
+  activiteit-post:
+    type: object
+    required:
+      - id
+      - naam
+    properties:
+      id:
+        type: string
+      naam:
+        type: string
+      beschrijving:
+        type: string
+      bron_link:
+        type: string
+      contactpersoon:
+        type: string
+      tags:
+        type: string
+        description: een door komma gescheiden lijst van labels / tags passend bij deze activiteit.
+      start_time:
+        type: string
+        format: date-time
+        description: Datum / tijd waarop deze activiteit ingaat / aanvangt.
+      end_time:
+        type: string
+        format: date-time
+        description: Datum / tijd waarop deze activiteit stopt.
+      locatie:
+        type: string
+        description: De `locatie-guid` zoals het bekend is bij het zorg portaal.
+      organisatie:
+        type: string
+        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
 
   activiteit:
     type: object
