@@ -281,6 +281,29 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+    put:
+      tags: [ data-endpoint, put ]
+      summary: Wijzig een organisatie object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: wijzig organisatie object
+          required: false
+          schema:
+            $ref: "#/definitions/organisatie"
+      responses:
+        "405":
+          description: Validation error
+        "404":
+          description: Organisatie not found
+        "400":
+          description: Bad request, invalid URL
+        "204":
+          description: Update successful
 
   /zorg/organisatie:
     get:
@@ -335,25 +358,53 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+
+  /zorg/activiteit/{guid}:
+    get:
+      tags: [ data-endpoint, get, by guid ]
+      summary: fetch activiteit by id
+      produces:
+        - application/json
+      parameters:
+      -
+        name: guid
+        in: path
+        description: pagination the page number to show
+        type: string
+        required: true
+      responses:
+        200:
+          description: Returns a locatie data record
+          schema:
+            $ref: '#/definitions/activiteit'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
     put:
-      tags: [ data-endpoint, put ]
-      summary: Wijzig een organisatie object
+      tags: [ data-endpoint, put, by guid]
+      summary: Wijzig een activiteit object
       produces:
         - application/json
       consumes:
         - application/json
       parameters:
-        - in: body
-          name: body
-          description: wijzig organisatie object
-          required: false
-          schema:
-            $ref: "#/definitions/organisatie"
+      - name: guid
+        in: path
+        description: The guid of the activiteit that will be changed
+        type: string
+        required: true
+      - in: body
+        name: body
+        description: wijzig activiteit object
+        required: false
+        schema:
+          $ref: "#/definitions/activiteit"
       responses:
         "405":
           description: Validation error
         "404":
-          description: Organisatie not found
+          description: Activiteit not found
         "400":
           description: Bad request, invalid URL
         "204":
@@ -412,25 +463,54 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+
+  /zorg/locatie/{guid}:
+    get:
+      tags: [ data-endpoint, get, by guid ]
+      summary: fetch locatie by id
+      produces:
+        - application/json
+      parameters:
+      -
+        name: guid
+        in: path
+        description: pagination the page number to show
+        type: string
+        required: true
+      responses:
+        200:
+          description: Returns a locatie data record
+          schema:
+            $ref: '#/definitions/locatie'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
     put:
-      tags: [ data-endpoint, put ]
-      summary: Wijzig een activiteit object
+      tags: [ data-endpoint, put, by guid ]
+      summary: Wijzig een locatie object
       produces:
         - application/json
       consumes:
         - application/json
       parameters:
-        - in: body
-          name: body
-          description: wijzig activiteit object
-          required: false
-          schema:
-            $ref: "#/definitions/activiteit"
+      - name: guid
+        in: path
+        description: The guid of the locatie that will be changed
+        type: string
+        required: true
+      - in: body
+        name: body
+        description: wijzig locatie object
+        required: false
+        schema:
+          $ref: "#/definitions/locatie"
       responses:
         "405":
           description: Validation error
         "404":
-          description: Activiteit not found
+          description: Locatie not found
         "400":
           description: Bad request, invalid URL
         "204":
@@ -491,29 +571,6 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
-    put:
-      tags: [ data-endpoint, put ]
-      summary: Wijzig een locatie object
-      produces:
-        - application/json
-      consumes:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: wijzig locatie object
-          required: false
-          schema:
-            $ref: "#/definitions/locatie"
-      responses:
-        "405":
-          description: Validation error
-        "404":
-          description: Locatie not found
-        "400":
-          description: Bad request, invalid URL
-        "204":
-          description: Update successful
 
 ################################################################################
 #                                  Definitions                                 #
