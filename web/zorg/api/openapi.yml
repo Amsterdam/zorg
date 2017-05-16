@@ -123,7 +123,6 @@ paths:
     get:
       tags: [ zoek-endpoint, get ]
       summary: zoek naar `organisatie`, `locatie` of `activiteit`
-      # operationId: api.ZoekApiView.as_view
       parameters:
       -
         name: search-for
@@ -450,7 +449,7 @@ paths:
         description: wijzig activiteit object
         required: false
         schema:
-          $ref: "#/definitions/activiteit"
+          $ref: "#/definitions/activiteit-post"
       responses:
         "405":
           description: Validation error
@@ -623,6 +622,61 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
+  /zorg/persoon:
+    get:
+      tags: [ data-endpoint, get ]
+      summary: data locatiePERSOON
+      produces:
+        - application/json
+      parameters:
+      -
+        name: page
+        in: query
+        description: Paginering, toont de gevraagde pagina
+        type: number
+        format: int64
+        required: false
+      responses:
+        200:
+          description: Retourneert een lijst met contactpersoon data
+          schema:
+            type: object
+            properties:
+              _links:
+                $ref: '#/definitions/_links'
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/results'
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+    post:
+      tags: [ data-endpoint, post ]
+      summary: Voeg een nieuwe contactpersoon  toe
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+      -
+        in: body
+        name: body
+        description: Creeer een nieuw contactpersoon object
+        required: true
+        schema:
+          $ref: '#/definitions/persoon'
+      responses:
+        201:
+          description: Nieuw contactpersoon is toegevoegd
+          schema:
+            type: object
+        500:
+          description: server error
+          schema:
+            $ref: '#/definitions/error_response'
+
 ################################################################################
 #                                  Definitions                                 #
 ################################################################################
@@ -644,7 +698,13 @@ definitions:
       afdeling:
         type: string
       contact:
-        type: string
+        description: |
+          een lijst met adressen, bijv
+          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
+           {"soort":"twitter", "adres":"@voorbeeld"}]
+        type: array
+        items:
+            $ref: '#/definitions/comm'
       locatie_id:
         type: string
 
@@ -666,7 +726,13 @@ definitions:
       afdeling:
         type: string
       contact:
-        type: string
+        description: |
+          een lijst met adressen, bijv
+          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
+           {"soort":"twitter", "adres":"@voorbeeld"}]
+        type: array
+        items:
+            $ref: '#/definitions/comm'
       locatie_id:
         type: string
 
@@ -800,8 +866,22 @@ definitions:
       guid:
         type: string
       contact:
-        type: string
+        description: |
+          een lijst met adressen, bijv
+          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
+           {"soort":"twitter", "adres":"@voorbeeld"}]
+        type: array
+        items:
+            $ref: '#/definitions/comm'
       naam:
+        type: string
+
+  comm:
+    type: object
+    properties:
+      soort:
+        type: string
+      adres:
         type: string
 
   href:

@@ -2,6 +2,7 @@ import json
 import logging
 
 import requests
+from datasets.normalized import documents
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models as geo
@@ -11,10 +12,30 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
-from datasets.normalized import documents
 
 log = logging.getLogger(__name__)
 bag_url = f"{settings.DATAPUNT_API_URL}bag/nummeraanduiding/?"
+
+
+class TagDefinition(models.Model):
+    """
+    Predefined tags each with a category to eventually separate them in 
+    a front end
+    """
+    CATEGORIES = (
+        ('BETAALD', 'Betaald'),
+        ('DAG', 'Dagen'),
+        ('TIJD', 'Tijdstip'),
+    )
+
+    naam = models.CharField(max_length=255, unique=True)
+    category = models.CharField(max_length=25, choices=CATEGORIES)
+
+    def __str__(self):
+        return self.naam
+
+    class Meta:
+        verbose_name_plural = 'TagDefinitions'
 
 
 class Profile(models.Model):
@@ -32,6 +53,7 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.naam
+
 
 class Persoon(models.Model):
     guid = models.CharField(max_length=255, primary_key=True)
@@ -203,7 +225,7 @@ class Activiteit(ReadOptimizedModel):
     bron_link = models.URLField()
     contactpersoon = models.CharField(max_length=255, blank=True)
     persoon = models.ManyToManyField(to=Persoon, related_name='activiteiten', blank=True)
-    tags = models.CharField(max_length=255, blank=True)
+    tags = models.ManyToManyField(to=TagDefinition, related_name='activiteiten', blank=True)
     start_time = models.DateTimeField(null=True)
     end_time = models.DateTimeField(null=True)
     locatie = models.ForeignKey(Locatie, related_name='activiteiten', blank=True, null=True)
