@@ -63,10 +63,6 @@ class ZoekApiView(View):
         return self.search_elastic(kwargs.get('search_for', None), self.request.POST.get('query', ''))
 
 
-# Voor na de poc moet beter
-class TermsZoekView(ZoekApiView):
-    zoek_functie = queries.terms_Q
-
 
 class GeoZoekView(ZoekApiView):
     zoek_functie = queries.geo_Q

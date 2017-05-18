@@ -4,13 +4,16 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from rest_framework import viewsets
+from rest_framework.response import Response
+# from redis import redis
+# from rq import Queue
+
 # Project
-from .models import Organisatie, Activiteit, Locatie
-from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSerializer
+from .models import Organisatie, Activiteit, Locatie, TagDefinition
+from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSerializer, TagDefinitionSerializer
 
 
 class ZorgViewSet(viewsets.ModelViewSet):
-
     def get_object(self):
         queryset = self.get_queryset()
         filter = {
@@ -22,7 +25,7 @@ class ZorgViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None):
         prev_events = list(self.serializer_class.event_model.objects.filter(
-                      guid=pk).order_by('sequence'))
+            guid=pk).order_by('sequence'))
         if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
             raise ValidationError('Object not found')
         else:
@@ -46,7 +49,6 @@ class ZorgViewSet(viewsets.ModelViewSet):
 
 
 class OrganisatieViewSet(ZorgViewSet):
-
     serializer_class = OrganisatieSerializer
 
     def get_queryset(self):
@@ -54,7 +56,6 @@ class OrganisatieViewSet(ZorgViewSet):
 
 
 class ActiviteitViewSet(ZorgViewSet):
-
     serializer_class = ActiviteitSerializer
 
     def get_queryset(self):
@@ -62,11 +63,16 @@ class ActiviteitViewSet(ZorgViewSet):
 
 
 class LocatieViewSet(ZorgViewSet):
-
     serializer_class = LocatieSerializer
 
     def get_queryset(self):
         return Locatie.objects.all()
+
+class TagDefinitionViewSet(viewsets.ModelViewSet):
+    serializer_class = TagDefinitionSerializer
+
+    def get_queryset(self):
+        return TagDefinition.objects.filter(category='BETAALD')
 
 
 class TagsApiView(ListView):
@@ -74,12 +80,33 @@ class TagsApiView(ListView):
     Read only api endpoint for tags
     Works for listing all tags and for specific tag name
     """
+
     def get_queryset(self):
         try:
-            return Activiteit.objects.filter(tags__icontains=self.args[0])
+            return TagDefinition.objects.filter(category=self.args[0])
         except IndexError:
-            return Activiteit.objects.all()
+            return TagDefinition.objects.all()
 
     def render_to_response(self, context, **response_kwargs):
-        resp = ActiviteitSerializer(list(context['object_list']), many=True)
+        resp = TagDefinitionSerializer(list(context['object_list']), many=True)
         return JsonResponse(resp.data, status=200, safe=False)
+
+
+class BatchUpdateView(viewsets.ViewSet):
+    """
+    Add new events and locations in batch
+    [
+        {'add': {'ts': <timestamp>, 'location': <location-rec>, 'event': <event-rec>'},
+        {'patch': {'ts': <timestamp>, 'location': <location-changes>, 'event': <event-changes>'},
+        {'delete': {'ts': <timestamp>, 'location': <location-guid>, 'event': <event-guid>'},
+    ]
+    """
+
+    def create(self, request):
+        """
+
+        :param request:
+        :return:
+        """
+
+        return JsonResponse({}, status=202)

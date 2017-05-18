@@ -104,3 +104,9 @@ class ActiviteitSerializer(ZorgModelSerializer):
     class Meta(object):
         exclude = ('locatie', 'organisatie',)
         model = models.Activiteit
+
+class TagDefinitionSerializer(serializers.ModelSerializer):
+
+    class Meta(object):
+        fields = ['category', 'naam']
+        model = models.TagDefinition

@@ -9,6 +9,7 @@ RUN apt-get install -y \
 		gdal-bin \
 		libgeos-dev \
 		netcat \
+		redis-server \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 	&& adduser --system zorg \

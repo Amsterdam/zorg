@@ -2,7 +2,7 @@
 from django.conf.urls import include, url
 from rest_framework import routers
 # Project
-from .views import OrganisatieViewSet, ActiviteitViewSet, LocatieViewSet, TagsApiView
+from .views import OrganisatieViewSet, ActiviteitViewSet, LocatieViewSet, TagsApiView, TagDefinitionViewSet
 
 nrouter = routers.SimpleRouter()
 nrouter.register(r'organisatie', OrganisatieViewSet, base_name='organisatie')
@@ -10,7 +10,7 @@ nrouter.register(r'activiteit', ActiviteitViewSet, base_name='activiteit')
 nrouter.register(r'locatie', LocatieViewSet, base_name='locatie')
 
 urlpatterns = [
-    url(r'^zorg/tags/$', TagsApiView.as_view()),
+    # url(r'^zorg/tags/(BETAALD|DAG|TIJD)/$', TagsApiView.as_view()),
     url(r'^zorg/tags/([\w-]+)/$', TagsApiView.as_view()),
     url(r'^zorg/', include(nrouter.urls)),
 ]

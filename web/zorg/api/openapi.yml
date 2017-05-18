@@ -74,6 +74,106 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
+  /zorg/batch_update:
+    post:
+      tags: [ data-endpoint, batch, post ]
+      description: |
+        ### Batch update
+
+        #### In ontwikkeling
+
+        batch_update accepteert een payload met zgn. `events`. Deze events
+        worden uitgevoerd op onze datacollectie. Een event bestaat altijd uit
+        een actie-sleutel zoals:
+        - `add`,
+        - `patch` of
+        - `delete`.
+
+        De waarde hiervaan bevat altijd een record met de beschrijving
+        van de actie. Het record met de waarde van de update bestaat altijd uit een
+        - `timestamp` een
+        - `locatie` en een
+        - `activiteit`.
+
+        ### bijvoorbeeld:
+        ```javascript
+          [{"add":
+            {"ts": "2017-05-17T10:00:00.000+0000",
+             "locatie": <locatie-rec>,
+             "activiteit": <activiteit-rec>},
+          {"patch":
+            {"ts": "2017-05-17T10:04:00.340+0000",
+             "locatie": <locatie-changes>,
+             "activiteit": <activiteit-changes>},
+          {"delete":
+            {"ts":"2017-05-14T10:14:31.243+0000",
+              "locatie": <locatie-guid>,
+              "activiteit": <activiteit-guid>}]
+        ```
+
+      summary: Aanleveren van wijzigingen in een batch
+      responses:
+        202:
+          description: accepted the request and queued the payload for processing
+          schema:
+            $ref: '#/definitions/batch_job'
+        500:
+          description: server error
+      parameters:
+      -
+        name: payload
+        in: body
+        description: The payload for this request
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/batch_record'
+
+  /zorg/batch_job/{jobid}:
+    get:
+      tags: [ data-endpoint, get, batch ]
+      summary: opvragen van informatie over batch jobs
+      description: |
+        #### In ontwikkeling
+
+      parameters:
+      -
+        name: jobid
+        in: path
+        description: De jobid van de verwerking die gezocht wordt
+        type: string
+        required: true
+      responses:
+        200:
+          description: batch
+          schema:
+            $ref: '#/definitions/batch_job'
+        500:
+          description: server error
+
+  /zorg/tags/{categorie}:
+    get:
+      tags: [ data-endpoint, get ]
+      summary: opvragen van tags cq. labels per categorie
+      parameters:
+      -
+        name: categorie
+        in: path
+        description: de tag categorie die geselecteerd moet worden
+        type: string
+        enum:
+          - BETAALD
+          - DAG
+          - TIJD
+        required: true
+      responses:
+        200:
+          description: alle tags voor gevraagde categoroe
+          schema:
+            $ref: '#/definitions/tagdefinitie'
+        500:
+          description: server error
+
   /zorg/zoek:
     get:
       tags: [ zoek-endpoint, get ]
@@ -230,79 +330,6 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
-
-
-  /zorg/zoek/thema:
-    get:
-      tags: [ zoek-endpoint, get ]
-      summary: zoek op thema
-      # operationId: TermsZoekView.as_view
-      produces:
-        - application/json
-      parameters:
-      -
-        name: page
-        in: query
-        description: Paginering, toont de gevraagde pagina
-        type: number
-        format: int64
-        required: false
-
-      responses:
-        200:
-          description: Retourneert een lijst met zoekresultaten
-          schema:
-            type: object
-            properties:
-              took:
-                type: number
-                format: int64
-              timed_out:
-                type: boolean
-              _shards:
-                type: object
-              hits:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    total:
-                      type: number
-                      format: int64
-                    max_score:
-                      type: number
-                      format: float
-                    hits:
-                      type: array
-                      items:
-                        type: object
-        500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
-    put:
-      tags: [ data-endpoint, put ]
-      summary: Wijzig een organisatie object
-      produces:
-        - application/json
-      consumes:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: wijzig organisatie object
-          required: false
-          schema:
-            $ref: "#/definitions/organisatie"
-      responses:
-        "405":
-          description: Validation error
-        "404":
-          description: Organisatie not found
-        "400":
-          description: Bad request, invalid URL
-        "204":
-          description: Update successful
 
   /zorg/organisatie/{guid}:
     get:
@@ -625,7 +652,7 @@ paths:
   /zorg/persoon:
     get:
       tags: [ data-endpoint, get ]
-      summary: data locatiePERSOON
+      summary: data persoon
       produces:
         - application/json
       parameters:
@@ -647,7 +674,7 @@ paths:
               results:
                 type: array
                 items:
-                  $ref: '#/definitions/results'
+                  $ref: '#/definitions/persoon'
         500:
           description: server error
           schema:
@@ -726,13 +753,13 @@ definitions:
       afdeling:
         type: string
       contact:
-        description: |
-          een lijst met adressen, bijv
-          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
-           {"soort":"twitter", "adres":"@voorbeeld"}]
         type: array
         items:
             $ref: '#/definitions/comm'
+        description: |
+          Een lijst met adressen, Voorbeeld:
+          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
+          {"soort":"twitter", "adres":"@voorbeeld"}]
       locatie_id:
         type: string
 
@@ -917,3 +944,60 @@ definitions:
         type: string
       code:
         type: string
+
+  batch_record:
+    type: object
+    properties:
+      actie:
+        type: string
+        enum:
+          - insert
+          - update
+          - delete
+      locatie:
+        $ref: '#/definitions/locatie'
+      activiteit:
+        $ref: '#/definitions/activiteit'
+
+  batch_job:
+    type: object
+    properties:
+      jobid:
+        type: number
+        format: int64
+      guid:
+        type: string
+      status:
+        type: string
+        enum:
+           - queued
+           - running
+           - success
+           - failed
+      result:
+        type: object
+        properties:
+          added:
+            type: number
+            format: int64
+          updated:
+            type: number
+            format: int64
+          deleted:
+            type: number
+            format: int64
+          messages:
+            type: string
+
+  tagdefinitie:
+    type: object
+    properties:
+      category:
+        type: string
+        enum:
+          - BETAALD
+          - DAG
+          - TIJD
+      naam:
+        type: string
+
