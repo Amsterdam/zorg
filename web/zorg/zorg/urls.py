@@ -18,7 +18,6 @@ from django.contrib import admin
 from datasets.normalized.urls import urlpatterns as n_urlpatterns
 from api.urls import urlpatterns as a_urlpatterns
 
-
 urlpatterns = [
     url(r'^zorg/status/', include('health.urls')),
     url(r'^zorg/admin/', admin.site.urls),
@@ -26,3 +25,4 @@ urlpatterns = [
 
 urlpatterns += a_urlpatterns
 urlpatterns += n_urlpatterns
+urlpatterns +=  url(r'^zorg/rq/', include('django_rq.urls')),

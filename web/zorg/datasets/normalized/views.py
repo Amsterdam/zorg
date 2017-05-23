@@ -4,9 +4,11 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from rest_framework import viewsets
-from rest_framework.response import Response
-# from redis import redis
-# from rq import Queue
+from datasets.normalized.batch import process_updates
+
+import django_rq
+from rq import Queue
+from redis import Redis
 
 # Project
 from .models import Organisatie, Activiteit, Locatie, TagDefinition
@@ -108,5 +110,40 @@ class BatchUpdateView(viewsets.ViewSet):
         :param request:
         :return:
         """
+        queue = django_rq.get_queue('low')
+        res = queue.enqueue(process_updates, request.data)
+        return_value = {
+            "jobid": res.id,
+            "status": res.status,
+            "result": {
+                "added": 0,
+                "updated": 0,
+                "deleted": 0,
+                "messages": ""
+            }
+        }
+        return JsonResponse(return_value, status=202)
 
-        return JsonResponse({}, status=202)
+    def get_job(self, request, job_id):
+        """
+        Get the job status from the queues
+        :param request:
+        :param job_id:
+        :return:
+        """
+        q = Queue(name='low', connection=Redis())
+        res = q.fetch_job(job_id)
+        if res:
+            return_value = {
+                "jobid": job_id,
+                "status": res.status,
+                "result": {
+                    "added": 0,
+                    "updated": 0,
+                    "deleted": 0,
+                    "messages": ""
+                }
+            }
+        else:
+            return_value = {}
+        return JsonResponse(return_value, status=200)

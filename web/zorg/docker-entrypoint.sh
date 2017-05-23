@@ -9,6 +9,7 @@ source docker-wait.sh
 
 python manage.py migrate --noinput
 
-# run uwsgi
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
 exec uwsgi
 

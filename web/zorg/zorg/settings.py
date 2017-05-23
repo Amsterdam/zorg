@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Packages
     'rest_framework',
     'rest_framework.authtoken',
+    "django_rq",
     # Project
     'api',
     'datasets.normalized',
@@ -126,6 +127,30 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 240,
+    },
+    'high': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 240,
+    },
+    'low': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 240,
+    }
+}
+
+# RQ_EXCEPTION_HANDLERS = ['path.to.my.handler'] # If you need custom exception handlers
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
