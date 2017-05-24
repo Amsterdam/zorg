@@ -7,6 +7,7 @@ from rest_framework import viewsets
 from datasets.normalized.batch import process_updates
 
 import django_rq
+import json
 from rq import Queue
 from redis import Redis
 
@@ -111,7 +112,7 @@ class BatchUpdateView(viewsets.ViewSet):
         :return:
         """
         queue = django_rq.get_queue('low')
-        res = queue.enqueue(process_updates, request.data)
+        res = queue.enqueue(process_updates, json.loads(request.data))
         return_value = {
             "jobid": res.id,
             "status": res.status,

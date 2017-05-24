@@ -30,6 +30,9 @@ info:
 
     [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
+    ## Hoe gebruik ik het authenticatie token
+    
+
 schemes:
   - https
 
@@ -97,7 +100,7 @@ paths:
 
         ### bijvoorbeeld:
         ```javascript
-          [{"add":
+          [{"insert":
             {"ts": "2017-05-17T10:00:00.000+0000",
              "locatie": <locatie-rec>,
              "activiteit": <activiteit-rec>},
@@ -955,9 +958,9 @@ definitions:
           - update
           - delete
       locatie:
-        $ref: '#/definitions/locatie'
+        $ref: '#/definitions/locatie-post'
       activiteit:
-        $ref: '#/definitions/activiteit'
+        $ref: '#/definitions/activiteit-post'
 
   batch_job:
     type: object
