@@ -30,8 +30,10 @@ info:
 
     [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
-    ## Hoe gebruik ik het authenticatie token
-    
+    ## Hoe gebruik ik het API token
+
+    Een API token dient meegestuurd te worden via de HTTP Header `Authorization` van ieder API Request.
+    De inhoud van deze header moet letterijk zijn: `Token <het ontvangen API token>`
 
 schemes:
   - https
@@ -77,7 +79,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zorg/batch_update:
+  /zorg/_batch_update:
     post:
       tags: [ data-endpoint, batch, post ]
       description: |
@@ -85,7 +87,7 @@ paths:
 
         #### In ontwikkeling
 
-        batch_update accepteert een payload met zgn. `events`. Deze events
+        _batch_update accepteert een payload met zgn. `events`. Deze events
         worden uitgevoerd op onze datacollectie. Een event bestaat altijd uit
         een actie-sleutel zoals:
         - `add`,
@@ -821,6 +823,7 @@ definitions:
     required:
       - id
       - naam
+      - organisatie_id
     properties:
       id:
         type: string
@@ -843,19 +846,19 @@ definitions:
         type: string
         format: date-time
         description: Datum / tijd waarop deze activiteit stopt.
-      locatie:
+      locatie_id:
         type: string
-        description: De `locatie-guid` zoals het bekend is bij het zorg portaal.
-      organisatie:
+        description: De `locatie-guid` zoalsbekend is bij het zorg portaal.
+      organisatie_id:
         type: string
-        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
+        description: De `organisatie-guid` zoals het bekend bij het zorg portaal.
 
   activiteit:
     type: object
     required:
       - id
-      - guid
       - naam
+      - organisatie_id
     properties:
       id:
         type: string
@@ -883,12 +886,12 @@ definitions:
         type: string
         format: date-time
         description: Datum / tijd waarop deze activiteit stopt.
-      locatie:
+      locatie_id:
         type: string
-        description: De `locatie-id` zoals het bekend is bij het zorg portaal.
-      organisatie:
+        description: De `locatie-guid` zoalsbekend is bij het zorg portaal.
+      organisatie_id:
         type: string
-        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
+        description: De `organisatie-guid` zoals het bekend bij het zorg portaal.
 
   persoon:
     type: object

@@ -1,11 +1,11 @@
 import logging
 
-from datasets.normalized.models import Locatie, Activiteit
+from datasets.normalized import models
 
 log = logging.getLogger(__name__)
 
 
-def process_updates(data):
+def process_updates(organisatie, data):
     """
     Process batch updates
     :param data:
@@ -13,24 +13,26 @@ def process_updates(data):
     """
 
     action_dispatch = {
-        'insert': batch_insert,
-        'patch': batch_update,
+        'insert': _batch_insert,
+        'patch': _batch_update,
         'delete': batch_delete,
     }
     res = {
         'insert': 0,
-        'patch:': 0,
+        'patch': 0,
         'delete': 0,
     }
 
     for req in data:
-        operation = req['actie']
-        if action_dispatch[operation](req['locatie'], req['activiteit']):
+        operation, records = req.items().__iter__().__next__()
+        if action_dispatch[operation](organisatie,
+                                      records['locatie'],
+                                      records['activiteit']):
             res[operation] += 1
     return res
 
 
-def batch_insert(locatie, activiteit):
+def _batch_insert(organisatie, locatie, activiteit):
     """
     Batch insert, Inserts a locatie/activieit combi
 
@@ -38,43 +40,24 @@ def batch_insert(locatie, activiteit):
     :param activiteit: A dict with `activiteit` info
     :return: True id a change took place
     """
+    res = {'locatie': False, 'activiteit': False,}
     if locatie:
-        loc, loc_created = Locatie.objects.update_or_create(
-            id=locatie.get('id', ''),
-            naam=locatie.get('naam', ''),
-            openbare_ruimte_naam=locatie.get('openbare_ruimte_naam', ''),
-            postcode=locatie.get('postcode', ''),
-            huisnummer=locatie.get('huisnummer', ''),
-            huisletter=locatie.get('huisletter', ''),
-            huisnummer_toevoeging=locatie.get('huisnummer_toevoeging', ''),
-        )
-        if loc_created:
-            log.info(f"Created new `locatie` with guid {loc.guid}.")
-        else:
-            log.info(f"Tried creating new `locatie` but a `location`"
-                     f" with guid {loc.guid} already exists, updated it instead.")
-    else:
-        log.info(f"No `locatie` info provided.")
+        guid = f"{organisatie.guid}-{locatie.get('id')}"
+        event = models.LocatieEventLog(event_type='C', guid=guid, data=locatie)
+        event.save()
+        log.info(f"Created new `locatie` with guid {guid}.")
+        res['locatie'] = True
 
     if activiteit:
-        act, act_created = Activiteit.objects.update_or_create(
-            id=activiteit.get('id', ''),
-            naam=activiteit.get('naam', ''),
-            beschrijving=activiteit.get('beschrijving', ''),
-            afdeling=activiteit.get('afdeling', ''),
-            contact=activiteit.get('contact', ''),
-            locatie_id=activiteit.get('locatie_id', ''),
-        )
-        if act_created:
-            log.info(f"Created `activiteit` with guid {act.guid}.")
-        else:
-            log.info(f"Tried creating new `activiteit` but a `activiteit` "
-                     f"with guid {loc.guid} already exists, updated it instead.")
-    else:
-        log.info(f"No `activiteit` info provided.")
+        guid = f"{organisatie.guid}-{activiteit.get('id')}"
+        event = models.ActiviteitEventLog(event_type='C', guid=guid, data=activiteit)
+        event.save()
+        log.info(f"Created new `activiteit` with guid {guid}.")
+        res['activiteit'] = True
+    return res['activiteit'] | res['locatie']
 
 
-def batch_update(locatie, activiteit):
+def _batch_update(organisatie, locatie, activiteit):
     """
     Update/patch locatie and/or activiteit
 
@@ -82,26 +65,25 @@ def batch_update(locatie, activiteit):
     :param activiteit:
     :return:
     """
+    res = {'locatie': False, 'activiteit': False,}
     if locatie:
-        loc_updated = Locatie.objects.filter(pk=locatie['guid']).update(**locatie)
-        if loc_updated == 0:
-            log.info(f"Update: `locatie` with guid {locatie['guid']} not found. Update failed")
-        else:
-            log.info(f"Update: `locatie` with guid {locatie['guid']} succeeded")
-    else:
-        log.info(f"Update no `locatie` info provided.")
+        guid = f"{organisatie.guid}-{locatie.get('id')}"
+        event = models.LocatieEventLog(event_type='U', guid=guid, data=locatie)
+        event.save()
+        log.info(f"Created new `locatie` with guid {guid}.")
+        res['locatie'] = True
 
     if activiteit:
-        act_updated = Activiteit.objects.filter(pk=activiteit['guid']).update(**locatie)
-        if act_updated == 0:
-            log.info(f"Update: `activiteit` with guid {activiteit['guid']} not found. Update failed")
-        else:
-            log.info(f"Update: `activiteit` with guid {activiteit['guid']} succeeded")
-    else:
-        log.info(f"Update no `activiteit` info provided.")
+        guid = f"{organisatie.guid}-{activiteit.get('id')}"
+        event = models.ActiviteitEventLog(event_type='U', guid=guid, data=activiteit)
+        event.save()
+        log.info(f"Created new `activiteit` with guid {guid}.")
+        res['activiteit'] = True
+    return res['activiteit'] | res['locatie']
 
 
-def batch_delete(locatie, activiteit):
+
+def batch_delete(organisatie, locatie, activiteit):
     """
     Delete locatie and/or activiteit
 

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+from datetime import datetime, timedelta
 
 import datasets.normalized as normalized
 
@@ -60,7 +61,10 @@ def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_
         'id': id,
         'beschrijving': beschrijving,
         'bron_link': bron_link,
+        # 'start_time': datetime.now().isoformat(),
+        # 'end_time': (datetime.now() + timedelta(14)).isoformat(),
         'contactpersoon': contactpersoon,
+        'personen': [],
     }
     act.update(kwargs)
 

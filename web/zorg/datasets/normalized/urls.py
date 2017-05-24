@@ -13,7 +13,7 @@ nrouter.register(r'locatie', LocatieViewSet, base_name='locatie')
 urlpatterns = [
     # url(r'^zorg/tags/(BETAALD|DAG|TIJD)/$', TagsApiView.as_view()),
     url(r'^zorg/tags/([\w-]+)/$', TagsApiView.as_view()),
-    url(r'^zorg/batch_update/$', BatchUpdateView.as_view({'post': 'create'})),
-    url(r'^zorg/batch_job/(?P<job_id>[0-9a-f-]+)/$', BatchUpdateView.as_view({'get': 'get_job'})),
+    url(r'^zorg/_batch_update/$', BatchUpdateView.as_view({'post': 'create'}), name='batch-update'),
+    url(r'^zorg/batch_job/(?P<job_id>[0-9a-f-]+)/$', BatchUpdateView.as_view({'get': 'get_job'}), name='batch-job'),
     url(r'^zorg/', include(nrouter.urls)),
 ]
