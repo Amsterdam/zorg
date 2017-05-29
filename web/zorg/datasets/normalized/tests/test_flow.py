@@ -48,20 +48,11 @@ class OrganisatieTests(APITestCase):
         org = factories.create_organisate()
         response = client.post(self.url, org)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-1', 'id': '1', 'naam': 'Org',
+        self.assertEqual(response.data, {'guid': 'test', 'id': '1', 'naam': 'Org',
                                          'beschrijving': 'Dit is een lang verhaal', 'afdeling': '',
-                                         'contact': {'tel': '123'}, 'locatie_id': None}
-                         )
+                                         'contact': {'tel': '123'}, 'locatie_id': None})
 
-        org = factories.create_organisate(naam='Andere Org', id=2)
-        response = client.post(self.url, org)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-2', 'id': '2', 'naam': 'Andere Org',
-                                         'beschrijving': 'Dit is een lang verhaal', 'afdeling': '',
-                                         'contact': {'tel': '123'}, 'locatie_id': None}
-                         )
-
-    def test_unique_name_constrain(self):
+    def test_organisatie_constraints(self):
         """
         Test that a same name org is not created
         """
@@ -70,12 +61,17 @@ class OrganisatieTests(APITestCase):
         org = factories.create_organisate()
         response = client.post(self.url, org)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-1', 'locatie_id': None, 'id': '1', 'naam': 'Org',
+        self.assertEqual(response.data, {'guid': 'test', 'locatie_id': None, 'id': '1', 'naam': 'Org',
                                          'beschrijving': 'Dit is een lang verhaal', 'afdeling': '',
-                                         'contact': {'tel': '123'}}
-                         )
+                                         'contact': {'tel': '123'}})
 
+        # name
         org = factories.create_organisate(naam='Org', id=2)
+        response = client.post(self.url, org)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # guid == user
+        org = factories.create_organisate(naam='Andere Org', id=3, guid='ander')
         response = client.post(self.url, org)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -85,18 +81,15 @@ class OrganisatieTests(APITestCase):
         org = factories.create_organisate()
         response = client.post(self.url, org)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-1', 'id': '1', 'naam': 'Org',
+        self.assertEqual(response.data, {'guid': 'test', 'id': '1', 'naam': 'Org',
                                          'beschrijving': 'Dit is een lang verhaal', 'afdeling': '',
-                                         'contact': {'tel': '123'}, 'locatie_id': None}
-                         )
+                                         'contact': {'tel': '123'}, 'locatie_id': None})
 
         response = client.put(f"{self.url}{response.data['guid']}/", {'id': '1', 'naam': ' Nieuwe naam'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'guid': 'test-1', 'id': '1', 'naam': 'Nieuwe naam',
+        self.assertEqual(response.data, {'guid': 'test', 'id': '1', 'naam': 'Nieuwe naam',
                                          'beschrijving': 'Dit is een lang verhaal', 'afdeling': '',
-                                         'contact': {'tel': '123'}, 'locatie_id': None}
-                         )
-
+                                         'contact': {'tel': '123'}, 'locatie_id': None})
 
 class LocatieTests(APITestCase):
     url = reverse('locatie-list')
@@ -195,8 +188,7 @@ class ActiviteitenTests(APITestCase):
                                          'naam': 'Activiteit', 'beschrijving': 'Dingen doen',
                                          'bron_link': 'http://amsterdam.nl',
                                          'contactpersoon': 'Ik', 'tags': [], 'start_time': None, 'end_time': None,
-                                         'persoon': []}
-                         )
+                                         'persoon': []})
 
         act = factories.create_activiteit(naam='Doe nog eens wat',
                                           id=2, bron_link='http://amsterdam.nl/actie',
@@ -207,8 +199,7 @@ class ActiviteitenTests(APITestCase):
                                          'naam': 'Doe nog eens wat', 'beschrijving': 'Dingen doen',
                                          'bron_link': 'http://amsterdam.nl/actie',
                                          'contactpersoon': 'Ik', 'tags': [], 'start_time': None, 'end_time': None,
-                                         'persoon': []}
-                         )
+                                         'persoon': []})
 
     def test_add_location_to_activiteit(self):
         client = self._get_client(self.token)
@@ -216,8 +207,10 @@ class ActiviteitenTests(APITestCase):
         act = factories.create_activiteit()
         response = client.post(self.url, act)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # Adding the loc to the org
-        response = client.put(f"{self.org_url}{self.org['guid']}/", {'id': '1', 'locatie_id': response.data['guid']})
+        # Create and add the loc to the org
+
+        response = client.put(f"{self.org_url}{self.org['guid']}/",
+                              {'id': '1', 'locatie_id': response.data['guid']})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         update_resp = response.data
         response = client.get(f"{self.org_url}{self.org['guid']}/")
@@ -238,9 +231,8 @@ class BatchUpdateEndpointTests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + cls.token.key)
 
         # Creating organisation
-        cls.org = factories.create_organisate()
+        cls.org = factories.create_organisate(guid='test')
         response = client.post(cls.organisatie_url, cls.org)
-        cls.org['guid'] = response.data['guid']
 
         # Creating location
         cls.loc = factories.create_locatie()
@@ -284,13 +276,13 @@ class BatchUpdateProcessingTests(APITestCase):
     def setUpTestData(cls):
         cls.user = factories.create_user()
         cls.token = factories.create_token(cls.user.auth_user)
-        cls.org = factories.create_organisate()
+        cls.org = factories.create_organisate(guid='test')
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + cls.token.key)
         response = client.post(cls.org_url, cls.org)
         cls.org['guid'] = response.data['guid']
 
-    def test_process_updates_insert_empty(self):
+    def test_process_insert_empty(self):
         dt_now = datetime.now().isoformat()
         payload = [{"insert": {"ts": dt_now,
                                "locatie": None,
@@ -302,8 +294,7 @@ class BatchUpdateProcessingTests(APITestCase):
         assert res['patch'] == 0
         assert res['insert'] == 0
 
-    def test_process_updates_insert_locatie_activiteit(self):
-
+    def test_process_insert_locatie_activiteit(self):
         dt_now = datetime.now().isoformat()
 
         loc = factories.create_locatie()
@@ -321,8 +312,7 @@ class BatchUpdateProcessingTests(APITestCase):
         assert res['patch'] == 0
         assert res['insert'] == 1
 
-    def test_process_updates_insert_locatie_no_activiteit(self):
-
+    def test_process_insert_locatie_no_activiteit(self):
         dt_now = datetime.now().isoformat()
 
         loc = factories.create_locatie()
@@ -339,10 +329,8 @@ class BatchUpdateProcessingTests(APITestCase):
         assert res['patch'] == 0
         assert res['insert'] == 1
 
-    def test_process_updates_insert_no_locatie_activiteit(self):
-
+    def test_process_insert_no_locatie_activiteit(self):
         dt_now = datetime.now().isoformat()
-
         act = factories.create_activiteit()
 
         payload = [{"insert": {"ts": dt_now,
@@ -356,3 +344,155 @@ class BatchUpdateProcessingTests(APITestCase):
         assert res['delete'] == 0
         assert res['patch'] == 0
         assert res['insert'] == 1
+
+    def test_process_update_empty(self):
+        dt_now = datetime.now().isoformat()
+        payload = [{"patch": {"ts": dt_now,
+                               "locatie": None,
+                               "activiteit": None}}]
+        guid = self.org['guid']
+        organisatie = models.Organisatie.objects.get(pk=guid)
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 0
+        assert res['patch'] == 0
+        assert res['insert'] == 0
+
+    def test_process_update_locatie_activiteit(self):
+        dt_now = datetime.now().isoformat()
+        loc = factories.create_locatie()
+        event = models.LocatieEventLog(event_type='C', guid=f"{self.org['guid']}-{loc['id']}", data=loc)
+        event.save()
+
+        loc['naam'] = 'Locatie is veranderd'
+        payload = [{"patch": {"ts": dt_now,
+                              "locatie": loc,
+                              "activiteit": None}}]
+
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
+
+
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 0
+        assert res['patch'] == 1
+        assert res['insert'] == 0
+
+    def test_process_update_no_activiteit(self):
+        dt_now = datetime.now().isoformat()
+        loc = factories.create_locatie()
+        event = models.LocatieEventLog(event_type='C', guid=f"{self.org['guid']}-{loc['id']}", data=loc)
+        event.save()
+
+        act = factories.create_activiteit(id=1, guid='test-1')
+        actevent = models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act['id']}", data=act)
+        actevent.save()
+
+        act['naam'] = 'Effe iets gewijzigd aan deze activiteit'
+        loc['naam'] = 'Locatie is veranderd'
+
+        payload = [{"patch": {"ts": dt_now,
+                               "locatie": loc,
+                               "activiteit": act}}]
+
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
+
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 0
+        assert res['patch'] == 1
+        assert res['insert'] == 0
+
+    def test_process_update_no_locatie_activiteit(self):
+        dt_now = datetime.now().isoformat()
+
+        act = factories.create_activiteit(id=1, guid='test-1')
+        event = models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act['id']}", data=act)
+        event.save()
+
+        act['naam'] = 'Effe iets gewijzigd aan deze activiteit'
+
+        payload = [{"patch": {"ts": dt_now,
+                               "locatie": None,
+                               "activiteit": act}}]
+
+        guid = self.org['guid']
+        organisatie = models.Organisatie.objects.get(pk=guid)
+
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 0
+        assert res['patch'] == 1
+        assert res['insert'] == 0
+
+    def test_batch_process_update_multiple_records(self):
+        dt_now = datetime.now().isoformat()
+        guid = self.org['guid']
+        organisatie = models.Organisatie.objects.get(pk=guid)
+
+        act_16 = factories.create_activiteit(id=1, guid='test-16')
+        act_17 = factories.create_activiteit(id=1, guid='test-17')
+        act_18 = factories.create_activiteit(id=1, guid='test-18')
+        act_19 = factories.create_activiteit(id=1, guid='test-19')
+        act_20 = factories.create_activiteit(id=1, guid='test-20')
+
+        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_16['id']}", data=act_16)
+        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_17['id']}", data=act_17)
+        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_18['id']}", data=act_18)
+        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_19['id']}", data=act_19)
+        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_20['id']}", data=act_20)
+
+        act_16['naam'] = ['act_16 is gewijzigd']
+        act_17['naam'] = ['act_17 is gewijzigd']
+        act_18['naam'] = ['act_18 is gewijzigd']
+        act_19['naam'] = ['act_19 is gewijzigd']
+        act_20['naam'] = ['act_20 is gewijzigd']
+
+        payload = [
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=1, guid='test-1')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=2, guid='test-2')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=3, guid='test-3')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=4, guid='test-4')}},
+            {"patch":
+                 {"ts": dt_now, "locatie": None, 'activiteit': act_16}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=5, guid='test-5')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=6, guid='test-6')}},
+            {"patch":
+                 {"ts": dt_now, "locatie": None, 'activiteit': act_17}},
+            {"patch":
+                 {"ts": dt_now, "locatie": None, 'activiteit': act_18}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=7, guid='test-7')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=8, guid='test-8')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=9, guid='test-9')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=10, guid='test-10')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=11, guid='test-11')}},
+            {"patch":
+                 {"ts": dt_now, "locatie": None, 'activiteit': act_19}},
+            {"patch":
+                 {"ts": dt_now, "locatie": None, 'activiteit': act_20}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=12, guid='test-12')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=13, guid='test-13')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=14, guid='test-14')}},
+            {"insert":
+                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=15, guid='test-15')}},
+        ]
+
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 0
+        assert res['patch'] == 5
+        assert res['insert'] == 15
+
+        # print(models.Activiteit.objects.all())
+
+
+

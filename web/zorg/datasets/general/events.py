@@ -28,7 +28,11 @@ def guid_from_id(user_identifier: User, ext_id: str) -> str:
     user's id
     """
     profile = normalized.models.Profile.objects.get(auth_user=user_identifier)
-    return f"{profile.guid}-{ext_id}"
+    if ext_id != '':
+        return f"{profile.guid}-{ext_id}"
+    else:
+        return profile.guid
+
 
 
 def id_from_guid(user_identifier_len: int, guid: str) -> str:

@@ -65,15 +65,13 @@ class EventLogMixin(models.Model):
                 self.data[k] = str(self.data[k])
         print(self.data)
         try:
-            # @TODO atomic does not seem to work as expected
-            # The event log is created even if procssing fails
-            with transaction.atomic(savepoint=False):
-                # Saving the event
-                super(EventLogMixin, self).save()
-                # Updating the Read optimized model
-                # -----------------------------------
-                self.data.update(kwargs)  # Adding kwargs data
-                success = events.handle_event(self, self.read_model)
+            # Saving the event
+            super(EventLogMixin, self).save()
+
+            # Updating the Read optimized model
+            # -----------------------------------
+            self.data.update(kwargs)  # Adding kwargs data
+            success = events.handle_event(self, self.read_model)
         except DatabaseError as e:
             LOG.error(f'Database error, rolling back: {e}')
             return False

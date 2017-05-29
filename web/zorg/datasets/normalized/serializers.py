@@ -22,7 +22,11 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Creating the guid
-        guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
+        if isinstance(self, OrganisatieSerializer):
+            # organisatie `guid` == user `id`
+            guid = events.guid_from_id(self.context['request'].user, '')
+        else:
+            guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
         # If a guid is given, remove it from the data
         if 'guid' in validated_data:
             del (validated_data['guid'])
@@ -50,7 +54,12 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # Creating the guid
-        guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
+        if isinstance(self, OrganisatieSerializer):
+            # organisatie `guid` == user `id`
+            guid = events.guid_from_id(self.context['request'].user, '')
+        else:
+            guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
+
         # Checking for authorized access
         if guid != instance.guid:
             raise ValidationError('Access not allowed')

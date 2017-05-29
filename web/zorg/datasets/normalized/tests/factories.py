@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 
 import datasets.normalized as normalized
 
-def create_user():
+def create_user(**kwargs):
     """
     Create a user
     """
-    auth_user = User.objects.create_user('the_tester', 'test@amsterdam.nl', 'secret')
+    auth_user = User.objects.create_user('the_tester', 'test@amsterdam.nl', 'secret', **kwargs)
     auth_user.save()
     user = normalized.models.Profile.objects.create(
         auth_user=auth_user,
@@ -37,7 +37,7 @@ def create_organisate(naam='Org', id=1, beschrijving='Dit is een lang verhaal', 
         'naam': naam,
         'id': id,
         'beschrijving': beschrijving,
-        'contact': contact
+        'contact': contact,
     }
     org.update(kwargs)
 
