@@ -20,13 +20,12 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             extra_kwargs['guid'] = guid
         return extra_kwargs
 
+    def get_guid(self, **kwargs):
+        return events.guid_from_id(self.context['request'].user, kwargs.get('id', ''))
+
     def create(self, validated_data):
         # Creating the guid
-        if isinstance(self, OrganisatieSerializer):
-            # organisatie `guid` == user `id`
-            guid = events.guid_from_id(self.context['request'].user, '')
-        else:
-            guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
+        guid = self.get_guid(id=validated_data['id'])
         # If a guid is given, remove it from the data
         if 'guid' in validated_data:
             del (validated_data['guid'])
@@ -54,11 +53,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # Creating the guid
-        if isinstance(self, OrganisatieSerializer):
-            # organisatie `guid` == user `id`
-            guid = events.guid_from_id(self.context['request'].user, '')
-        else:
-            guid = events.guid_from_id(self.context['request'].user, validated_data['id'])
+        guid = self.get_guid(id=validated_data['id'])
 
         # Checking for authorized access
         if guid != instance.guid:
@@ -80,13 +75,25 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             event_type='U',
             data=validated_data
         )
-        item = event.save()
+        if isinstance(self, ActiviteitSerializer) and 'tags' in self.context['request'].data:
+            # validate many to many relations for tags
+            valid_tags = []
+            for tag_name in self.context['request'].data['tags']:
+                if models.TagDefinition.objects.filter(naam=tag_name).count() > 0:
+                    valid_tags.append(tag_name)
+            item = event.save(tags=valid_tags)
+        else:
+            item = event.save()
+
         return item
 
 
 class OrganisatieSerializer(ZorgModelSerializer):
     locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
     event_model = models.OrganisatieEventLog
+
+    def get_guid(self, **kwargs):
+        return events.guid_from_id(self.context['request'].user, '')
 
     class Meta(object):
         exclude = ('locatie',)
@@ -102,20 +109,22 @@ class LocatieSerializer(ZorgModelSerializer):
         model = models.Locatie
 
 
-class ActiviteitSerializer(ZorgModelSerializer):
-    locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
-    organisatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Organisatie.objects, allow_null=True,
-                                                        required=False)
-    event_model = models.ActiviteitEventLog
-    start_time = serializers.DateTimeField(allow_null=True, required=False)
-    end_time = serializers.DateTimeField(allow_null=True, required=False)
-
-    class Meta(object):
-        exclude = ('locatie', 'organisatie',)
-        model = models.Activiteit
-
-
 class TagDefinitionSerializer(serializers.ModelSerializer):
     class Meta(object):
         fields = ['category', 'naam']
         model = models.TagDefinition
+
+
+class ActiviteitSerializer(ZorgModelSerializer):
+    locatie_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Locatie.objects, allow_null=True, required=False)
+    organisatie_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Organisatie.objects, allow_null=True, required=False)
+    event_model = models.ActiviteitEventLog
+    start_time = serializers.DateTimeField(allow_null=True, required=False)
+    end_time = serializers.DateTimeField(allow_null=True, required=False)
+    tags = TagDefinitionSerializer(read_only=True, many=True, required=False)
+
+    class Meta(object):
+        exclude = ('locatie', 'organisatie',)
+        model = models.Activiteit

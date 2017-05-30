@@ -74,3 +74,13 @@ def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_
     act.update(kwargs)
 
     return act
+
+
+def create_tag_definitions():
+    return [
+        normalized.models.TagDefinition.objects.create(naam='betaald', category='BETAALD'),
+        normalized.models.TagDefinition.objects.create(naam='gratis', category='BETAALD'),
+        normalized.models.TagDefinition.objects.create(naam='maandag', category='DAG'),
+        normalized.models.TagDefinition.objects.create(naam='dinsdag', category='DAG'),
+        normalized.models.TagDefinition.objects.create(naam='avond', category='TIJD'),
+    ]

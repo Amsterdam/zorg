@@ -63,7 +63,7 @@ class EventLogMixin(models.Model):
         for k, v in self.data.items():
             if isinstance(v, datetime):
                 self.data[k] = str(self.data[k])
-        print(self.data)
+
         try:
             # Saving the event
             super(EventLogMixin, self).save()

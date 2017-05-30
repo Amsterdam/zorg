@@ -27,6 +27,7 @@ from datasets.normalized import models
 from unittest.mock import patch
 from django.http import JsonResponse
 from django.test import testcases
+from django.db import transaction
 
 
 class OrganisatieTests(APITestCase):
@@ -158,21 +159,24 @@ class ActiviteitenTests(APITestCase):
     org_url = reverse('organisatie-list')
     url = reverse('activiteit-list')
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = factories.create_user()
-        cls.token = factories.create_token(cls.user.auth_user)
+    def setUp(self):
+        self.user = factories.create_user()
+        self.token = factories.create_token(self.user.auth_user)
         client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION='Token ' + cls.token.key)
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
         # Creating organisation
-        cls.org = factories.create_organisate()
-        response = client.post(cls.org_url, cls.org)
-        cls.org['guid'] = response.data['guid']
+        self.org = factories.create_organisate()
+        response = client.post(self.org_url, self.org)
+        self.org['guid'] = response.data['guid']
+
         # Creating location
-        cls.loc = factories.create_locatie()
-        response = client.post(cls.loc_url, cls.org)
-        cls.loc['guid'] = response.data['guid']
+        self.loc = factories.create_locatie()
+        response = client.post(self.loc_url, self.org)
+        self.loc['guid'] = response.data['guid']
+
+        # create tag definitions
+        factories.create_tag_definitions()
 
     def _get_client(self, token):
         client = APIClient()
@@ -185,24 +189,25 @@ class ActiviteitenTests(APITestCase):
         act = factories.create_activiteit()
         response = client.post(self.url, act)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-1', 'locatie_id': None, 'organisatie_id': None, 'id': '1',
-                                         'naam': 'Activiteit', 'beschrijving': 'Dingen doen',
-                                         'bron_link': 'http://amsterdam.nl',
-                                         'contactpersoon': 'Ik', 'tags': [], 'start_time': None, 'end_time': None,
-                                         'persoon': []})
+        self.assertEqual(response.data['guid'], 'test-1')
+        self.assertEqual(response.data['id'], '1')
+        self.assertEqual(response.data['contactpersoon'], 'Ik')
+        self.assertEqual(response.data['bron_link'], 'http://amsterdam.nl')
 
         act = factories.create_activiteit(naam='Doe nog eens wat',
                                           id=2, bron_link='http://amsterdam.nl/actie',
                                           locatie_id=self.loc['guid'])
         response = client.post(self.url, act)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'guid': 'test-2', 'locatie_id': 'test-1', 'organisatie_id': None, 'id': '2',
-                                         'naam': 'Doe nog eens wat', 'beschrijving': 'Dingen doen',
-                                         'bron_link': 'http://amsterdam.nl/actie',
-                                         'contactpersoon': 'Ik', 'tags': [], 'start_time': None, 'end_time': None,
-                                         'persoon': []})
+        self.assertEqual(response.data['guid'], 'test-2')
+        self.assertEqual(response.data['locatie_id'], 'test-1')
+        self.assertEqual(response.data['id'], '2')
+        self.assertEqual(response.data['contactpersoon'], 'Ik')
+        self.assertEqual(response.data['bron_link'], 'http://amsterdam.nl/actie')
+        self.assertEqual(response.data['naam'], 'Doe nog eens wat')
+        self.assertEqual(response.data['beschrijving'], 'Dingen doen')
 
-    def test_add_location_and_tags_to_activiteit(self):
+    def test_add_location_to_activiteit(self):
         client = self._get_client(self.token)
 
         act = factories.create_activiteit()
@@ -211,14 +216,14 @@ class ActiviteitenTests(APITestCase):
         # Create and add the loc to the org
 
         response = client.put(f"{self.org_url}{self.org['guid']}/",
-                              {'id': '1',
-                               'locatie_id': response.data['guid'],
-                               'tags': ['gratis', 'maandag', 'dinsdag', 'avond']})
+                              {'id': '1', 'locatie_id': response.data['guid']})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         update_resp = response.data
         response = client.get(f"{self.org_url}{self.org['guid']}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print(response.data)
+        print(update_resp)
         self.assertEqual(response.data, update_resp)
 
 
@@ -227,21 +232,20 @@ class BatchUpdateEndpointTests(APITestCase):
     locatie_url = reverse('locatie-list')
     organisatie_url = reverse('organisatie-list')
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = factories.create_user()
-        cls.token = factories.create_token(cls.user.auth_user)
+    def setUp(self):
+        self.user = factories.create_user()
+        self.token = factories.create_token(self.user.auth_user)
         client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION='Token ' + cls.token.key)
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
         # Creating organisation
-        cls.org = factories.create_organisate(guid='test')
-        response = client.post(cls.organisatie_url, cls.org)
+        self.org = factories.create_organisate(guid='test')
+        response = client.post(self.organisatie_url, self.org)
 
         # Creating location
-        cls.loc = factories.create_locatie()
-        response = client.post(cls.locatie_url, cls.org)
-        cls.loc['guid'] = response.data['guid']
+        self.loc = factories.create_locatie()
+        response = client.post(self.locatie_url, self.org)
+        self.loc['guid'] = response.data['guid']
 
     def _get_client(self, token):
         client = APIClient()
@@ -276,15 +280,14 @@ class BatchUpdateEndpointTests(APITestCase):
 class BatchUpdateProcessingTests(APITestCase):
     org_url = reverse('organisatie-list')
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = factories.create_user()
-        cls.token = factories.create_token(cls.user.auth_user)
-        cls.org = factories.create_organisate(guid='test')
+    def setUp(self):
+        self.user = factories.create_user()
+        self.token = factories.create_token(self.user.auth_user)
+        self.org = factories.create_organisate(guid='test')
         client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION='Token ' + cls.token.key)
-        response = client.post(cls.org_url, cls.org)
-        cls.org['guid'] = response.data['guid']
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = client.post(self.org_url, self.org)
+        self.org['guid'] = response.data['guid']
 
     def test_process_insert_empty(self):
         dt_now = datetime.now().isoformat()
@@ -406,17 +409,17 @@ class BatchUpdateProcessingTests(APITestCase):
         guid = self.org['guid']
         organisatie = models.Organisatie.objects.get(pk=guid)
 
-        act_16 = factories.create_activiteit(id=1, guid='test-16')
-        act_17 = factories.create_activiteit(id=1, guid='test-17')
-        act_18 = factories.create_activiteit(id=1, guid='test-18')
-        act_19 = factories.create_activiteit(id=1, guid='test-19')
-        act_20 = factories.create_activiteit(id=1, guid='test-20')
+        act_16 = factories.create_activiteit(id=16, guid='test-16', naam='activiteit 1')
+        act_17 = factories.create_activiteit(id=17, guid='test-17', naam='activiteit 2')
+        act_18 = factories.create_activiteit(id=18, guid='test-18', naam='activiteit 3')
+        act_19 = factories.create_activiteit(id=19, guid='test-19', naam='activiteit 4')
+        act_20 = factories.create_activiteit(id=20, guid='test-20', naam='activiteit 5')
 
-        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_16['id']}", data=act_16)
-        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_17['id']}", data=act_17)
-        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_18['id']}", data=act_18)
-        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_19['id']}", data=act_19)
-        models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act_20['id']}", data=act_20)
+        models.ActiviteitEventLog.objects.create(event_type='C', guid=f"{self.org['guid']}", data=act_16)
+        models.ActiviteitEventLog.objects.create(event_type='C', guid=f"{self.org['guid']}", data=act_17)
+        models.ActiviteitEventLog.objects.create(event_type='C', guid=f"{self.org['guid']}", data=act_18)
+        models.ActiviteitEventLog.objects.create(event_type='C', guid=f"{self.org['guid']}", data=act_19)
+        models.ActiviteitEventLog.objects.create(event_type='C', guid=f"{self.org['guid']}", data=act_20)
 
         act_16['naam'] = ['act_16 is gewijzigd']
         act_17['naam'] = ['act_17 is gewijzigd']
@@ -425,26 +428,84 @@ class BatchUpdateProcessingTests(APITestCase):
         act_20['naam'] = ['act_20 is gewijzigd']
 
         payload = [
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=1, guid='test-1')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=2, guid='test-2')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=3, guid='test-3')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=4, guid='test-4')},
-            {"operatie": "patch",  "locatie": None, 'activiteit': act_16},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=5, guid='test-5')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=6, guid='test-6')},
-            {"operatie": "patch",  "locatie": None, 'activiteit': act_17},
-            {"operatie": "patch",  "locatie": None, 'activiteit': act_18},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=7, guid='test-7')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=8, guid='test-8')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=9, guid='test-9')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=10, guid='test-10')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=11, guid='test-11')},
-            {"operatie": "patch",  "locatie": None, 'activiteit': act_19},
-            {"operatie": "patch",  "locatie": None, 'activiteit': act_20},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=12, guid='test-12')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=13, guid='test-13')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=14, guid='test-14')},
-            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=15, guid='test-15')},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 1", id=1, guid="test-1")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 2", id=2, guid="test-2")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 3", id=3, guid="test-3")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 4", id=4, guid="test-4")},
+            {
+                "operatie": "patch", "locatie": None, "activiteit": act_16},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 5", id=5, guid="test-5")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 6", id=6, guid="test-6")},
+            {
+                "operatie": "patch",
+                "locatie": None,
+                "activiteit": act_17},
+            {
+                "operatie": "patch",
+                "locatie": None,
+                "activiteit": act_18},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 7", id=7, guid="test-7")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 8", id=8, guid="test-8")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 9", id=9, guid="test-9")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 10", id=10, guid="test-10")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 11", id=11, guid="test-11")},
+            {
+                "operatie": "patch",
+                "locatie": None,
+                "activiteit": act_19},
+            {
+                "operatie": "patch",
+                "locatie": None,
+                "activiteit": act_20},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 12", id=12, guid="test-12")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 13", id=13, guid="test-13")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 14", id=14, guid="test-14")},
+            {
+                "operatie": "insert",
+                "locatie": None,
+                "activiteit": factories.create_activiteit(naam="act 15", id=15, guid="test-15")},
         ]
 
         res = process_updates(organisatie, payload)

@@ -1,5 +1,7 @@
 # Python
 # Packages
+import json
+
 import elasticsearch_dsl as es
 from django.conf import settings
 from django.db import models
@@ -90,8 +92,12 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
     Create an elastic Activiteit doc
     """
     doc = Activiteit(_id=n.guid)
-    for key in ('naam', 'beschrijving', 'bron_link', 'tags'):
+    for key in ('naam', 'beschrijving', 'bron_link'):
         setattr(doc, key, getattr(n, key))
+
+    # add tags
+    setattr(doc, 'tags', json.dumps(list(n.tags.all().values_list('naam', flat=True))))
+
     doc.ext_id = n.id
     # Loading locatie
     try:

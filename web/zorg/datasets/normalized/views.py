@@ -100,9 +100,9 @@ class BatchUpdateView(viewsets.ViewSet):
     """
     Add new events and locations in batch
     [
-        {'add': {'ts': <timestamp>, 'location': <location-rec>, 'event': <event-rec>'},
-        {'patch': {'ts': <timestamp>, 'location': <location-changes>, 'event': <event-changes>'},
-        {'delete': {'ts': <timestamp>, 'location': <location-guid>, 'event': <event-guid>'},
+        {'operation': 'insert', 'location': <location-rec>, 'event': <event-rec>'},
+        {'operation': 'patch', 'location': <location-changes>, 'event': <event-changes>'},
+        {'operation': 'delete', 'location': <location-guid>, 'event': <event-guid>'},
     ]
     """
 
