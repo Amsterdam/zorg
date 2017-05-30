@@ -1,6 +1,8 @@
 # Python
 import csv
+
 import os
+
 # Project
 from datasets.normalized import models
 

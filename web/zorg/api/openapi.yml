@@ -30,10 +30,8 @@ info:
 
     [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
-    ## Hoe gebruik ik het API token
-
-    Een API token dient meegestuurd te worden via de HTTP Header `Authorization` van ieder API Request.
-    De inhoud van deze header moet letterijk zijn: `Token <het ontvangen API token>`
+    Als leverancier van zorggerelateerde content kan een account aangevraagd worden bij datapunt Amsterdam.
+    Wij creeren en zenden u vervolgens een account met een bijbehorend API token.
 
 schemes:
   - https
@@ -79,7 +77,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zorg/_batch_update:
+  /zorg/batch_update:
     post:
       tags: [ data-endpoint, batch, post ]
       description: |
@@ -87,33 +85,28 @@ paths:
 
         #### In ontwikkeling
 
-        _batch_update accepteert een payload met zgn. `events`. Deze events
-        worden uitgevoerd op onze datacollectie. Een event bestaat altijd uit
-        een actie-sleutel zoals:
-        - `add`,
-        - `patch` of
-        - `delete`.
+        batch_update accepteert een payload met zgn. `operaties`. Deze operaties worden uitgevoerd op onze datacollectie.
 
-        De waarde hiervaan bevat altijd een record met de beschrijving
-        van de actie. Het record met de waarde van de update bestaat altijd uit een
-        - `timestamp` een
-        - `locatie` en een
-        - `activiteit`.
+        Een operatie bestaat altijd uit een key `operatie` met als de mogelijk waarden:
+          - `insert`,
+          - `patch` of
+          - `delete`.
+
+        een key `locatie` en een key `activiteit`.
 
         ### bijvoorbeeld:
         ```javascript
-          [{"insert":
-            {"ts": "2017-05-17T10:00:00.000+0000",
+          [
+            {"operatie":"insert",
              "locatie": <locatie-rec>,
              "activiteit": <activiteit-rec>},
-          {"patch":
-            {"ts": "2017-05-17T10:04:00.340+0000",
+            {"operatie":"patch",
              "locatie": <locatie-changes>,
              "activiteit": <activiteit-changes>},
-          {"delete":
-            {"ts":"2017-05-14T10:14:31.243+0000",
-              "locatie": <locatie-guid>,
-              "activiteit": <activiteit-guid>}]
+            {"operatie":"delete":
+             "locatie": <locatie-guid>,
+             "activiteit": <activiteit-guid>}
+          ]
         ```
 
       summary: Aanleveren van wijzigingen in een batch
@@ -823,7 +816,6 @@ definitions:
     required:
       - id
       - naam
-      - organisatie_id
     properties:
       id:
         type: string
@@ -846,19 +838,19 @@ definitions:
         type: string
         format: date-time
         description: Datum / tijd waarop deze activiteit stopt.
-      locatie_id:
+      locatie:
         type: string
-        description: De `locatie-guid` zoalsbekend is bij het zorg portaal.
-      organisatie_id:
+        description: De `locatie-guid` zoals het bekend is bij het zorg portaal.
+      organisatie:
         type: string
-        description: De `organisatie-guid` zoals het bekend bij het zorg portaal.
+        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
 
   activiteit:
     type: object
     required:
       - id
+      - guid
       - naam
-      - organisatie_id
     properties:
       id:
         type: string
@@ -886,12 +878,12 @@ definitions:
         type: string
         format: date-time
         description: Datum / tijd waarop deze activiteit stopt.
-      locatie_id:
+      locatie:
         type: string
-        description: De `locatie-guid` zoalsbekend is bij het zorg portaal.
-      organisatie_id:
+        description: De `locatie-id` zoals het bekend is bij het zorg portaal.
+      organisatie:
         type: string
-        description: De `organisatie-guid` zoals het bekend bij het zorg portaal.
+        description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
 
   persoon:
     type: object
@@ -954,16 +946,16 @@ definitions:
   batch_record:
     type: object
     properties:
-      actie:
+      operatie:
         type: string
         enum:
           - insert
           - update
           - delete
       locatie:
-        $ref: '#/definitions/locatie-post'
+        $ref: '#/definitions/locatie'
       activiteit:
-        $ref: '#/definitions/activiteit-post'
+        $ref: '#/definitions/activiteit'
 
   batch_job:
     type: object

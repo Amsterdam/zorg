@@ -3,6 +3,7 @@
 # Packages
 import requests
 import xmltodict
+
 # Project
 from datasets.normalized import models
 
@@ -10,7 +11,7 @@ USER_GUID = 'jekm'
 OFFESET_STEP = 100
 
 URLS = {
-    'activiteiten':  'http://amsterdam.jekuntmeer.nl/beheer/eigen-projecten/projects/inforing?c-Offset={offset}',
+    'activiteiten': 'http://amsterdam.jekuntmeer.nl/beheer/eigen-projecten/projects/inforing?c-Offset={offset}',
     'activiteitenDetails': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/detail/{activiteit_id}/2/inforing',
     'activiteitenLink': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/detail/{activiteit_id}/',
     'organisaties': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orglist/inforing',

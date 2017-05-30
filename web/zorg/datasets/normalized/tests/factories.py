@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from datetime import datetime, timedelta
 
 import datasets.normalized as normalized
+
 
 def create_user(**kwargs):
     """
@@ -20,6 +20,7 @@ def create_user(**kwargs):
 
     return user
 
+
 def create_token(user):
     """
     Create a token for a given user
@@ -28,6 +29,7 @@ def create_token(user):
     token.save()
 
     return token
+
 
 def create_organisate(naam='Org', id=1, beschrijving='Dit is een lang verhaal', contact={'tel': '123'}, **kwargs):
     """
@@ -43,7 +45,8 @@ def create_organisate(naam='Org', id=1, beschrijving='Dit is een lang verhaal', 
 
     return org
 
-def create_locatie(naam='Loc', id=1, openbare_ruimte_naam='Straat', postcode='1111AA',huisnummer='1', **kwargs):
+
+def create_locatie(naam='Loc', id=1, openbare_ruimte_naam='Straat', postcode='1111AA', huisnummer='1', **kwargs):
     loc = {
         'naam': naam,
         'id': id,
@@ -55,7 +58,9 @@ def create_locatie(naam='Loc', id=1, openbare_ruimte_naam='Straat', postcode='11
 
     return loc
 
-def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_link='http://amsterdam.nl', contactpersoon='Ik', **kwargs):
+
+def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_link='http://amsterdam.nl',
+                      contactpersoon='Ik', **kwargs):
     act = {
         'naam': naam,
         'id': id,
@@ -69,4 +74,3 @@ def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_
     act.update(kwargs)
 
     return act
-

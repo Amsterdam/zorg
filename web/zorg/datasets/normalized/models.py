@@ -2,7 +2,6 @@ import json
 import logging
 
 import requests
-from datasets.normalized import documents
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models as geo
@@ -12,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
+from datasets.normalized import documents
 
 log = logging.getLogger(__name__)
 bag_url = f"{settings.DATAPUNT_API_URL}bag/nummeraanduiding/?"
@@ -19,7 +19,7 @@ bag_url = f"{settings.DATAPUNT_API_URL}bag/nummeraanduiding/?"
 
 class TagDefinition(models.Model):
     """
-    Predefined tags each with a category to eventually separate them in 
+    Predefined tags each with a category to eventually separate them in
     a front end
     """
     CATEGORIES = (

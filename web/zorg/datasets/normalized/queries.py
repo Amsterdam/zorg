@@ -1,8 +1,6 @@
 # Python
 import logging
 # Packages
-from elasticsearch_dsl import Q
-
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +12,7 @@ def zorg_Q(query_string: dict, doc_type: str) -> dict:
                 "bool": {
                     "must": {
                         "multi_match": {
-                            "query":  query_string,
+                            "query": query_string,
                             "fields": ["naam^1.5", "beschrijving"]
                         }
                     },
@@ -28,7 +26,7 @@ def zorg_Q(query_string: dict, doc_type: str) -> dict:
         q = {
             "query": {
                 "multi_match": {
-                    "query":  query_string,
+                    "query": query_string,
                     "fields": ["naam^1.5", "beschrijving"]
                 }
             }
@@ -47,6 +45,7 @@ def tterms_Q(doc_type, query_string):
     }
 
     return q
+
 
 def terms_Q(query_string: str, doc_type: str) -> dict:
     terms = query_string.split(' ')
@@ -72,6 +71,7 @@ def terms_Q(query_string: str, doc_type: str) -> dict:
 
     return q
 
+
 def geo_Q(query: dict, doc_type=None) -> dict:
     """
     Perform a geospatial search.
@@ -83,9 +83,9 @@ def geo_Q(query: dict, doc_type=None) -> dict:
     default_distance = '2km'
     # Allowing for text filtering in query, if needed
     try:
-        match =  {
+        match = {
             "multi_match": {
-                "query":  query['text'],
+                "query": query['text'],
                 "fields": ["naam^1.5", "beschrijving"]
             }
         }
@@ -93,11 +93,11 @@ def geo_Q(query: dict, doc_type=None) -> dict:
         match = {'match_all': {}}
 
     geo_distance = {
-        "geo_distance":  {
-            "distance" : default_distance,
-            "locatie.centroid" : {
-                "lat" : query['lat'],
-                "lon" : query['lon']
+        "geo_distance": {
+            "distance": default_distance,
+            "locatie.centroid": {
+                "lat": query['lat'],
+                "lon": query['lon']
             }
         }
     }
@@ -111,11 +111,11 @@ def geo_Q(query: dict, doc_type=None) -> dict:
                 "must": [
                     match,
                     {
-                        "geo_distance":  {
-                            "distance" : default_distance,
-                            "locatie.centroid" : {
-                                "lat" : query['lat'],
-                                "lon" : query['lon']
+                        "geo_distance": {
+                            "distance": default_distance,
+                            "locatie.centroid": {
+                                "lat": query['lat'],
+                                "lon": query['lon']
                             }
                         }
                     }
@@ -125,15 +125,15 @@ def geo_Q(query: dict, doc_type=None) -> dict:
         "sort": [
             "_score",
             {
-                "_geo_distance" : {
-                    "locatie.centroid" : {
-                        "lat" : query['lat'],
-                        "lon" : query['lon']
+                "_geo_distance": {
+                    "locatie.centroid": {
+                        "lat": query['lat'],
+                        "lon": query['lon']
                     },
-                    "order" : "asc",
-                    "unit" : "km",
-                    "mode" : "min",
-                    "distance_type" : "plane"
+                    "order": "asc",
+                    "unit": "km",
+                    "mode": "min",
+                    "distance_type": "plane"
                 }
             }
         ]

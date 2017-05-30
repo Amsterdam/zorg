@@ -91,6 +91,7 @@ class OrganisatieTests(APITestCase):
                                          'beschrijving': 'Dit is een lang verhaal', 'afdeling': '',
                                          'contact': {'tel': '123'}, 'locatie_id': None})
 
+
 class LocatieTests(APITestCase):
     url = reverse('locatie-list')
     org_url = reverse('organisatie-list')
@@ -201,7 +202,7 @@ class ActiviteitenTests(APITestCase):
                                          'contactpersoon': 'Ik', 'tags': [], 'start_time': None, 'end_time': None,
                                          'persoon': []})
 
-    def test_add_location_to_activiteit(self):
+    def test_add_location_and_tags_to_activiteit(self):
         client = self._get_client(self.token)
 
         act = factories.create_activiteit()
@@ -210,7 +211,10 @@ class ActiviteitenTests(APITestCase):
         # Create and add the loc to the org
 
         response = client.put(f"{self.org_url}{self.org['guid']}/",
-                              {'id': '1', 'locatie_id': response.data['guid']})
+                              {'id': '1',
+                               'locatie_id': response.data['guid'],
+                               'tags': ['gratis', 'maandag', 'dinsdag', 'avond']})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         update_resp = response.data
         response = client.get(f"{self.org_url}{self.org['guid']}/")
@@ -246,7 +250,7 @@ class BatchUpdateEndpointTests(APITestCase):
 
     def test_batch_update_endpoint(self):
         client = self._get_client(self.token)
-        payload = json.dumps([{"insert": {"locatie": None, "activiteit": None}}])
+        payload = json.dumps([{"operatie": "insert"}])
 
         with patch.object(BatchUpdateView,
                           'create',
@@ -284,11 +288,8 @@ class BatchUpdateProcessingTests(APITestCase):
 
     def test_process_insert_empty(self):
         dt_now = datetime.now().isoformat()
-        payload = [{"insert": {"ts": dt_now,
-                               "locatie": None,
-                               "activiteit": None}}]
-        guid = self.org['guid']
-        organisatie = models.Organisatie.objects.get(pk=guid)
+        payload = [{"operatie": "insert"}]
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
         res = process_updates(organisatie, payload)
         assert res['delete'] == 0
         assert res['patch'] == 0
@@ -300,12 +301,8 @@ class BatchUpdateProcessingTests(APITestCase):
         loc = factories.create_locatie()
         act = factories.create_activiteit()
 
-        payload = [{"insert": {"ts": dt_now,
-                               "locatie": loc,
-                               "activiteit": act}}]
-
-        guid = self.org['guid']
-        organisatie = models.Organisatie.objects.get(pk=guid)
+        payload = [{"operatie": "insert", "locatie": loc, "activiteit": act}]
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
 
         res = process_updates(organisatie, payload)
         assert res['delete'] == 0
@@ -317,9 +314,7 @@ class BatchUpdateProcessingTests(APITestCase):
 
         loc = factories.create_locatie()
 
-        payload = [{"insert": {"ts": dt_now,
-                               "locatie": loc,
-                               "activiteit": None}}]
+        payload = [{"operatie": "insert", "locatie": loc, "activiteit": None}]
 
         guid = self.org['guid']
         organisatie = models.Organisatie.objects.get(pk=guid)
@@ -333,9 +328,7 @@ class BatchUpdateProcessingTests(APITestCase):
         dt_now = datetime.now().isoformat()
         act = factories.create_activiteit()
 
-        payload = [{"insert": {"ts": dt_now,
-                               "locatie": None,
-                               "activiteit": act}}]
+        payload = [{"operatie": "insert", "locatie": None, "activiteit": act}]
 
         guid = self.org['guid']
         organisatie = models.Organisatie.objects.get(pk=guid)
@@ -347,11 +340,8 @@ class BatchUpdateProcessingTests(APITestCase):
 
     def test_process_update_empty(self):
         dt_now = datetime.now().isoformat()
-        payload = [{"patch": {"ts": dt_now,
-                               "locatie": None,
-                               "activiteit": None}}]
-        guid = self.org['guid']
-        organisatie = models.Organisatie.objects.get(pk=guid)
+        payload = [{"operatie": "patch", "locatie": None, "activiteit": None}]
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
         res = process_updates(organisatie, payload)
         assert res['delete'] == 0
         assert res['patch'] == 0
@@ -364,12 +354,9 @@ class BatchUpdateProcessingTests(APITestCase):
         event.save()
 
         loc['naam'] = 'Locatie is veranderd'
-        payload = [{"patch": {"ts": dt_now,
-                              "locatie": loc,
-                              "activiteit": None}}]
+        payload = [{"operatie": "patch", "locatie": loc, "activiteit": None}]
 
         organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
-
 
         res = process_updates(organisatie, payload)
         assert res['delete'] == 0
@@ -389,9 +376,7 @@ class BatchUpdateProcessingTests(APITestCase):
         act['naam'] = 'Effe iets gewijzigd aan deze activiteit'
         loc['naam'] = 'Locatie is veranderd'
 
-        payload = [{"patch": {"ts": dt_now,
-                               "locatie": loc,
-                               "activiteit": act}}]
+        payload = [{"operatie": "patch", "locatie": loc, "activiteit": act}]
 
         organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
 
@@ -409,13 +394,8 @@ class BatchUpdateProcessingTests(APITestCase):
 
         act['naam'] = 'Effe iets gewijzigd aan deze activiteit'
 
-        payload = [{"patch": {"ts": dt_now,
-                               "locatie": None,
-                               "activiteit": act}}]
-
-        guid = self.org['guid']
-        organisatie = models.Organisatie.objects.get(pk=guid)
-
+        payload = [{"operatie": "patch", "locatie": None, "activiteit": act}]
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
         res = process_updates(organisatie, payload)
         assert res['delete'] == 0
         assert res['patch'] == 1
@@ -445,46 +425,26 @@ class BatchUpdateProcessingTests(APITestCase):
         act_20['naam'] = ['act_20 is gewijzigd']
 
         payload = [
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=1, guid='test-1')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=2, guid='test-2')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=3, guid='test-3')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=4, guid='test-4')}},
-            {"patch":
-                 {"ts": dt_now, "locatie": None, 'activiteit': act_16}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=5, guid='test-5')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=6, guid='test-6')}},
-            {"patch":
-                 {"ts": dt_now, "locatie": None, 'activiteit': act_17}},
-            {"patch":
-                 {"ts": dt_now, "locatie": None, 'activiteit': act_18}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=7, guid='test-7')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=8, guid='test-8')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=9, guid='test-9')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=10, guid='test-10')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=11, guid='test-11')}},
-            {"patch":
-                 {"ts": dt_now, "locatie": None, 'activiteit': act_19}},
-            {"patch":
-                 {"ts": dt_now, "locatie": None, 'activiteit': act_20}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=12, guid='test-12')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=13, guid='test-13')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=14, guid='test-14')}},
-            {"insert":
-                 {"ts": dt_now, "locatie": None, 'activiteit': factories.create_activiteit(id=15, guid='test-15')}},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=1, guid='test-1')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=2, guid='test-2')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=3, guid='test-3')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=4, guid='test-4')},
+            {"operatie": "patch",  "locatie": None, 'activiteit': act_16},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=5, guid='test-5')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=6, guid='test-6')},
+            {"operatie": "patch",  "locatie": None, 'activiteit': act_17},
+            {"operatie": "patch",  "locatie": None, 'activiteit': act_18},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=7, guid='test-7')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=8, guid='test-8')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=9, guid='test-9')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=10, guid='test-10')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=11, guid='test-11')},
+            {"operatie": "patch",  "locatie": None, 'activiteit': act_19},
+            {"operatie": "patch",  "locatie": None, 'activiteit': act_20},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=12, guid='test-12')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=13, guid='test-13')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=14, guid='test-14')},
+            {"operatie": "insert", "locatie": None, 'activiteit': factories.create_activiteit(id=15, guid='test-15')},
         ]
 
         res = process_updates(organisatie, payload)
@@ -493,6 +453,3 @@ class BatchUpdateProcessingTests(APITestCase):
         assert res['insert'] == 15
 
         # print(models.Activiteit.objects.all())
-
-
-

@@ -1,13 +1,13 @@
 # Python
 import logging
-# Packages
-from django.contrib.postgres.fields import JSONField
-from django.db import DatabaseError, models, transaction
-# Project
-from django.conf import settings
-from elasticsearch_dsl.connections import connections
 from datetime import datetime
 
+# Project
+from django.conf import settings
+# Packages
+from django.contrib.postgres.fields import JSONField
+from django.db import DatabaseError, models
+from elasticsearch_dsl.connections import connections
 
 LOG = logging.getLogger(__name__)
 

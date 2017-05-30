@@ -1,9 +1,10 @@
 # Packages
 from django.conf.urls import include, url
 from rest_framework import routers
+
 # Project
 from .views import OrganisatieViewSet, ActiviteitViewSet, LocatieViewSet, TagsApiView, \
-    TagDefinitionViewSet, BatchUpdateView
+    BatchUpdateView
 
 nrouter = routers.SimpleRouter()
 nrouter.register(r'organisatie', OrganisatieViewSet, base_name='organisatie')

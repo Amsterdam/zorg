@@ -63,11 +63,11 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         # Checking for authorized access
         if guid != instance.guid:
             raise ValidationError('Access not allowed')
+
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry
-        # 2. The laatste event was een delete
-        prev_events = list(self.event_model.objects.filter(
-            guid=guid).order_by('sequence'))
+        # 2. The last event was a delete
+        prev_events = list(self.event_model.objects.filter(guid=guid).order_by('sequence'))
         if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
             # @TODO convert to self.fail call
             raise ValidationError('Object not found')
@@ -114,8 +114,8 @@ class ActiviteitSerializer(ZorgModelSerializer):
         exclude = ('locatie', 'organisatie',)
         model = models.Activiteit
 
-class TagDefinitionSerializer(serializers.ModelSerializer):
 
+class TagDefinitionSerializer(serializers.ModelSerializer):
     class Meta(object):
         fields = ['category', 'naam']
         model = models.TagDefinition

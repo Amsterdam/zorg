@@ -12,18 +12,18 @@ class LocatieAdmin(admin.ModelAdmin):
     fields = ('id', 'guid', 'naam', 'openbare_ruimte_naam', 'postcode',
               'huisnummer', 'huisletter', 'huisnummer_toevoeging',
               'bag_link',)
-              # 'geometrie')
+    # 'geometrie')
 
     list_display = ('id', 'guid', 'naam', 'postcode',
                     'huisnummer', 'huisletter', 'huisnummer_toevoeging')
 
-class OrganisatieAdmin(admin.ModelAdmin):
 
+class OrganisatieAdmin(admin.ModelAdmin):
     fields = ('id', 'guid', 'naam', 'beschrijving', 'afdeling', 'contact', 'locatie')
     list_display = ('guid', 'naam', 'beschrijving', 'afdeling')
 
-class ActiviteitAdmin(admin.ModelAdmin):
 
+class ActiviteitAdmin(admin.ModelAdmin):
     fields = (
         'id', 'guid', 'naam', 'beschrijving', 'bron_link', 'contactpersoon',
         'persoon', 'tags', 'start_time', 'end_time', 'locatie', 'organisatie',

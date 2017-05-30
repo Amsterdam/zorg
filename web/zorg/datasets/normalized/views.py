@@ -1,16 +1,16 @@
 # Packages
+import json
+
+import django_rq
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
-from rest_framework import viewsets
-from datasets.normalized.batch import process_updates
-
-import django_rq
-import json
-from rq import Queue
 from redis import Redis
+from rest_framework import viewsets
+from rq import Queue
 
+from datasets.normalized.batch import process_updates
 # Project
 from .models import Organisatie, Activiteit, Locatie, TagDefinition
 from .serializers import OrganisatieSerializer, ActiviteitSerializer, LocatieSerializer, TagDefinitionSerializer
@@ -70,6 +70,7 @@ class LocatieViewSet(ZorgViewSet):
 
     def get_queryset(self):
         return Locatie.objects.all()
+
 
 class TagDefinitionViewSet(viewsets.ModelViewSet):
     serializer_class = TagDefinitionSerializer

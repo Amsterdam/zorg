@@ -8,8 +8,8 @@ import logging
 from django.contrib.auth.models import User
 from django.db import models
 
-from datasets.general.mixins import EventLogMixin
 import datasets.normalized as normalized
+from datasets.general.mixins import EventLogMixin
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +32,6 @@ def guid_from_id(user_identifier: User, ext_id: str) -> str:
         return f"{profile.guid}-{ext_id}"
     else:
         return profile.guid
-
 
 
 def id_from_guid(user_identifier_len: int, guid: str) -> str:
@@ -92,7 +91,7 @@ def update(guid: str, data: dict, model: models.Model) -> models.Model:
     for (attr, value) in data.items():
         setattr(item, attr, value)
         if attr.endswith('_id'):
-            print (f'Foreign key {value} set on {item}: {getattr(item, attr)}')
+            print(f'Foreign key {value} set on {item}: {getattr(item, attr)}')
     item.save()
     return item
 

@@ -5,7 +5,6 @@ from django.conf import settings
 from django.db import models
 from elasticsearch_dsl import analyzer, tokenizer
 
-
 base_analyzer = analyzer('zorg_base_txt',
                          tokenizer=tokenizer('trigram', 'nGram', min_gram=2, max_gram=20),
                          filter=['lowercase']
