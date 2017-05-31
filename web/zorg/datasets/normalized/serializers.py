@@ -75,15 +75,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             event_type='U',
             data=validated_data
         )
-        if isinstance(self, ActiviteitSerializer) and 'tags' in self.context['request'].data:
-            # validate many to many relations for tags
-            valid_tags = []
-            for tag_name in self.context['request'].data['tags']:
-                if models.TagDefinition.objects.filter(naam=tag_name).count() > 0:
-                    valid_tags.append(tag_name)
-            item = event.save(tags=valid_tags)
-        else:
-            item = event.save()
+        item = event.save()
 
         return item
 
@@ -124,6 +116,20 @@ class ActiviteitSerializer(ZorgModelSerializer):
     start_time = serializers.DateTimeField(allow_null=True, required=False)
     end_time = serializers.DateTimeField(allow_null=True, required=False)
     tags = TagDefinitionSerializer(read_only=True, many=True, required=False)
+
+    def save(self, *args, **kwargs):
+        super(ActiviteitSerializer, self).save(*args, **kwargs)
+
+        # validate many to many relations for tags
+        valid_tags = []
+        if 'tags' in self.initial_data:
+            for tag_name in self.initial_data['tags']:
+                fetched_tags = models.TagDefinition.objects.filter(naam=tag_name)
+                if fetched_tags.count() > 0:
+                    valid_tags.append(fetched_tags.first())
+
+        if len(valid_tags) > 0:
+            models.Activiteit.objects.get(pk=self.data['guid']).tags.add(*valid_tags)
 
     class Meta(object):
         exclude = ('locatie', 'organisatie',)

@@ -69,7 +69,7 @@ def create_activiteit(naam='Activiteit', id=1, beschrijving='Dingen doen', bron_
         # 'start_time': datetime.now().isoformat(),
         # 'end_time': (datetime.now() + timedelta(14)).isoformat(),
         'contactpersoon': contactpersoon,
-        'personen': [],
+        'persoon': [],
     }
     act.update(kwargs)
 

@@ -222,9 +222,35 @@ class ActiviteitenTests(APITestCase):
         update_resp = response.data
         response = client.get(f"{self.org_url}{self.org['guid']}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response.data)
-        print(update_resp)
         self.assertEqual(response.data, update_resp)
+
+    def test_create_activiteit_with_tags(self):
+        client = self._get_client(self.token)
+
+        act = factories.create_activiteit(tags=['avond', 'gratis', 'maandag', 'dinsdag'])
+        response = client.post(self.url, act)
+        nieuwe_activiteit = models.Activiteit.objects.get(pk=response.data['guid'])
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(nieuwe_activiteit.tags.all().count(), 4)
+        self.assertEqual(nieuwe_activiteit.tags.filter(naam='avond').first().category, 'TIJD')
+        self.assertEqual(nieuwe_activiteit.tags.filter(naam='gratis').first().category, 'BETAALD')
+        self.assertEqual(nieuwe_activiteit.tags.filter(naam='dinsdag').first().category, 'DAG')
+
+    def test_update_activiteit_add_tags(self):
+        client = self._get_client(self.token)
+
+        act = factories.create_activiteit()
+        response = client.post(self.url, act)
+        nieuwe_activiteit = models.Activiteit.objects.get(pk=response.data['guid'])
+
+        response = client.put(f"{self.url}{nieuwe_activiteit.guid}/",
+                              {"id": nieuwe_activiteit.id, "tags": ['avond', 'gratis', 'maandag', 'dinsdag']})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(nieuwe_activiteit.tags.all().count(), 4)
+        self.assertEqual(nieuwe_activiteit.tags.filter(naam='avond').first().category, 'TIJD')
+        self.assertEqual(nieuwe_activiteit.tags.filter(naam='gratis').first().category, 'BETAALD')
+        self.assertEqual(nieuwe_activiteit.tags.filter(naam='dinsdag').first().category, 'DAG')
 
 
 class BatchUpdateEndpointTests(APITestCase):
@@ -422,6 +448,7 @@ class BatchUpdateProcessingTests(APITestCase):
         models.ActiviteitEventLog.objects.create(event_type='C', guid=f"{self.org['guid']}", data=act_20)
 
         act_16['naam'] = ['act_16 is gewijzigd']
+        act_16['tags'] = ['avond', 'gratis', 'maandag', 'dinsdag']
         act_17['naam'] = ['act_17 is gewijzigd']
         act_18['naam'] = ['act_18 is gewijzigd']
         act_19['naam'] = ['act_19 is gewijzigd']
@@ -435,7 +462,11 @@ class BatchUpdateProcessingTests(APITestCase):
             {
                 "operatie": "insert",
                 "locatie": None,
-                "activiteit": factories.create_activiteit(naam="act 2", id=2, guid="test-2")},
+                "activiteit": factories.create_activiteit(naam="act 2",
+                                                          id=2,
+                                                          guid="test-2",
+                                                          tags=['avond', 'gratis', 'maandag', 'dinsdag']
+                                                          )},
             {
                 "operatie": "insert",
                 "locatie": None,

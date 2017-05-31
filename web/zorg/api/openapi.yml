@@ -377,7 +377,7 @@ paths:
           description: Activiteit not found
         "400":
           description: Bad request, invalid URL
-        "204":
+        "200":
           description: Update successful
 
   /zorg/organisatie:
@@ -482,7 +482,7 @@ paths:
           description: Activiteit not found
         "400":
           description: Bad request, invalid URL
-        "204":
+        "200":
           description: Update successful
 
   /zorg/activiteit:
@@ -588,7 +588,7 @@ paths:
           description: Locatie not found
         "400":
           description: Bad request, invalid URL
-        "204":
+        "200":
           description: Update successful
 
   /zorg/locatie:

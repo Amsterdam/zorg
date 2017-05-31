@@ -68,6 +68,7 @@ def handle_event(event: EventLogMixin, model: models.Model) -> bool:
     return False
 
 
+
 def create(guid: str, data: dict, model: models.Model) -> models.Model:
     """
     In a create the event is logged
@@ -75,9 +76,21 @@ def create(guid: str, data: dict, model: models.Model) -> models.Model:
     optimized table
     """
     item = model(guid=guid)
+    mtm_values = {}
     for (attr, value) in data.items():
-        setattr(item, attr, value)
+        if attr not in ['force_insert', 'using']:
+            if isinstance(item._meta.get_field(attr), models.ManyToManyField):
+                mtm_values[attr] = item.get_mtm_values(attr, value)
+            else:
+                setattr(item, attr, value)
+                if attr.endswith('_id'):
+                    print(f'Foreign key {value} set on {item}: {getattr(item, attr)}')
+
     item.save()
+
+    for field, values in mtm_values.items():
+        if len(values) > 0:
+            item.add_mtm(field, values)
     return item
 
 
@@ -88,11 +101,21 @@ def update(guid: str, data: dict, model: models.Model) -> models.Model:
     table is updated with the new value(s)
     """
     item = model.objects.get(pk=guid)
+    mtm_values = {}
     for (attr, value) in data.items():
-        setattr(item, attr, value)
-        if attr.endswith('_id'):
-            print(f'Foreign key {value} set on {item}: {getattr(item, attr)}')
+        if attr not in ['force_insert', 'using']:
+            if isinstance(item._meta.get_field(attr), models.ManyToManyField):
+                mtm_values[attr] = item.get_mtm_values(attr, value)
+            else:
+                setattr(item, attr, value)
+                if attr.endswith('_id'):
+                    print(f'Foreign key {value} set on {item}: {getattr(item, attr)}')
+
     item.save()
+
+    for field, values in mtm_values.items():
+        if len(values) > 0:
+            item.add_mtm(field, values)
     return item
 
 

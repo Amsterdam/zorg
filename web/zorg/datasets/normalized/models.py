@@ -249,6 +249,26 @@ class Activiteit(ReadOptimizedModel):
         if not self.contactpersoon and not self.persoon:
             raise ValidationError('Give either a contact person\'s name or a refrence to a person')
 
+    def get_mtm_values(self, field, values):
+        # validate many to many relations for `field`
+        valid_mtm = []
+        for name in values:
+            if field == 'tags':
+                fetched_tags = TagDefinition.objects.filter(naam=name)
+                if fetched_tags.count() > 0:
+                    valid_mtm.append(fetched_tags.first())
+            elif field == 'persoon':
+                valid_mtm = []
+        return valid_mtm
+
+    def add_mtm(self, field, values):
+        if field == 'tag':
+            if len(values) > 0:
+                self.tags.add(*values)
+        elif field == 'persoon':
+            if len(values):
+                self.persoon.add(*values)
+
     def __str__(self):
         return f'<{self.naam}>'
 
@@ -263,8 +283,9 @@ class ActiviteitEventLog(EventLogMixin):
     read_model = Activiteit
 
     def save(self, *args, **kwargs):
-        # Setting sequence
+        valid_tags = []
         try:
+            # Setting sequence
             prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
             self.sequence = prev.sequence + 1
 
@@ -277,6 +298,11 @@ class ActiviteitEventLog(EventLogMixin):
                 organisatie = self.data['organisatie_id']
                 self.data['organisatie_id'] = organisatie.guid
                 kwargs['organisatie'] = organisatie
+            if 'tags' in self.data:
+                for tag_name in self.data['tags']:
+                    fetched_tags = models.TagDefinition.objects.filter(naam=tag_name)
+                    if fetched_tags.count() > 0:
+                        valid_tags.append(fetched_tags.first())
 
         except IndexError:
             self.sequence = 0
@@ -285,4 +311,7 @@ class ActiviteitEventLog(EventLogMixin):
             self.sequence = 0
 
         # Saving
-        return super(ActiviteitEventLog, self).save(*args, **kwargs)
+        res = super(ActiviteitEventLog, self).save(*args, **kwargs)
+        if len(valid_tags) > 0:
+            self.tags.add(*valid_tags)
+        return res
