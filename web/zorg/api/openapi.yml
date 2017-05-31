@@ -30,9 +30,6 @@ info:
 
     [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 
-    Als leverancier van zorggerelateerde content kan een account aangevraagd worden bij datapunt Amsterdam.
-    Wij creeren en zenden u vervolgens een account met een bijbehorend API token.
-
 schemes:
   - https
 
@@ -828,8 +825,10 @@ definitions:
       contactpersoon:
         type: string
       tags:
-        type: string
-        description: een door komma gescheiden lijst van labels / tags passend bij deze activiteit.
+        type: array
+        description: een array van labels / tags passend bij deze activiteit.
+        items:
+          type: string
       start_time:
         type: string
         format: date-time
@@ -998,4 +997,3 @@ definitions:
           - TIJD
       naam:
         type: string
-
