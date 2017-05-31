@@ -430,6 +430,59 @@ class BatchUpdateProcessingTests(APITestCase):
         assert res['patch'] == 1
         assert res['insert'] == 0
 
+    def test_process_delete_empty(self):
+        dt_now = datetime.now().isoformat()
+        payload = [{"operatie": "delete", "locatie": None, "activiteit": None}]
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 0
+        assert res['patch'] == 0
+        assert res['insert'] == 0
+
+    def test_process_delete_locatie_activiteit(self):
+        dt_now = datetime.now().isoformat()
+        loc = factories.create_locatie()
+        act = factories.create_activiteit()
+        event1 = models.LocatieEventLog(event_type='C', guid=f"{self.org['guid']}-{loc['id']}", data=loc)
+        event2 = models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act['id']}", data=act)
+
+        payload = [{"operatie": "delete", "locatie": event1.guid, "activiteit": event2.guid}]
+
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
+
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 1
+        assert res['patch'] == 0
+        assert res['insert'] == 0
+
+    def test_process_delete_no_activiteit(self):
+        dt_now = datetime.now().isoformat()
+        loc = factories.create_locatie()
+        event1 = models.LocatieEventLog(event_type='C', guid=f"{self.org['guid']}-{loc['id']}", data=loc)
+
+        payload = [{"operatie": "delete", "locatie": event1.guid, "activiteit": None}]
+
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
+
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 1
+        assert res['patch'] == 0
+        assert res['insert'] == 0
+
+    def test_process_delete_no_locatie_activiteit(self):
+        dt_now = datetime.now().isoformat()
+
+        act = factories.create_activiteit(id=1, guid='test-1')
+        event2 = models.ActiviteitEventLog(event_type='C', guid=f"{self.org['guid']}-{act['id']}", data=act)
+
+        payload = [{"operatie": "delete", "locatie": None, "activiteit": event2.guid}]
+
+        organisatie = models.Organisatie.objects.get(pk=self.org['guid'])
+        res = process_updates(organisatie, payload)
+        assert res['delete'] == 1
+        assert res['patch'] == 0
+        assert res['insert'] == 0
+
     def test_batch_process_update_multiple_records(self):
         dt_now = datetime.now().isoformat()
         guid = self.org['guid']

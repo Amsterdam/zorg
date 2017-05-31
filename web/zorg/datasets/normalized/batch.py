@@ -91,17 +91,17 @@ def batch_delete(organisatie, locatie, activiteit):
     if locatie:
         loc_deleted = models.Locatie.objects.filter(pk=locatie).delete()
         if loc_deleted == 0:
-            log.info(f"Delete: `locatie` with guid {locatie['guid']} not found. No delete performed")
+            log.info(f"Delete: `locatie` with guid {locatie} not found. No delete performed")
         else:
-            log.info(f"Delete: `locatie` with guid {locatie['guid']} succeeded")
-            res[locatie] = True
+            log.info(f"Delete: `locatie` with guid {locatie} succeeded")
+            res['locatie'] = True
 
     if activiteit:
         act_deleted = models.Activiteit.objects.filter(pk=activiteit).delete()
         if act_deleted == 0:
-            log.info(f"Delete: `activiteit` with guid {activiteit['guid']} not found. No delete performed")
+            log.info(f"Delete: `activiteit` with guid {activiteit} not found. No delete performed")
         else:
-            log.info(f"Deelete: `activiteit` with guid {activiteit['guid']} succeeded")
-            res[activiteit] = True
+            log.info(f"Delete: `activiteit` with guid {activiteit} succeeded")
+            res['activiteit'] = True
 
     return res['activiteit'] | res['locatie']
