@@ -1,8 +1,8 @@
 # Python
 import json
 import logging
-
 import os
+
 # Packages
 from django.conf import settings
 from django.http import HttpResponse
@@ -62,6 +62,9 @@ class ZoekApiView(View):
     def post(self, *args, **kwargs):
         return self.search_elastic(kwargs.get('search_for', None), self.request.POST.get('query', ''))
 
+
+class TermsZoekView(ZoekApiView):
+    zoek_functie = queries.terms_Q
 
 
 class GeoZoekView(ZoekApiView):
