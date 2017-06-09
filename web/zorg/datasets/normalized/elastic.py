@@ -18,7 +18,7 @@ class SearchError(Exception):
 def _elasticsearch():
     """Elasticsearch Instance.
 
-    lru_cache makes this a singleton. I don't think / hope we need to worry
+    lru_cache makes this a singleton. I think / hope we don't need to worry
     about the connection. The docs indicate that the Elasticsearch library
     takes care of this itself.
 
@@ -33,7 +33,7 @@ def _elasticsearch():
 def search(q='', doctype=None, lonlat=None):
     """Generate and fire an Elastic query"""
     fields = ['naam^1.5', 'beschrijving']
-    should = [
+    should = q and [
         {'multi_match': {'query': t, 'fields': fields}} for t in q.split()
     ]
     searchfilter = (doctype and {'type': {'value': doctype}}) or {}
@@ -41,19 +41,24 @@ def search(q='', doctype=None, lonlat=None):
     if lonlat:
         sort.insert(0, {
             '_geo_distance': {
-                'pin.location': lonlat,
+                'locatie.centroid': lonlat,
                 'order': 'asc',
                 'unit': 'km'
             }
         })
     query = {
-        'query': {
-            'should': should,
-            'filter': searchfilter
-        },
         'sort': sort,
         'size': 1000
     }
+    if should or searchfilter:
+        query['query'] = {'bool': {}}
+        boolquery = query['query']['bool']
+        if should:
+            boolquery['should'] = should
+        if filter:
+            boolquery['filter'] = searchfilter
+
+    print(query)
 
     try:
         response = _elasticsearch().search(

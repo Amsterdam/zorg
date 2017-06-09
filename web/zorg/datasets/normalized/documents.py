@@ -12,17 +12,18 @@ base_analyzer = analyzer('zorg_base_txt',
                          filter=['lowercase']
                          )
 
+_index = es.Index(settings.ELASTIC_INDEX)
 
+
+@_index.doc_type
 class Organisatie(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)  # ngram
     beschrijving = es.String(analyzer=base_analyzer)
     afdeling = es.String(index='not_analyzed')
 
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
 
-
+@_index.doc_type
 class Locatie(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)
@@ -32,10 +33,8 @@ class Locatie(es.DocType):
     huisnummer_toevoeging = es.String(index='not_analyzed')
     postcode = es.String(index='not_analyzed')
 
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
 
-
+@_index.doc_type
 class Activiteit(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)
@@ -56,9 +55,6 @@ class Activiteit(es.DocType):
         }
     )
 
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
-
 
 def doc_from_organisatie(n: models.Model) -> Organisatie:
     """
@@ -76,13 +72,19 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     Create an elastic Locatie doc
     """
     doc = Locatie(_id=n.guid)
+    if not _index.exists():
+        _index.create()
     for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
         setattr(doc, key, getattr(n, key))
     # Adding geometrie
     try:
-        doc.centroid = n.geometrie.transform('wgs84', clone=True).coords
-    except AttributeError:
+        lat, lon = n.geometrie.transform('wgs84', clone=True).coords
+        print(lat, lon)
+        doc.centroid = {'lat': lat, 'lon': lon}
+    except AttributeError as e:
+        print('Exc raised!!!', e)
         doc.centroid
+    print(type(doc.centroid), doc.centroid)
     doc.ext_id = n.id
     return doc
 

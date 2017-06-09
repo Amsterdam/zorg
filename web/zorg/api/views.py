@@ -25,7 +25,7 @@ def search(request, doctype=None):
     # QueryDict instance from META['query_string']
     q = queryparams.get('query')
     lon, lat = queryparams.get('lon'), queryparams.get('lat')
-    lonlat = lon and lat and (lon, lat)
+    lonlat = lon and lat and (float(lon), float(lat))
     try:
         return HttpResponse(
             elastic.search(q, doctype, lonlat),
