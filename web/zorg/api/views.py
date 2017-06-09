@@ -1,4 +1,10 @@
+"""Views for search endpoints and for the OpenAPI defintition.
+
+.. todo::
+    Reorganize this code and implement content negotiation.
+"""
 # Python
+import functools
 import json
 import logging
 import os
@@ -7,12 +13,38 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.views import View
+from django.views.decorators.http import require_GET
 from elasticsearch import Elasticsearch, RequestError
 
 # Project
-from datasets.normalized import queries
+from datasets.normalized import elastic
 
 log = logging.getLogger(__name__)
+
+
+@require_GET
+def search(request, doctype=None):
+    pass
+
+
+@require_GET
+def openapi(request):
+    """Server the OpenAPI spec.
+
+    Currently only supports yml output and doesn't do any content negotiation.
+    """
+    return HttpResponse(_swagger_yml(), content_type='application/yaml')
+
+
+@functools.lru_cache(maxsize=1)
+def _swagger_yml():
+    """Swagger yaml file.
+
+    Uses lru_cache so it can act as a singleton.
+    """
+    path = '{}/openapi.yml'.format(os.path.dirname(os.path.abspath(__file__)))
+    with open(path) as file:
+        return file.read()
 
 
 class ZoekApiView(View):

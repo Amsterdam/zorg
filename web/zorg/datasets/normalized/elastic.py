@@ -1,8 +1,53 @@
 # Python
+import functools
+import json
 import logging
 # Packages
+from django.conf import settings
+from elasticsearch import Elasticsearch, RequestError
 
 log = logging.getLogger(__name__)
+
+
+class QueryError(Exception):
+    """Error that indicates to the user of this module that something went
+    wrong while searching."""
+
+
+@functools.lru_cache(maxsize=1)
+def _elasticsearch():
+    """Elasticsearch Instance.
+
+    lru_cache makes this a singleton. I don't think / hope we need to worry
+    about the connection. The docs indicate that the Elasticsearch library
+    takes care of this itself.
+
+    :see: https://elasticsearch-py.readthedocs.io/en/master/#persistent-connections
+    """
+    return Elasticsearch(
+        hosts=settings.ELASTIC_SEARCH_HOSTS, retry_on_timeout=True,
+        refresh=True
+    )
+
+
+def _search(query):
+    """Fire queries at Elasticsearch.
+    """
+    query['size'] = 1000
+
+    response = _elasticsearch().search(
+        index=settings.ELASTIC_INDEX,
+        body=query
+    )
+    return json.dumps(response)
+
+
+def search(q='', doctype=None, latlong=None):
+    fields = ["naam^1.5", "beschrijving"]
+    should = [{"multi_match": {"query": t, "fields": fields}} for t in q.split()]
+    filter = (doctype and {"type": {"value": doctype}}) or None
+    if latlong:
+        lat, long = latlong
 
 
 def zorg_Q(query_string: dict, doc_type: str) -> dict:
@@ -31,19 +76,6 @@ def zorg_Q(query_string: dict, doc_type: str) -> dict:
                 }
             }
         }
-    return q
-
-
-def tterms_Q(doc_type, query_string):
-    terms = query_string.split(' ')
-    q = {
-        "query": {
-            "terms": {
-                "beschrijving": terms
-            }
-        }
-    }
-
     return q
 
 
