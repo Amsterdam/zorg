@@ -1,5 +1,3 @@
-# Python
-# Packages
 import json
 
 import elasticsearch_dsl as es
@@ -74,15 +72,11 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     doc = Locatie(_id=n.guid)
     for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
         setattr(doc, key, getattr(n, key))
-    # Adding geometrie
     try:
         lat, lon = n.geometrie.transform('wgs84', clone=True).coords
-        print(lat, lon)
         doc.centroid = {'lat': lat, 'lon': lon}
-    except AttributeError as e:
-        print('Exc raised!!!', e)
+    except AttributeError:
         doc.centroid
-    print(type(doc.centroid), doc.centroid)
     doc.ext_id = n.id
     return doc
 
@@ -103,7 +97,8 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
     try:
         locatie_doc = doc_from_locatie(n.locatie)
         doc.locatie = locatie_doc
-    except Exception as e:
+    except Exception:
+        # ???? how come we don't care?
         pass
 
     return doc

@@ -169,162 +169,50 @@ paths:
         500:
           description: server error
 
-  /zorg/zoek:
+  /zorg/zoek/:
     get:
       tags: [ zoek-endpoint, get ]
-      summary: Zoek
+      summary: |
+        Zoek over alle data in het systeem. Als `lat` en `lon` gegeven zijn dan
+        worden de resultaten primair gesorteerd op afstand.
       # operationId: api.ZoekApiView.as_view
       parameters:
-      -
-        name: query
-        in: query
-        description: de woorden / delen van woorden waarop gezocht wordt
-        type: string
-        required: false
+      - $ref: '#/parameters/query'
+      - $ref: '#/parameters/latitude'
+      - $ref: '#/parameters/longitude'
       responses:
         200:
-          description: Retourneert een lijst met zoekresulaten
-          schema:
-            type: object
-            properties:
-              took:
-                type: number
-                format: int64
-              timed_out:
-                type: boolean
-              _shards:
-                type: object
-              hits:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    total:
-                      type: number
-                      format: int64
-                    max_score:
-                      type: number
-                      format: float
-                    hits:
-                      type: array
-                      items:
-                        type: object
+          $ref: '#/responses/200-zoek'
         500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
+          $ref: '#/responses/500'
 
-  /zorg/zoek/{search-for}:
+  /zorg/zoek/{subtype}:
     get:
       tags: [ zoek-endpoint, get ]
-      summary: zoek naar `organisatie`, `locatie` of `activiteit`
+      summary: |
+        Zoek over de `subtype` data in het systeem. Als `lat` en `lon` gegeven
+        zijn dan worden de resultaten primair gesorteerd op afstand.
+      # operationId: api.ZoekApiView.as_view
       parameters:
+      - $ref: '#/parameters/query'
+      - $ref: '#/parameters/latitude'
+      - $ref: '#/parameters/longitude'
       -
-        name: search-for
+        name: subtype
         in: path
-        description: data van het type `organisatie`, `locatie` of `activiteit`
+        description: '`organisatie`, `locatie` of `activiteit`'
         type: string
         required: true
         enum:
           - organisatie
           - locatie
           - activiteit
-      -
-        name: query
-        in: query
-        description: de woorden / delen van woorden waarop gezocht wordt
-        type: string
-        required: false
       responses:
         200:
-          description: Retourneert een lijst met zoekresultaten
-          schema:
-            type: object
-            properties:
-              took:
-                type: number
-                format: int64
-              timed_out:
-                type: boolean
-              _shards:
-                type: object
-              hits:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    total:
-                      type: number
-                      format: int64
-                    max_score:
-                      type: number
-                      format: float
-                    hits:
-                      type: array
-                      items:
-                        type: object
+          $ref: '#/responses/200-zoek'
         500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
+          $ref: '#/responses/500'
 
-  /zorg/zoek/geo:
-    get:
-      tags: [ zoek-endpoint, get ]
-      summary: zoek op lat, lon en tekst
-      # operationId: api.GeoZoekView.as_view
-      parameters:
-      -
-        name: query
-        in: query
-        description: de woorden / delen van woorden waarop gezocht wordt
-        type: string
-        required: false
-      -
-        name: lat
-        in: query
-        description: latitude
-        required: true
-        type: number
-      -
-        name: lon
-        in: query
-        description: longitude
-        required: true
-        type: number
-      responses:
-        200:
-          description: Retourneert een lijst met zoekresultaten
-          schema:
-            type: object
-            properties:
-              took:
-                type: number
-                format: int64
-              timed_out:
-                type: boolean
-              _shards:
-                type: object
-              hits:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    total:
-                      type: number
-                      format: int64
-                    max_score:
-                      type: number
-                      format: float
-                    hits:
-                      type: array
-                      items:
-                        type: object
-
-        500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
 
   /zorg/organisatie/{guid}:
     get:
@@ -345,9 +233,7 @@ paths:
           schema:
             $ref: '#/definitions/organisatie'
         500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
+          $ref: '#/responses/500'
     put:
       tags: [ data-endpoint, put, by guid]
       summary: Change an `organisatie` object
@@ -698,6 +584,61 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+
+
+parameters:
+  query:
+    name: query
+    in: query
+    description: de woorden / delen van woorden waarop gezocht wordt
+    type: string
+    required: false
+  latitude:
+    name: lat
+    in: query
+    description: latitude (heeft alleen effect als `lon` ook aanwezig is)
+    required: false
+    type: number
+  longitude:
+    name: lon
+    in: query
+    description: longitude (heeft alleen effect als `lat` ook aanwezig is)
+    required: false
+    type: number
+
+
+responses:
+  200-zoek:
+    description: Retourneert een lijst met zoekresulaten
+    schema:
+      type: object
+      properties:
+        took:
+          type: number
+          format: int64
+        timed_out:
+          type: boolean
+        _shards:
+          type: object
+        hits:
+          type: array
+          items:
+            type: object
+            properties:
+              total:
+                type: number
+                format: int64
+              max_score:
+                type: number
+                format: float
+              hits:
+                type: array
+                items:
+                  type: object
+  500:
+    description: server error
+    schema:
+      $ref: '#/definitions/error_response'
 
 ################################################################################
 #                                  Definitions                                 #
