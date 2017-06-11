@@ -72,8 +72,6 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     Create an elastic Locatie doc
     """
     doc = Locatie(_id=n.guid)
-    if not _index.exists():
-        _index.create()
     for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
         setattr(doc, key, getattr(n, key))
     # Adding geometrie

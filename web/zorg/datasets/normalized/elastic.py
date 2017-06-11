@@ -58,8 +58,6 @@ def search(q='', doctype=None, lonlat=None):
         if filter:
             boolquery['filter'] = searchfilter
 
-    print(query)
-
     try:
         response = _elasticsearch().search(
             index=settings.ELASTIC_INDEX,
