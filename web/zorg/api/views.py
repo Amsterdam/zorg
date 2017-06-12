@@ -31,6 +31,7 @@ def search(request, doctype=None):
             elastic.search(q, doctype, lonlat),
             content_type='application/json')
     except elastic.SearchError:
+        _logger.critical('Exception while searching', exc_info=sys.exc_info())
         return HttpResponseServerError()
     except:
         _logger.fatal(

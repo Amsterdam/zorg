@@ -55,7 +55,7 @@ def search(q='', doctype=None, lonlat=None):
         boolquery = query['query']['bool']
         if should:
             boolquery['should'] = should
-        if filter:
+        if searchfilter:
             boolquery['filter'] = searchfilter
 
     try:
@@ -64,7 +64,6 @@ def search(q='', doctype=None, lonlat=None):
             body=query
         )
     except Exception as e:
-        _logger.critical('Exception while searching', exc_info=sys.exc_info())
         raise SearchError() from e
 
     return json.dumps(response)
