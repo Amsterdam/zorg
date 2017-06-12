@@ -1,5 +1,3 @@
-# Python
-# Packages
 import json
 
 import elasticsearch_dsl as es
@@ -12,17 +10,18 @@ base_analyzer = analyzer('zorg_base_txt',
                          filter=['lowercase']
                          )
 
+_index = es.Index(settings.ELASTIC_INDEX)
 
+
+@_index.doc_type
 class Organisatie(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)  # ngram
     beschrijving = es.String(analyzer=base_analyzer)
     afdeling = es.String(index='not_analyzed')
 
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
 
-
+@_index.doc_type
 class Locatie(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)
@@ -32,10 +31,8 @@ class Locatie(es.DocType):
     huisnummer_toevoeging = es.String(index='not_analyzed')
     postcode = es.String(index='not_analyzed')
 
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
 
-
+@_index.doc_type
 class Activiteit(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)
@@ -56,9 +53,6 @@ class Activiteit(es.DocType):
         }
     )
 
-    class Meta(object):
-        index = settings.ELASTIC_INDEX
-
 
 def doc_from_organisatie(n: models.Model) -> Organisatie:
     """
@@ -78,9 +72,9 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     doc = Locatie(_id=n.guid)
     for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
         setattr(doc, key, getattr(n, key))
-    # Adding geometrie
     try:
-        doc.centroid = n.geometrie.transform('wgs84', clone=True).coords
+        lat, lon = n.geometrie.transform('wgs84', clone=True).coords
+        doc.centroid = {'lat': lat, 'lon': lon}
     except AttributeError:
         doc.centroid
     doc.ext_id = n.id
@@ -103,7 +97,8 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
     try:
         locatie_doc = doc_from_locatie(n.locatie)
         doc.locatie = locatie_doc
-    except Exception as e:
+    except Exception:
+        # ???? how come we don't care?
         pass
 
     return doc
