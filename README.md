@@ -17,10 +17,15 @@ Zie Api_endpoint.md voor api details
    
     # run database migrations
     cd web/zorg
-    manage.py migrate
+    python manage.py migrate
+
+
+    # create elastic index based on document definitions
+    cd web/zorg
+    python manage.py elastic --build
 
     # start server
-    manage.py runserver  
+    python manage.py runserver  
    
    	# check out status using
     http://127.0.0.1:8000/zorg/status/health
