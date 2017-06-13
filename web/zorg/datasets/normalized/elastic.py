@@ -1,7 +1,6 @@
 import functools
 import json
 import logging
-import sys
 
 from django.conf import settings
 from elasticsearch import Elasticsearch
