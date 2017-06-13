@@ -33,6 +33,18 @@ class ReadOptimizedModel(models.Model):
     class Meta(object):
         abstract = True
 
+    def delete(self, guid):
+        item = super(ReadOptimizedModel, self).delete()
+        try:
+            connections.create_connection(
+                hosts=settings.ELASTIC_SEARCH_HOSTS,
+                retry_on_timeout=True,
+            )
+            doc = self.create_doc_with_guid(guid)
+            doc.delete()
+        except Exception as exp:
+            LOG.error(f'Failed to delete from elastic: {exp}')
+        return item
 
 class EventLogMixin(models.Model):
     read_model = None  # This must be overwritten

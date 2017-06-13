@@ -1,0 +1,14 @@
+{
+  "id": "9888943894839",
+  "naam": "Goed bezig!",
+  "beschrijving": "beschrijving",
+  "bron_link": "http://localhost",
+  "contactpersoon": "onbekend",
+  "tags": [
+    "string"
+  ],
+  "start_time": "2017-06-13T09:10:37.915Z",
+  "end_time": "2017-06-13T09:10:37.915Z",
+  "locatie_id": "1235-7843278492",
+  "organisatie_id": "1235"
+}
