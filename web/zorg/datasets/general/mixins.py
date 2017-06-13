@@ -58,6 +58,9 @@ class EventLogMixin(models.Model):
         if 'locatie_id' in self.data.keys():
             if not isinstance(self.data['locatie_id'], str):
                 self.data['locatie_id'] = self.data['locatie_id'].guid
+        if 'organisatie_id' in self.data.keys():
+            if not isinstance(self.data['organisatie_id'], str):
+                self.data['organisatie_id'] = self.data['organisatie_id'].guid
 
         # make sure datetime fields are serialized to strings
         for k, v in self.data.items():
