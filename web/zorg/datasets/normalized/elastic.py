@@ -1,4 +1,5 @@
 import functools
+import itertools
 import json
 import logging
 
@@ -31,10 +32,14 @@ def _elasticsearch():
 
 def search(q='', doctype=None, lonlat=None):
     """Generate and fire an Elastic query"""
-    fields = ['naam^1.5', 'beschrijving']
-    bools = q and [
-        {'multi_match': {'query': t, 'fields': fields}} for t in q.split()
-    ]
+    bools = q and list(
+        itertools.chain.from_iterable(
+            (
+                {'term': {'naam': {'value': t, 'boost': 1.5}}},
+                {'term': {'beschrijving': t}}
+            ) for t in q.split()
+        )
+    )
     searchfilter = (doctype and {'type': {'value': doctype}}) or {}
     sort = ['_score']
     if lonlat:
