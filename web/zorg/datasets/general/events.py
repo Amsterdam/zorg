@@ -127,7 +127,7 @@ def delete(guid: str, model: models.Model) -> bool:
     success = True
     try:
         item = model.objects.get(pk=guid)
-        item.delete(guid)
+        item.delete()
     except Exception as exp:
         log.error(repr(exp))
         success = False

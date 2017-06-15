@@ -54,10 +54,6 @@ class Activiteit(es.DocType):
     )
 
 
-def doc_with_guid_from_organisatie(n: models.Model, guid) -> Organisatie:
-    return Organisatie(_id=guid)
-
-
 def doc_from_organisatie(n: models.Model) -> Organisatie:
     """
     Create an elastic Organisate doc
@@ -67,10 +63,6 @@ def doc_from_organisatie(n: models.Model) -> Organisatie:
         setattr(doc, key, getattr(n, key))
     doc.ext_id = n.id
     return doc
-
-
-def doc_with_guid_from_locatie(n: models.Model, guid) -> Locatie:
-    return Locatie(_id=guid)
 
 
 def doc_from_locatie(n: models.Model) -> Locatie:
@@ -87,10 +79,6 @@ def doc_from_locatie(n: models.Model) -> Locatie:
         doc.centroid
     doc.ext_id = n.id
     return doc
-
-
-def doc_with_guid_from_activiteit(n: models.Model, guid) -> Activiteit:
-    return Activiteit(_id=guid)
 
 
 def doc_from_activiteit(n: models.Model) -> Activiteit:
