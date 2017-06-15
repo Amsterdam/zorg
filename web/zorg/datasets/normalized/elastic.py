@@ -55,7 +55,7 @@ def search(q='', doctype=None, lonlat=None):
         if bools:
             # if we have terms and we're sorting on geo, then we must filter
             # the terms with "must" rather than "should"
-            booltype = (searchfilter and 'must') or 'should'
+            booltype = (lonlat and 'must') or 'should'
             boolquery[booltype] = bools
         if searchfilter:
             boolquery['filter'] = searchfilter
