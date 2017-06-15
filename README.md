@@ -39,3 +39,13 @@ Zie Api_endpoint.md voor api details
 5. token meesturen in de `Authorization: Token [value]` header van je requests
 
 #### 
+
+### Reindex ###
+The elastic index can be recreated using the commands.
+In acceptance/production environment this command can also be run inside the docker container.
+
+           python manage.py elastic --delete
+           python manage.py elastic --build
+           python manage.py elastic --reindex
+            
+            
