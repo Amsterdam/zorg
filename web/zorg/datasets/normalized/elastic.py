@@ -40,9 +40,9 @@ def search(q='', doctype=None, lonlat=None, tags=None):
             ) for t in q.split()
         )
     )
-    searchfilter = (doctype and [{'type': doctype}]) or []
+    searchfilter = (doctype and [{'type': {'value': doctype}}]) or []
     if tags:
-        searchfilter.extend({'tags': tag} for tag in tags)
+        searchfilter.extend({'term': {'tags': tag}} for tag in tags)
     sort = ['_score']
     if lonlat:
         sort.insert(0, {
