@@ -32,7 +32,7 @@ def _elasticsearch():
 def search(q='', doctype=None, lonlat=None):
     """Generate and fire an Elastic query"""
     fields = ['naam^1.5', 'beschrijving']
-    should = q and [
+    bools = q and [
         {'multi_match': {'query': t, 'fields': fields}} for t in q.split()
     ]
     searchfilter = (doctype and {'type': {'value': doctype}}) or {}
@@ -49,11 +49,14 @@ def search(q='', doctype=None, lonlat=None):
         'sort': sort,
         'size': 1000
     }
-    if should or searchfilter:
+    if bools or searchfilter:
         query['query'] = {'bool': {}}
         boolquery = query['query']['bool']
-        if should:
-            boolquery['should'] = should
+        if bools:
+            # if we have terms and we're sorting on geo, then we must filter
+            # the terms with "must" rather than "should"
+            booltype = (searchfilter and 'must') or 'should'
+            boolquery[booltype] = bools
         if searchfilter:
             boolquery['filter'] = searchfilter
 
