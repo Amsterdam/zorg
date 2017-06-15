@@ -34,13 +34,14 @@ class ReadOptimizedModel(models.Model):
         abstract = True
 
     def delete(self):
+        guid = self.guid
         item = super(ReadOptimizedModel, self).delete()
         try:
             connections.create_connection(
                 hosts=settings.ELASTIC_SEARCH_HOSTS,
                 retry_on_timeout=True,
             )
-            doc = self.es_doctype(_id=self.guid)
+            doc = self.es_doctype(_id=guid)
             doc.delete()
         except Exception as exp:
             LOG.error(f'Failed to delete from elastic: {exp}')
