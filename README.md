@@ -48,4 +48,16 @@ In acceptance/production environment this command can also be run inside the doc
            python manage.py elastic --build
            python manage.py elastic --reindex
             
-            
+#### Tags #####
+   Login on <http://localhost:8000/zorg/admin> and add the required TagDefinitions.
+
+category: "DAG"
+naam: "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"
+
+category: "TIJD"
+naam: "ochtend", "middag", "avond", "nacht"
+
+category: "BETAALD"
+naam: "gratis", "betaald"
+
+The **naam** of these tags can be used in the create activiteit API.

@@ -5,7 +5,7 @@
   "bron_link": "http://localhost",
   "contactpersoon": "onbekend",
   "tags": [
-    "string"
+    "maandag", "dinsdag", "woensdag"
   ],
   "start_time": "2017-06-13T09:10:37.915Z",
   "end_time": "2017-06-13T09:10:37.915Z",
