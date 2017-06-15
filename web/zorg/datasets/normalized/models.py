@@ -73,6 +73,7 @@ class PersoonEventLog(EventLogMixin):
 
 class Locatie(ReadOptimizedModel):
     create_doc = documents.doc_from_locatie
+    es_doctype = documents.Locatie
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
@@ -172,6 +173,8 @@ class Organisatie(ReadOptimizedModel):
     telefoon, fax, email, website, mobiel
     """
     create_doc = documents.doc_from_organisatie
+    es_doctype = documents.Organisatie
+
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
@@ -217,6 +220,7 @@ class OrganisatieEventLog(EventLogMixin):
 
 class Activiteit(ReadOptimizedModel):
     create_doc = documents.doc_from_activiteit
+    es_doctype = documents.Activiteit
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)

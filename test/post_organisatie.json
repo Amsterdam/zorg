@@ -1,0 +1,19 @@
+{
+	"id":
+		12345678901234567891,
+	"naam":
+		"Just do it2",
+	"beschrijving":
+		"Just do it",
+	"contact":
+		{
+			"telefoon": {
+				"tel1": "01234567890",
+				"tel2": "01234567890"
+			},
+			"website":{
+				"home": "http://nu.nl"
+			}
+
+		}
+}
