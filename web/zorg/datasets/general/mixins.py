@@ -17,7 +17,7 @@ class ReadOptimizedModel(models.Model):
 
     def save(self, *args, **kwargs):
         # Saving the model
-        item = super(ReadOptimizedModel, self).save(args, kwargs)
+        super(ReadOptimizedModel, self).save(args, kwargs)
         # Adding to elastic
         try:
             connections.create_connection(
@@ -28,7 +28,6 @@ class ReadOptimizedModel(models.Model):
             doc.save()
         except Exception as exp:
             LOG.error(f'Failed to send to elastic: {exp}')
-        return item
 
     class Meta(object):
         abstract = True
