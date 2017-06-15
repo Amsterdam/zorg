@@ -178,6 +178,7 @@ paths:
       # operationId: api.ZoekApiView.as_view
       parameters:
       - $ref: '#/parameters/query'
+      - $ref: '#/parameters/tag'
       - $ref: '#/parameters/latitude'
       - $ref: '#/parameters/longitude'
       responses:
@@ -195,6 +196,7 @@ paths:
       # operationId: api.ZoekApiView.as_view
       parameters:
       - $ref: '#/parameters/query'
+      - $ref: '#/parameters/tag'
       - $ref: '#/parameters/latitude'
       - $ref: '#/parameters/longitude'
       -
@@ -593,6 +595,12 @@ parameters:
     description: de woorden / delen van woorden waarop gezocht wordt
     type: string
     required: false
+  tag:
+    name: tag
+    in: query
+    description: zoek naar een tag (bijvoorbeeld `tag=betaald` of `tag=maandag`)
+    required: false
+    type: string
   latitude:
     name: lat
     in: query
