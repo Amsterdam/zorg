@@ -24,11 +24,12 @@ def search(request, doctype=None):
     # this is ugly!! is it lazy? because in that case I would rather create a
     # QueryDict instance from META['query_string']
     q = queryparams.get('query')
+    tags = queryparams.getlist('tag')
     lon, lat = queryparams.get('lon'), queryparams.get('lat')
     lonlat = lon and lat and (float(lon), float(lat))
     try:
         return HttpResponse(
-            elastic.search(q, doctype, lonlat),
+            elastic.search(q, doctype, lonlat, tags),
             content_type='application/json')
     except elastic.SearchError:
         _logger.critical('Exception while searching', exc_info=sys.exc_info())
