@@ -6,11 +6,16 @@ info:
   description: |
     ## Guid
 
-    Bij het aanmaken van organisaties, locaties en activiteiten genereert de applicatie zelf een `guid`
-    op basis van de gebruiker en de id in de aanroep.
+    De `guid` is de unieke sleutel van elke entiteit in de applicatie.
 
-    Indien een `guid` wordt meegestuurd met een `http POST request` wordt deze door het systeem genegeerd en
-    zal het systeem zelf een nieuwe unieke guid genereren.
+    Bij het aanmaken van organisaties, voegt de applicatie zelf een `guid` toe
+    op basis van de gebruiker.
+
+    Bij het aanmaken van locaties en activiteiten voegt de applicatie zelf een `guid` toe
+    op basis van de gebruiker aangevuld met het `id` in de aanroep.
+
+    Indien een `guid` wordt meegestuurd bij een van bovenstaande acties wordt deze door het systeem genegeerd.
+
     Bij `lees`, `update` en `verwijder` opdrachten moet de `guid` wel meegestuurd worden.
 
     Het gebruik van een guid maakt het mogelijk om meerdere partijen hun eigen id reeks te laten gebruiken
@@ -46,7 +51,7 @@ produces:
 paths:
   /zorg/status/health:
     get:
-      tags: [ status, get ]
+      tags: [ status ]
       # operationId: health.views.health
       summary: Ok, als de server draait
       responses:
@@ -61,8 +66,8 @@ paths:
 
   /zorg/status/data:
     get:
-      tags: [ status, get ]
-      summary: Ok, als data bereikbaar is en goed uitziet.
+      tags: [ status ]
+      summary: Ok, als data bereikbaar is.
       # operationId: health.views.data
       responses:
         200:
@@ -76,7 +81,7 @@ paths:
 
   /zorg/batch_update:
     post:
-      tags: [ data-endpoint, batch, post ]
+      tags: [ batch ]
       description: |
         ### Batch update
 
@@ -126,7 +131,7 @@ paths:
 
   /zorg/batch_job/{jobid}:
     get:
-      tags: [ data-endpoint, get, batch ]
+      tags: [  batch ]
       summary: opvragen van informatie over batch jobs
       description: |
         #### In ontwikkeling
@@ -148,7 +153,7 @@ paths:
 
   /zorg/tags/{categorie}:
     get:
-      tags: [ data-endpoint, get ]
+      tags: [ tags ]
       summary: opvragen van tags cq. labels per categorie
       parameters:
       -
@@ -171,7 +176,7 @@ paths:
 
   /zorg/zoek/:
     get:
-      tags: [ zoek-endpoint, get ]
+      tags: [ zoekingangen ]
       summary: |
         Zoek over alle data in het systeem. Als `lat` en `lon` gegeven zijn dan
         worden de resultaten primair gesorteerd op afstand.
@@ -189,7 +194,7 @@ paths:
 
   /zorg/zoek/{subtype}:
     get:
-      tags: [ zoek-endpoint, get ]
+      tags: [ zoekingangen ]
       summary: |
         Zoek over de `subtype` data in het systeem. Als `lat` en `lon` gegeven
         zijn dan worden de resultaten primair gesorteerd op afstand.
@@ -218,8 +223,8 @@ paths:
 
   /zorg/organisatie/{guid}:
     get:
-      tags: [ data-endpoint, get, by guid ]
-      summary: fetch activiteit by id
+      tags: [ organisaties ]
+      summary: Toon de organisatie met deze guid
       produces:
         - application/json
       parameters:
@@ -237,8 +242,8 @@ paths:
         500:
           $ref: '#/responses/500'
     put:
-      tags: [ data-endpoint, put, by guid]
-      summary: Change an `organisatie` object
+      tags: [ organisaties ]
+      summary: Wijzig de gegevens van de organisatie met deze guid
       produces:
         - application/json
       consumes:
@@ -264,11 +269,23 @@ paths:
           description: Bad request, invalid URL
         "200":
           description: Update successful
+    delete:
+      tags: [ organisaties ]
+      summary: Verwijder de organisatie met deze guid
+      parameters:
+      - name: guid
+        in: path
+        description: Het guid van de organisatie die verwijderd gaat worden
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Delete successful
 
   /zorg/organisatie:
     get:
-      tags: [ data-endpoint, get]
-      summary: data organisaties
+      tags: [ organisaties ]
+      summary: Toon de lijst met organisaties
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
         - application/json
@@ -297,7 +314,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
     post:
-      tags: [ data-endpoint, post ]
+      tags: [ organisaties ]
       summary: Voeg een nieuwe organisatie toe
       produces:
         - application/json
@@ -305,7 +322,7 @@ paths:
       -
         in: body
         name: body
-        description: Creeer een nieuw organsatie object
+        description: Toevoegen van een nieuw organsatie object
         required: true
         schema:
           $ref: '#/definitions/organisatie-post'
@@ -321,8 +338,8 @@ paths:
 
   /zorg/activiteit/{guid}:
     get:
-      tags: [ data-endpoint, get, by guid ]
-      summary: vind activiteit met id
+      tags: [ activiteiten ]
+      summary: Toon de activiteit met deze guid
       produces:
         - application/json
       parameters:
@@ -342,8 +359,8 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
     put:
-      tags: [ data-endpoint, put, by guid]
-      summary: Wijzig een activiteit object
+      tags: [ activiteiten ]
+      summary: Wijzig de gegevens van activiteit met deze guid
       produces:
         - application/json
       consumes:
@@ -369,11 +386,23 @@ paths:
           description: Bad request, invalid URL
         "200":
           description: Update successful
+    delete:
+      tags: [ activiteiten ]
+      summary: Verwijder de activiteit met deze guid
+      parameters:
+      - name: guid
+        in: path
+        description: Het guid van de activiteit die verwijderd gaat worden
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Delete successful
 
   /zorg/activiteit:
     get:
-      tags: [ data-endpoint, get ]
-      summary: data activiteiten
+      tags: [ activiteiten  ]
+      summary: Toon de lijst met activiteiten
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
         - application/json
@@ -402,7 +431,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
     post:
-      tags: [ data-endpoint, post ]
+      tags: [ activiteiten  ]
       summary: Voeg een nieuwe activiteit toe
       produces:
         - application/json
@@ -410,7 +439,7 @@ paths:
       -
         in: body
         name: body
-        description: creeeer nieuw activiteit object
+        description: Toevoegen van een nieuw activiteit object
         required: true
         schema:
           $ref: '#/definitions/activiteit-post'
@@ -426,8 +455,8 @@ paths:
 
   /zorg/locatie/{guid}:
     get:
-      tags: [ data-endpoint, get, by guid ]
-      summary: fetch locatie by id
+      tags: [ locaties  ]
+      summary: Toon de locatie met deze guid
       produces:
         - application/json
       parameters:
@@ -448,8 +477,8 @@ paths:
             $ref: '#/definitions/error_response'
 
     put:
-      tags: [ data-endpoint, put, by guid ]
-      summary: Wijzig een locatie object
+      tags: [ locaties ]
+      summary: Wijzig de gegevens van de locatie met deze guid
       produces:
         - application/json
       consumes:
@@ -475,11 +504,23 @@ paths:
           description: Bad request, invalid URL
         "200":
           description: Update successful
+    delete:
+      tags: [ locaties ]
+      summary: Verwijder de locatie met deze guid
+      parameters:
+      - name: guid
+        in: path
+        description: Het guid van de locatie die gewijzigd gaat worden
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Delete successful
 
   /zorg/locatie:
     get:
-      tags: [ data-endpoint, get ]
-      summary: data locatie
+      tags: [ locaties ]
+      summary: Toon de lijst met locaties
       # operationId: api.datasets.normailzed.views.OrganisatieViewSet
       produces:
         - application/json
@@ -508,7 +549,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
     post:
-      tags: [ data-endpoint, post ]
+      tags: [ locaties ]
       summary: Voeg een nieuwe locatie toe
       produces:
         - application/json
@@ -518,7 +559,7 @@ paths:
       -
         in: body
         name: body
-        description: Creeer een nieuw locatie object
+        description: Toevoegen van een nieuw locatie object
         required: true
         schema:
           $ref: '#/definitions/locatie-post'
@@ -532,60 +573,60 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zorg/persoon:
-    get:
-      tags: [ data-endpoint, get ]
-      summary: data persoon
-      produces:
-        - application/json
-      parameters:
-      -
-        name: page
-        in: query
-        description: Paginering, toont de gevraagde pagina
-        type: number
-        format: int64
-        required: false
-      responses:
-        200:
-          description: Retourneert een lijst met contactpersoon data
-          schema:
-            type: object
-            properties:
-              _links:
-                $ref: '#/definitions/_links'
-              results:
-                type: array
-                items:
-                  $ref: '#/definitions/persoon'
-        500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
-    post:
-      tags: [ data-endpoint, post ]
-      summary: Voeg een nieuwe contactpersoon  toe
-      produces:
-        - application/json
-      consumes:
-        - application/json
-      parameters:
-      -
-        in: body
-        name: body
-        description: Creeer een nieuw contactpersoon object
-        required: true
-        schema:
-          $ref: '#/definitions/persoon'
-      responses:
-        201:
-          description: Nieuw contactpersoon is toegevoegd
-          schema:
-            type: object
-        500:
-          description: server error
-          schema:
-            $ref: '#/definitions/error_response'
+#  /zorg/persoon:
+#    get:
+#      tags: [ persoon  ]
+#      summary: data persoon
+#      produces:
+#        - application/json
+#      parameters:
+#      -
+#        name: page
+#        in: query
+#        description: Paginering, toont de gevraagde pagina
+#        type: number
+#        format: int64
+#        required: false
+#      responses:
+#        200:
+#          description: Retourneert een lijst met contactpersoon data
+#          schema:
+#            type: object
+#            properties:
+#              _links:
+#                $ref: '#/definitions/_links'
+#              results:
+#                type: array
+#                items:
+#                  $ref: '#/definitions/persoon'
+#        500:
+#          description: server error
+#          schema:
+#            $ref: '#/definitions/error_response'
+#    post:
+#      tags: [ persoon ]
+#      summary: Voeg een nieuwe contactpersoon  toe
+#      produces:
+#        - application/json
+#      consumes:
+#        - application/json
+#      parameters:
+#      -
+#        in: body
+#        name: body
+#        description: Toevoegen van een nieuw contactpersoon object
+#        required: true
+#        schema:
+#          $ref: '#/definitions/persoon'
+#      responses:
+#        201:
+#          description: Nieuw contactpersoon is toegevoegd
+#          schema:
+#            type: object
+#        500:
+#          description: server error
+#          schema:
+#            $ref: '#/definitions/error_response'
 
 
 parameters:
@@ -812,12 +853,13 @@ definitions:
         type: string
       contactpersoon:
         type: string
-      personen:
-        # link to personen query
-        type: string
+      persoon:
+        type: array
       tags:
-        type: string
-        description: een door komma gescheiden lijst van labels / tags passend bij deze activiteit.
+        type: array
+        description: een array van labels / tags passend bij deze activiteit.
+        items:
+          type: string
       start_time:
         type: string
         format: date-time
@@ -826,28 +868,28 @@ definitions:
         type: string
         format: date-time
         description: Datum / tijd waarop deze activiteit stopt.
-      locatie:
+      locatie_id:
         type: string
         description: De `locatie-id` zoals het bekend is bij het zorg portaal.
-      organisatie:
+      organisatie_id:
         type: string
         description: De `organisatie-id` zoals het bekend is bij het zorg portaal.
 
-  persoon:
-    type: object
-    properties:
-      guid:
-        type: string
-      contact:
-        description: |
-          een lijst met adressen, bijv
-          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
-           {"soort":"twitter", "adres":"@voorbeeld"}]
-        type: array
-        items:
-            $ref: '#/definitions/comm'
-      naam:
-        type: string
+#  persoon:
+#    type: object
+#    properties:
+#      guid:
+#        type: string
+#      contact:
+#        description: |
+#          een lijst met adressen, bijv
+#          [{"soort":"email", "adres":"voorbeeld@domain.dom"},
+#           {"soort":"twitter", "adres":"@voorbeeld"}]
+#        type: array
+#        items:
+#            $ref: '#/definitions/comm'
+#      naam:
+#        type: string
 
   comm:
     type: object

@@ -1,9 +1,9 @@
 {
   "id": "7843278492",
   "naam": "locatietje2!",
-  "openbare_ruimte_naam": "string",
-  "postcode": "string",
-  "huisnummer": "string",
-  "huisletter": "1",
-  "huisnummer_toevoeging": "string"
+  "openbare_ruimte_naam": "cultuurlokatie",
+  "postcode": "1100",
+  "huisnummer": "1",
+  "huisletter": "a",
+  "huisnummer_toevoeging": "b"
 }
