@@ -855,6 +855,8 @@ definitions:
         type: string
       persoon:
         type: array
+        items:
+          type: string
       tags:
         type: array
         description: een array van labels / tags passend bij deze activiteit.
