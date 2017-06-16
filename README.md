@@ -31,11 +31,15 @@ Zie Api_endpoint.md voor api details
     http://127.0.0.1:8000/zorg/status/health
 
 
-### API Token maken
-1. `$ python manage.py createsuperuser` en stappen volgen
-2. in je browser naar http://localhost:8000/zorg/admin en inloggen
-3. onder “Tokens” een token maken voor je superuser (of maak eerst een andere user aan)
-4. onder “Profiles” een paar gegevens invullen voor je user
+### Gebruiker en API Token maken
+1. Maak superuser: `$ python manage.py createsuperuser` 
+2. Log in: <http://localhost:8000/zorg/admin> 
+3. Maak een nieuwe gebruiker aan. Users-add.
+4. maak een een token aan voor de nieuwe gebruiker. Tokens-add.
+5. maak een nieuwe profiel aan voor de nieuwe gebruiker. Profiles-add
+    * Guid = unieke guid voor de organisatie (4 karakters)
+    * Naam = naam voor de organisatie
+    * Contact = {"email":"email@host"}
 5. token meesturen in de `Authorization: Token [value]` header van je requests
 
 #### 
