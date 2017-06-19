@@ -124,7 +124,7 @@ in api
      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
         -X PUT  \
         -d @put_activiteit.json \
-        http://localhost:8000/zorg/activiteit/1235-9888943894839/
+        http://localhost:8000/zorg/activiteit/te01-9888943894839/
 
 - [ ] Delete activiteit
 

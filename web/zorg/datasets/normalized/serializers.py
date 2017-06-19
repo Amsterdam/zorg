@@ -78,7 +78,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             guid=guid,
             sequence=sequence,
             event_type='U',
-            data=validated_data
+            data=event_data
         )
         item = event.save()
 
@@ -130,6 +130,7 @@ class ActiviteitSerializer(ZorgModelSerializer):
 
         # validate many to many relations for tags
         valid_tags = []
+        models.Activiteit.objects.get(pk=self.data['guid']).tags.clear()
         if 'tags' in self.initial_data:
             for tag_name in self.initial_data['tags']:
                 fetched_tags = models.TagDefinition.objects.filter(naam=tag_name)
@@ -142,3 +143,4 @@ class ActiviteitSerializer(ZorgModelSerializer):
     class Meta(object):
         exclude = ('locatie', 'organisatie',)
         model = models.Activiteit
+
