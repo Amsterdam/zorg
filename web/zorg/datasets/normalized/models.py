@@ -13,6 +13,8 @@ from django.db import models
 from datasets.general.mixins import EventLogMixin, ReadOptimizedModel
 from datasets.normalized import documents
 
+from ..normalized import models as normalized_models
+
 log = logging.getLogger(__name__)
 bag_url = f"{settings.DATAPUNT_API_URL}bag/nummeraanduiding/?"
 
@@ -221,6 +223,7 @@ class OrganisatieEventLog(EventLogMixin):
 class Activiteit(ReadOptimizedModel):
     create_doc = documents.doc_from_activiteit
     es_doctype = documents.Activiteit
+    es_tags = None
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
@@ -302,20 +305,17 @@ class ActiviteitEventLog(EventLogMixin):
                 organisatie = self.data['organisatie_id']
                 self.data['organisatie_id'] = organisatie.guid
                 kwargs['organisatie'] = organisatie
-            if 'tags' in self.data:
-                for tag_name in self.data['tags']:
-                    fetched_tags = models.TagDefinition.objects.filter(naam=tag_name)
-                    if fetched_tags.count() > 0:
-                        valid_tags.append(fetched_tags.first())
 
-        except IndexError:
-            self.sequence = 0
+        except IndexError as exp:
+            log.error(repr(exp))
+            raise
         except Exception as exp:
             log.error(repr(exp))
-            self.sequence = 0
+            raise
 
         # Saving
         res = super(ActiviteitEventLog, self).save(*args, **kwargs)
         if len(valid_tags) > 0:
             self.tags.add(*valid_tags)
+
         return res

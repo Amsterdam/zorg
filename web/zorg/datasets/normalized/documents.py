@@ -90,7 +90,8 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
         setattr(doc, key, getattr(n, key))
 
     # add tags
-    setattr(doc, 'tags', list(n.tags.all().values_list('naam', flat=True)))
+    if n.es_tags:
+        setattr(doc, 'tags', n.es_tags)
 
     doc.ext_id = n.id
     # Loading locatie

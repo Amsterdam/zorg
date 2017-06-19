@@ -65,3 +65,8 @@ category: "BETAALD"
 naam: "gratis", "betaald"
 
 The **naam** of these tags can be used in the create activiteit API.
+
+
+### Test info ####
+
+Zie test/Smoke_test.MD voor voorbeeld requests.
