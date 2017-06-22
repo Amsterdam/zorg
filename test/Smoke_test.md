@@ -81,7 +81,7 @@ in api
      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
         -X PUT  \
         -d @put_locatie.json \
-        http://localhost:8000/zorg/locatie/1235-7843278492/
+        http://localhost:8000/zorg/locatie/te01-7843278492/
         
 - [ ]  Delete locatie
  
