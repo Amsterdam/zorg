@@ -85,7 +85,7 @@ def create(guid: str, data: dict, model: models.Model) -> models.Model:
                 setattr(item, attr, value)
                 if attr.endswith('_id'):
                     print(f'Foreign key {value} set on {item}: {getattr(item, attr)}')
-
+    item.es_tags = data.get('tags')
     item.save()
 
     for field, values in mtm_values.items():
@@ -110,7 +110,7 @@ def update(guid: str, data: dict, model: models.Model) -> models.Model:
                 setattr(item, attr, value)
                 if attr.endswith('_id'):
                     print(f'Foreign key {value} set on {item}: {getattr(item, attr)}')
-
+    item.es_tags = data.get('tags')
     item.save()
 
     for field, values in mtm_values.items():

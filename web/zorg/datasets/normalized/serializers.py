@@ -41,12 +41,14 @@ class ZorgModelSerializer(serializers.ModelSerializer):
             # Does not match creation rule
             # @TODO convert to self.fail call
             raise ValidationError('Object already exists')
-
+        event_data = validated_data.copy()
+        if 'tags' in self.initial_data:
+            event_data['tags'] = self.initial_data['tags']
         event = self.event_model(
             guid=guid,
             sequence=sequence,
             event_type='C',
-            data=validated_data
+            data=event_data
         )
         new_item = event.save()
         return new_item
@@ -69,11 +71,14 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         else:
             sequence = prev_events[-1].sequence + 1
 
+        event_data = validated_data.copy()
+        if 'tags' in self.initial_data:
+            event_data['tags'] = self.initial_data['tags']
         event = self.event_model(
             guid=guid,
             sequence=sequence,
             event_type='U',
-            data=validated_data
+            data=event_data
         )
         item = event.save()
 
@@ -102,6 +107,9 @@ class LocatieSerializer(ZorgModelSerializer):
 
 
 class TagDefinitionSerializer(serializers.ModelSerializer):
+    def to_representation(self, obj):
+        return obj.naam
+
     class Meta(object):
         fields = ['category', 'naam']
         model = models.TagDefinition
@@ -122,15 +130,17 @@ class ActiviteitSerializer(ZorgModelSerializer):
 
         # validate many to many relations for tags
         valid_tags = []
+        models.Activiteit.objects.get(pk=self.data['guid']).tags.clear()
         if 'tags' in self.initial_data:
             for tag_name in self.initial_data['tags']:
                 fetched_tags = models.TagDefinition.objects.filter(naam=tag_name)
                 if fetched_tags.count() > 0:
                     valid_tags.append(fetched_tags.first())
 
-        if len(valid_tags) > 0:
-            models.Activiteit.objects.get(pk=self.data['guid']).tags.add(*valid_tags)
+            if len(valid_tags) > 0:
+                models.Activiteit.objects.get(pk=self.data['guid']).tags.add(*valid_tags)
 
     class Meta(object):
         exclude = ('locatie', 'organisatie',)
         model = models.Activiteit
+

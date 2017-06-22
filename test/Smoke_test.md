@@ -81,7 +81,7 @@ in api
      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
         -X PUT  \
         -d @put_locatie.json \
-        http://localhost:8000/zorg/locatie/1235-7843278492/
+        http://localhost:8000/zorg/locatie/te01-7843278492/
         
 - [ ]  Delete locatie
  
@@ -124,11 +124,11 @@ in api
      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
         -X PUT  \
         -d @put_activiteit.json \
-        http://localhost:8000/zorg/activiteit/1235-9888943894839/
+        http://localhost:8000/zorg/activiteit/te01-9888943894839/
 
 - [ ] Delete activiteit
 
 
-      curl -H "Authorization: Token c3f1c1ab3355187f701ccc08d49753fc86de6423" \
-        -X DELETE  http://localhost:8000/zorg/activiteit/1235-9888943894839/
+      curl -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+        -X DELETE  http://localhost:8000/zorg/activiteit/te01-9888943894839/
 

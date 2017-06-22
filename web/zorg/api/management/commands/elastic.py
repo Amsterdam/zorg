@@ -89,7 +89,16 @@ class Command(BaseCommand):
         locations = models.Locatie.objects.all()
         actions = models.Activiteit.objects.all()
         organisations = models.Organisatie.objects.all()
-        for dataset in [locations, actions, organisations]:
+
+        for dataset in [locations, organisations]:
             for item in dataset:
                 doc = item.create_doc()
                 doc.save()
+        for action in actions:
+            tags = []
+            for t in action.tags.all():
+                tags.append(t.naam)
+            if tags:
+                action.es_tags = tags
+            doc = action.create_doc()
+            doc.save()

@@ -5,10 +5,10 @@
   "bron_link": "http://localhost",
   "contactpersoon": "onbekend",
   "tags": [
-    "maandag", "dinsdag", "woensdag"
+     "maandag","woensdag"
   ],
   "start_time": "2017-06-13T09:10:37.915Z",
   "end_time": "2017-06-13T09:10:37.915Z",
-  "locatie_id": "1235-7843278492",
-  "organisatie_id": "1235"
+  "locatie_id": "te01-7843278492",
+  "organisatie_id": "te01"
 }

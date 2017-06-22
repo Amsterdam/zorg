@@ -48,7 +48,7 @@ class ReadOptimizedModel(models.Model):
 
 class EventLogMixin(models.Model):
     read_model = None  # This must be overwritten
-
+    tags = None
     EVENT_TYPES = (
         ('C', 'CREATE'),
         ('U', 'UPDATE'),
