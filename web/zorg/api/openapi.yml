@@ -151,7 +151,7 @@ paths:
         500:
           description: server error
 
-  /zorg/tags/{categorie}:
+  /zorg/tags/{categorie}/:
     get:
       tags: [ tags ]
       summary: opvragen van tags cq. labels per categorie
@@ -221,7 +221,7 @@ paths:
           $ref: '#/responses/500'
 
 
-  /zorg/organisatie/{guid}:
+  /zorg/organisatie/{guid}/:
     get:
       tags: [ organisaties ]
       summary: Toon de organisatie met deze guid
@@ -282,7 +282,7 @@ paths:
         "200":
           description: Delete successful
 
-  /zorg/organisatie:
+  /zorg/organisatie/:
     get:
       tags: [ organisaties ]
       summary: Toon de lijst met organisaties
@@ -336,7 +336,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zorg/activiteit/{guid}:
+  /zorg/activiteit/{guid}/:
     get:
       tags: [ activiteiten ]
       summary: Toon de activiteit met deze guid
@@ -399,7 +399,7 @@ paths:
         "200":
           description: Delete successful
 
-  /zorg/activiteit:
+  /zorg/activiteit/:
     get:
       tags: [ activiteiten  ]
       summary: Toon de lijst met activiteiten
@@ -453,7 +453,7 @@ paths:
           schema:
             $ref: '#/definitions/error_response'
 
-  /zorg/locatie/{guid}:
+  /zorg/locatie/{guid}/:
     get:
       tags: [ locaties  ]
       summary: Toon de locatie met deze guid
@@ -517,7 +517,7 @@ paths:
         "200":
           description: Delete successful
 
-  /zorg/locatie:
+  /zorg/locatie/:
     get:
       tags: [ locaties ]
       summary: Toon de lijst met locaties
@@ -658,7 +658,43 @@ parameters:
 
 responses:
   200-zoek:
-    description: Retourneert een lijst met zoekresulaten
+    description: |
+        Retourneert een lijst met zoekresulaten conform de Elastic v5 Search API. Elk zoekresultaat bestaat uit een organisatie, locatie of activiteit, elk met hun eigen set van properties\:
+        _________________________________
+
+        Organisatie
+        * naam
+        * beschrijving
+        * afdeling
+        * ext_id
+
+        Locatie
+        * naam
+        * openbare_ruimte_naam
+        * huisnummer
+        * huisnummer_toevoeging
+        * postcode
+        * centroid.lat
+        * centroid.lon
+        * ext_id
+
+        Activiteit
+        * naam
+        * beschrijving
+        * bron_link
+        * tags
+        * ext_id
+        * locatie
+            * naam
+            * openbare_ruimte_naam
+            * huisnummer
+            * huisnummer_toevoeging
+            * postcode
+            * centroid.lat
+            * centroid.lon
+            * ext_id
+
+
     schema:
       type: object
       properties:
@@ -669,6 +705,16 @@ responses:
           type: boolean
         _shards:
           type: object
+          properties:
+            total:
+              type: number
+              format: int64
+            successful:
+              type: number
+              format: int64
+            failed:
+              type: number
+              format: int64
         hits:
           type: array
           items:
@@ -684,6 +730,86 @@ responses:
                 type: array
                 items:
                   type: object
+                  properties:
+                    _index:
+                      type: string
+                    _type:
+                      type: string
+                      enum: [activiteit, organisatie, locatie]
+                    _id:
+                      type: string
+                    _score:
+                      type: number
+                      format: int64
+                    _source:
+                      type: object
+                      properties:
+                        naam:
+                          type: string
+                        beschrijving:
+                          type: string
+
+      example:
+        took: 2
+        timed_out: false
+        _shards:
+          total: 5
+          successful: 5
+          failed: 0
+        hits:
+          total: 4
+          max_score: 1
+          hits:
+            - _index: zorg
+              _type: organisatie
+              _id: te01
+              _score: 1
+              _source:
+                naam: Demo organisatie
+                beschrijving: Demo organisatie
+                afdeling: customer support
+                ext_id: '12345678901234567891'
+            - _index: zorg
+              _type: activiteit
+              _id: abcd-12345678
+              _score: 1
+              _source:
+                naam: Demo activiteit
+                beschrijving: Demo activiteit
+                bron_link: 'http://0.0.0.0'
+                tags:
+                  - maandag
+                  - woensdag
+                ext_id: '123456789'
+                locatie:
+                  naam: Demo locatie
+                  openbare_ruimte_naam: Demo
+                  huisnummer: '1'
+                  huisnummer_toevoeging: 'a'
+                  postcode: '1012JS'
+                  centroid:
+                    lat: 4.89371750163616
+                    lon: 52.37329259288013
+                  ext_id: '123456789'
+            - _index: zorg
+              _type: locatie
+              _id: abcd-123456789
+              _score: 1
+              _source:
+                naam: Demo locatie
+                openbare_ruimte_naam: Demo locatie
+                huisnummer: '1'
+                huisnummer_toevoeging: 'b'
+                postcode: 1012JS
+                centroid:
+                  lat: 4.89371750163616
+                  lon: 52.37329259288013
+                ext_id: '12345678'
+
+
+
+
+
   500:
     description: server error
     schema:
