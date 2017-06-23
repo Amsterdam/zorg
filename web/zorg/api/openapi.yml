@@ -615,7 +615,7 @@ paths:
         required: false
       responses:
         200:
-          description: Retourneert een liojst met locatie data
+          description: Retourneert een lijst met locatie data
           schema:
             type: object
             properties:
@@ -640,7 +640,7 @@ paths:
       -
         in: body
         name: body
-        description: Toevoegen van een nieuw locatie object
+        description: Toevoegen van een nieuw locatie object. Formaat van het optionele `geometrie` attribuut is `SRID=28992;POINT (120233 488538)`.
         required: true
         schema:
           $ref: '#/definitions/locatie-post'
@@ -975,6 +975,8 @@ definitions:
       huisletter:
         type: string
       huisnummer_toevoeging:
+        type: string
+      geometrie:
         type: string
 
   locatie:
