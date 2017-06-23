@@ -1,0 +1,32 @@
+[
+  {
+    "operatie": "patch",
+    "locatie": {
+      "id": "7843278492",
+      "guid": "te01-7843278492",
+      "naam": "locatietje2!",
+      "openbare_ruimte_naam": "openbaar5",
+      "postcode": "1012JS",
+      "huisnummer": "1",
+      "huisletter": "1",
+      "huisnummer_toevoeging": "string",
+      "geometrie": "SRID=28992;POINT (121538 487044)"
+    },
+    "activiteit": {
+      "id": "9888943894839",
+      "guid": "te01-9888943894839",
+      "naam": "Goed bezig!!",
+      "beschrijving": "beschrijving",
+      "bron_link": "http://localhost",
+      "contactpersoon": "onbekend",
+      "tags": [
+        "maandag",
+        "woensdag"
+      ],
+      "start_time": "2017-06-13T09:10:37.915Z",
+      "end_time": "2017-06-13T09:10:37.915Z",
+      "locatie_id": "te01-7843278492",
+      "organisatie_id": "te01"
+    }
+  }
+]

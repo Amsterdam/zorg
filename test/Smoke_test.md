@@ -132,3 +132,12 @@ in api
       curl -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
         -X DELETE  http://localhost:8000/zorg/activiteit/te01-9888943894839/
 
+
+
+- [ ] Create batch update
+
+
+      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+        -X POST  \
+        -d @post_batch.json \
+        http://localhost:8000/zorg/_batch_update/
