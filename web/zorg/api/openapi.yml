@@ -43,6 +43,79 @@ info:
 
     Bij `update` en `verwijder` opdrachten wordt de `guid` van de desbetreffende entiteit gebruikt  in de URL die aangeroepen wordt, conform REST principe, b.v. `PUT /zorg/activiteit/{guid}/`
 
+
+    ## Aansluit proces
+    1) Partij ontvangt API token van DataPunt beheer
+
+    2) Partij registreert organisatie gegevens. `POST /zorg/organisatie/`
+    3) Partij registreert een aantal locaties (met het API token). `POST /zorg/locatie/`
+    4) Partij registreert een aantal activiteiten, gekoppeld aan organisatie en locatie (met het API token). `POST /zorg/activiteit/`
+
+    Bij 2, 3 en 4 moet de volgende HTTP header worden meegestuurd:
+
+    `Authorization: Token your_api_token`
+
+    ### Voorbeelden - registreren van gegevens
+    `POST /zorg/organisatie/`
+    `{
+      "id": 12345678901234567891,
+      "naam": "Demo",
+      "beschrijving": "Demo",
+      "afdeling": "Demo",
+      "contact":
+        {
+          "telefoon": {
+            "tel1": "01234567890",
+            "tel2": "01234567890"
+        },
+        "website":{
+            "home": "http://0.0.0.0"
+        }
+    }`
+
+
+    `POST /zorg/locatie/`
+    `{
+      "id": "7843278492",
+      "naam": "demo lokatie",
+      "openbare_ruimte_naam": "cultuurlokatie",
+      "postcode": "1100",
+      "huisnummer": "1",
+      "huisletter": "a",
+      "huisnummer_toevoeging": "bis",
+      "geometrie": "SRID=28992;POINT (120233 488538)"
+    }`
+
+    `POST /zorg/activiteit/`
+    `{
+      "id": "9888943894839",
+      "naam": "Demo activiteit",
+      "beschrijving": "demo",
+      "bron_link": "http://0.0.0.0",
+      "contactpersoon": "onbekend",
+      "tags": [
+        "maandag", "dinsdag", "woensdag"
+      ],
+      "start_time": "2017-06-13T09:10:37.915Z",
+      "end_time": "2017-06-13T09:10:37.915Z",
+      "locatie_id": "te01-7843278492",
+      "organisatie_id": "te01"
+    }`
+
+    De `locatie_id` en `organisatie_id` zijn de `guid`s zoals beschreven in de sectie 'Uitleg over de technische sleutels bij elke entiteit'.
+
+    De lijst met mogelijke `tags` kan opgevraagd worden met de API calls. `GET /zorg/tags/DAG`,  `GET /zorg/tags/TIJD` en `GET zorg/tags/BETAALD`
+
+    ### Voorbeelden - zoeken van gegevens
+    Zoeken op vrije zoekterm
+    `GET` /zorg/zoek/?query=yoga
+
+    Zoeken op label
+    `GET` /zorg/zoek/?tag=maandag&tag=dinsdag
+
+    Zoeken op geolocatie
+    `GET` /zorg/zoek/?lat=4.89371750163616&lon=52.37329259288013
+
 schemes:
   - https
 
