@@ -4,36 +4,44 @@ info:
   version: "1.0.0"
   title: Datapunt Amsterdam Zorg
   description: |
-    ## Guid
 
-    De `guid` is de unieke sleutel van elke entiteit in de applicatie.
+    ## Zorg API
+    De zorg API bevat informatie over locaties, organisaties en activiteiten die gerelateerd zijn aan zorg en welzijn.
 
-    Bij het aanmaken van organisaties, voegt de applicatie zelf een `guid` toe
-    op basis van de gebruiker.
+    Opvragen van de Zorg informatie is voor iedereen mogelijk. Voor het toevoegen van informatie is een API token noodzakelijk. Een API token wordt verstrekt door DataPunt beheer.
 
-    Bij het aanmaken van locaties en activiteiten voegt de applicatie zelf een `guid` toe
-    op basis van de gebruiker aangevuld met het `id` in de aanroep.
+      ## Opvragen van gegevens
+    De volgende informatie kan opgevraagd worden via een lijst of via een zoekingang.
+    * organisaties
+    * locaties
+    * activiteiten
 
-    Indien een `guid` wordt meegestuurd bij een van bovenstaande acties wordt deze door het systeem genegeerd.
+    Er zijn een aantal zoekingangen:
+    * vrije zoekterm in naam en/of beschrijving
+    * geolocatie
+    * lijst met vooraf gedefinieerde labels voor een activiteit (tags)
 
-    Bij `lees`, `update` en `verwijder` opdrachten moet de `guid` wel meegestuurd worden.
+    ## Toevoegen van gegevens
+    DataPunt beheer registreert een account en bijbehorend API token voor een aan te sluiten partij/organisatie. Met het API token kan de organisatie zijn organisatiegegevens toevoegen/wijzigen, en vervolgens locaties en activiteiten toevoegen, wijzigen of weghalen.
 
-    Het gebruik van een guid maakt het mogelijk om meerdere partijen hun eigen id reeks te laten gebruiken
-    zonder dat dit leidt tot conflicten in het zorg-portaal.
+    ## Uitleg over de technische sleutels bij elke entiteit
 
-    Op termijn is het de bedoeling om ook gebruik te maken van het eigen id voor lees, update en verwijder
-    opdrachten. Dit ligt voorlopig nog buiten de scope van het project.
+    In request/response berichten komt op een groot aantal plekken de GUID voor: de  is de unieke sleutel van elke entiteit (organisatie, locatie, activiteit) in de applicatie.
 
-    ## Authenticatie
 
-    Voor het ophalen van data via een `http GET request` is geen authenticatie nodig.
-    Het toevoegen en wijzigen van data vereist echter een API token.
+     ### Aanmaken technische sleutels
+    De API zorgt er zelf voor dat bij het aanmaken van een entiteit, een unieke `guid` wordt toegevoegd aan de entiteit, op basis van het API token en het `id` dat door de gebruiker van de API meegestuurd wordt.
+    Op deze wijze kan iedere partij kan dus zijn eigen id reeks gebruiken zonder dat dit leidt tot conflicten in het zorg-portaal.
 
-    [Meer informatie over API tokens](https://scotch.io/tutorials/the-ins-and-outs-of-token-based-authentication)
+    * organisatie guid = vastgesteld door DataPunt
+    * activiteit guid = `organisatieguid-activiteitid`
+    * locatie guid = `organisatieguid-locatieid`
 
-    -en-
+    De gebruikers van de API hoeven dus alleen een `id` mee te sturen, en geen GUID. Indien wel een GUID wordt meegestuurd, zal deze niet gebruikt worden.
 
-    [Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
+    ### Gebruik van technische sleutels
+
+    Bij `update` en `verwijder` opdrachten wordt de `guid` van de desbetreffende entiteit gebruikt  in de URL die aangeroepen wordt, conform REST principe, b.v. `PUT /zorg/activiteit/{guid}/`
 
 schemes:
   - https

@@ -32,7 +32,10 @@ Zie Api_endpoint.md voor api details
 
 
 ### Gebruiker en API Token maken
-1. Maak superuser: `$ python manage.py createsuperuser` 
+Voor het ophalen van data via een `http GET request` is geen authenticatie nodig.
+Het toevoegen en wijzigen van data vereist echter een API token.
+
+1. Maak superuser: `$ python manage.py createsuperuser`
 2. Log in: <http://localhost:8000/zorg/admin> 
 3. Maak een nieuwe gebruiker aan. Users-add.
 4. maak een een token aan voor de nieuwe gebruiker. Tokens-add.
@@ -42,7 +45,12 @@ Zie Api_endpoint.md voor api details
     * Contact = {"email":"email@host"}
 5. token meesturen in de `Authorization: Token [value]` header van je requests
 
-#### 
+
+[Meer informatie over API tokens](https://scotch.io/tutorials/the-ins-and-outs-of-token-based-authentication)
+
+[Hoe deze te implementeren](http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
+
+####
 
 ### Reindex ###
 The elastic index can be recreated using the commands.
