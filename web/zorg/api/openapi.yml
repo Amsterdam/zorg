@@ -48,7 +48,9 @@ info:
     1) Partij ontvangt API token van DataPunt beheer
 
     2) Partij registreert organisatie gegevens. `POST /zorg/organisatie/`
+
     3) Partij registreert een aantal locaties (met het API token). `POST /zorg/locatie/`
+
     4) Partij registreert een aantal activiteiten, gekoppeld aan organisatie en locatie (met het API token). `POST /zorg/activiteit/`
 
     Bij 2, 3 en 4 moet de volgende HTTP header worden meegestuurd:
