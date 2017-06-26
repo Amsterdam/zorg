@@ -30,6 +30,32 @@ def _elasticsearch():
     )
 
 
+def typeahead(q=''):
+    """Get a list of JSON encoded search suggestions based on the given query.
+
+    :param q: query
+    """
+    query = {
+        'query': {
+            'prefix': {
+                'naam': q,
+            }
+        },
+        'sort': [
+            'naam'
+        ]
+    }
+    try:
+        results = _elasticsearch().search(
+            index=settings.ELASTIC_INDEX,
+            body=query
+        )
+    except Exception as e:
+        raise SearchError() from e
+
+    return json.dumps([r['naam'] for r in results])
+
+
 def search(q='', doctype=None, lonlat=None, tags=None):
     """Generate and fire an Elastic query"""
     bools = q and list(

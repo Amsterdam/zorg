@@ -41,6 +41,26 @@ def search(request, doctype=None):
 
 
 @require_GET
+def typeahead(request):
+    """Perform a search"""
+    queryparams = request.GET
+    # this is ugly!! is it lazy? because in that case I would rather create a
+    # QueryDict instance from META['query_string']
+    q = queryparams.get('query')
+    try:
+        return HttpResponse(
+            elastic.typeahead(q),
+            content_type='application/json')
+    except elastic.SearchError:
+        _logger.critical('Exception while searching', exc_info=sys.exc_info())
+        return HttpResponseServerError()
+    except:
+        _logger.fatal(
+            'Unexpected exception while searching', exc_info=sys.exc_info())
+        return HttpResponseServerError()
+
+
+@require_GET
 def openapi(request):
     """Server the OpenAPI spec.
 
