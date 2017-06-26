@@ -27,7 +27,8 @@ class TagDefinition(models.Model):
     CATEGORIES = (
         ('BETAALD', 'Betaald'),
         ('DAG', 'Dagen'),
-        ('TIJD', 'Tijdstip')
+        ('TIJD', 'Tijdstip'),
+        ('LEEFTIJDSCATEGORIE', 'Leeftijdscategorie')
     )
 
     naam = models.CharField(max_length=255, unique=True)

@@ -72,6 +72,10 @@ naam: "ochtend", "middag", "avond", "nacht"
 category: "BETAALD"
 naam: "gratis", "betaald"
 
+category: "LEEFTIJDSCATEGORIE"
+naam: "volwassene", "senior", "jeugd"
+
+
 The **naam** of these tags can be used in the create activiteit API.
 
 
