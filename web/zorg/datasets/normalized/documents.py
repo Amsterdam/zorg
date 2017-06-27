@@ -14,6 +14,12 @@ _index = es.Index(settings.ELASTIC_INDEX)
 
 
 @_index.doc_type
+class Term(es.DocType):
+    term = es.Text()
+    gewicht = es.Integer()
+
+
+@_index.doc_type
 class Organisatie(es.DocType):
     ext_id = es.String(index='not_analyzed')
     naam = es.String(analyzer=base_analyzer)  # ngram
@@ -62,6 +68,10 @@ def doc_from_organisatie(n: models.Model) -> Organisatie:
     for key in ('naam', 'beschrijving', 'afdeling'):
         setattr(doc, key, getattr(n, key))
     doc.ext_id = n.id
+
+    # add suggestions
+    create_suggestions(n)
+
     return doc
 
 
@@ -70,8 +80,13 @@ def doc_from_locatie(n: models.Model) -> Locatie:
     Create an elastic Locatie doc
     """
     doc = Locatie(_id=n.guid)
+
     for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
         setattr(doc, key, getattr(n, key))
+
+    # add suggestions
+    create_suggestions(n)
+
     try:
         lat, lon = n.geometrie.transform('wgs84', clone=True).coords
         doc.centroid = {'lat': lat, 'lon': lon}
@@ -89,6 +104,9 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
     for key in ('naam', 'beschrijving', 'bron_link'):
         setattr(doc, key, getattr(n, key))
 
+    # add suggestions
+    create_suggestions(n)
+
     # add tags
     if n.es_tags:
         setattr(doc, 'tags', n.es_tags)
@@ -99,7 +117,16 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
         locatie_doc = doc_from_locatie(n.locatie)
         doc.locatie = locatie_doc
     except Exception:
-        # ???? how come we don't care?
-        pass
-
+        raise
     return doc
+
+
+def create_suggestions(n: models.Model):
+    suggestions = []
+    for attr in ('naam', 'beschrijving'):
+        if hasattr(n, attr):
+            terms = getattr(n, attr).lower().split()
+            for term in terms:
+                doc = Term()
+                doc.term = term
+                doc.save()
