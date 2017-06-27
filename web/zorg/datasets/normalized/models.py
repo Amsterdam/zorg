@@ -294,8 +294,11 @@ class ActiviteitEventLog(EventLogMixin):
         valid_tags = []
         try:
             # Setting sequence
-            prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
-            self.sequence = prev.sequence + 1
+            prev = ActiviteitEventLog.objects.filter(guid=self.guid).order_by('-sequence')
+            if prev:
+                self.sequence = prev[0].sequence + 1
+            else:
+                self.sequence = 0
 
             # Handling foreign key relations
             if 'locatie_id' in self.data:

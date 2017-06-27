@@ -29,7 +29,7 @@
 - [x] Create organisatie
 
 
-        curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+        curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X POST  \
         -d @post_organisatie.json \
         http://localhost:8000/zorg/organisatie/
@@ -52,13 +52,18 @@
         
 - [ ] Update organisatie
 
+     curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
+        -X PUT  \
+        -d @put_organisatie.json \
+        http://localhost:8000/zorg/organisatie/te01/
+
 - [ ] Delete organisatie
 
  
 - [x]  Create locatie
 
 
-       curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+       curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X POST  \
         -d @post_locatie.json \
         http://localhost:8000/zorg/locatie/
@@ -78,7 +83,7 @@ in api
 - [ ]  Update locatie
       
       
-     curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X PUT  \
         -d @put_locatie.json \
         http://localhost:8000/zorg/locatie/te01-7843278492/
@@ -86,14 +91,14 @@ in api
 - [ ]  Delete locatie
  
  
-       curl -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+       curl -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X DELETE  http://localhost:8000/zorg/locatie/te01-7843278492/
 
 
 - [ ] Create persoon
 
 
-      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+      curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X POST  \
         -d @post_persoon.json \
         http://localhost:8000/zorg/persoon
@@ -101,9 +106,14 @@ in api
 - [ ] Create activiteit
 
 
-      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+      curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X POST  \
         -d @post_activiteit.json \
+        http://localhost:8000/zorg/activiteit/
+
+     curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
+        -X POST  \
+        -d @post_activiteit_2.json \
         http://localhost:8000/zorg/activiteit/
 
 - [ ] Read activiteit
@@ -121,23 +131,23 @@ in api
 - [ ] Update activiteit
 
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X PUT  \
         -d @put_activiteit.json \
-        http://localhost:8000/zorg/activiteit/te01-9888943894839/
+        http://localhost:8000/zorg/activiteit/te01-2288943894839/
 
 - [ ] Delete activiteit
 
 
-      curl -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
-        -X DELETE  http://localhost:8000/zorg/activiteit/te01-9888943894839/
+      curl -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
+        -X DELETE  http://localhost:8000/zorg/activiteit/te01-2288943894839/
 
 
 
 - [ ] Create batch update
 
 
-      curl -H "Content-Type: application/json" -H "Authorization: Token 4dc46119f481443621efbe15035957ae9a07f4d9" \
+      curl -H "Content-Type: application/json" -H "Authorization: Token ef7b1abd65abd34c967a743dcd4289911d6d2951" \
         -X POST  \
         -d @post_batch.json \
         http://localhost:8000/zorg/_batch_update/
