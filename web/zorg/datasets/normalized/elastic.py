@@ -36,12 +36,32 @@ def typeahead(q=''):
     :param q: query
     """
     query = {
-        'size' : 50,
+        'size': 100,
         'query': {
-            'prefix': {
-                'term': q,
-            }
+            'bool': {
+                'must': [
+                    {
+                        'type': {
+                            'value': 'term'
+                        }
+                    },
+                    {
+                        'prefix': {
+                            'term': q,
+                        }
+
+                    }
+
+                ]}
+
         },
+        'sort': [
+            {
+                'gewicht': {
+                    'order': 'desc'
+                    }
+            }
+        ]
     }
     try:
         results = _elasticsearch().search(
@@ -51,10 +71,10 @@ def typeahead(q=''):
     except Exception as e:
         raise SearchError() from e
     suggestions = []
-    for hit in results['hits']['hits']:
-        suggestions.append(hit['_source']['term'])
-    suggestions.sort()
+    for suggestion in results['hits']['hits']:
+        suggestions.append(suggestion['_source']['term'])
     return json.dumps(suggestions)
+
 
 def search(q='', doctype=None, lonlat=None, tags=None):
     """Generate and fire an Elastic query"""

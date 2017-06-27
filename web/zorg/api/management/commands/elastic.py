@@ -11,13 +11,13 @@ from elasticsearch_dsl.connections import connections
 
 # Project
 from datasets.normalized import models
-from datasets.normalized.documents import Activiteit, Locatie, Organisatie
+from datasets.normalized.documents import Activiteit, Locatie, Organisatie, Term
 
 log = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    doc_types = [Activiteit, Locatie, Organisatie]
+    doc_types = [Activiteit, Locatie, Organisatie, Term]
     index = settings.ELASTIC_INDEX
 
     def add_arguments(self, parser):
@@ -51,6 +51,7 @@ class Command(BaseCommand):
             self.create_index()
         elif options['reindex_data']:
             self.reindex_data()
+            self.reindex_typeahead()
         else:
             self.stdout.write("Unkown command")
 
@@ -102,3 +103,29 @@ class Command(BaseCommand):
                 action.es_tags = tags
             doc = action.create_doc()
             doc.save()
+
+    def reindex_typeahead(self):
+        """reindex the autocomplete terms
+
+        """
+        connections.create_connection(
+            hosts=settings.ELASTIC_SEARCH_HOSTS,
+            retry_on_timeout=True,
+        )
+        locations = models.Locatie.objects.all()
+        actions = models.Activiteit.objects.all()
+        organisations = models.Organisatie.objects.all()
+
+        all_terms = {}
+        for dataset in [locations, actions, organisations]:
+            for item in dataset:
+                for attr in ('naam', 'beschrijving'):
+                    if hasattr(item, attr):
+                        terms = getattr(item, attr).lower().split()
+                        for term in terms:
+                            all_terms[term] = all_terms.get(term, 0) + 1
+
+        for (term, gewicht) in all_terms.items():
+            doc = Term(term=term, gewicht=gewicht)
+            doc.save()
+
