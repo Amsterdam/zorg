@@ -4,6 +4,7 @@ import time
 
 import elasticsearch_dsl as es
 import requests
+import json
 from django.conf import settings
 # Packages
 from django.core.management import BaseCommand
@@ -19,6 +20,7 @@ log = logging.getLogger(__name__)
 class Command(BaseCommand):
     doc_types = [Activiteit, Locatie, Organisatie, Term]
     index = settings.ELASTIC_INDEX
+    index_backup = index + '_backup'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -42,6 +44,27 @@ class Command(BaseCommand):
             default=False,
             help='Reindex all the data to elastic')
 
+        parser.add_argument(
+            '--backup_index',
+            action='store_true',
+            dest='backup_index',
+            default=False,
+            help='Create backup index data to elastic')
+
+        parser.add_argument(
+            '--delete_backup_index',
+            action='store_true',
+            dest='delete_backup_index',
+            default=False,
+            help='Delete backup index from elastic')
+
+        parser.add_argument(
+            '--restore_index',
+            action='store_true',
+            dest='restore_index',
+            default=False,
+            help='Restore backup index data to elastic')
+
     def handle(self, *args, **options):
         start = time.time()
 
@@ -52,6 +75,12 @@ class Command(BaseCommand):
         elif options['reindex_data']:
             self.reindex_data()
             self.reindex_typeahead()
+        elif options['backup_index']:
+            self.backup_index()
+        elif options['delete_backup_index']:
+            self.delete_backup_index()
+        elif options['restore_index']:
+            self.restore_index()
         else:
             self.stdout.write("Unkown command")
 
@@ -128,4 +157,35 @@ class Command(BaseCommand):
         for (term, gewicht) in all_terms.items():
             doc = Term(term=term, gewicht=gewicht)
             doc.save()
+
+    def delete_backup_index(self):
+        requests.delete('http://{}/{}'.format(settings.ELASTIC_SEARCH_HOSTS[0], self.index_backup))
+
+    def backup_index(self):
+        self.delete_backup_index()
+        response = requests.post('http://{}/_reindex'.format(settings.ELASTIC_SEARCH_HOSTS[0]),
+                      data=json.dumps({
+                          'source': {
+                              'index': self.index
+                          },
+                          'dest': {
+                              'index': self.index_backup
+                          }
+                      }))
+
+        if response.status_code != 200:
+            raise Exception("Error! ", response.text)
+
+    def restore_index(self):
+        response = requests.post('http://{}/_reindex'.format(settings.ELASTIC_SEARCH_HOSTS[0]),
+                      data=json.dumps({
+                          'source': {
+                              'index': self.index_backup
+                          },
+                          'dest': {
+                              'index': self.index
+                          }
+                      }))
+        if response.status_code != 200:
+            raise Exception("Error! ", response.text)
 
