@@ -56,9 +56,23 @@ Het toevoegen en wijzigen van data vereist echter een API token.
 The elastic index can be recreated using the commands.
 In acceptance/production environment this command can also be run inside the docker container.
 
-           python manage.py elastic --delete
-           python manage.py elastic --build
-           python manage.py elastic --reindex
+        # Create a copy of the ES index to index '/zorg_backup'
+        manage.py --backup_index
+
+        # Delete, build and reindex
+        manage.py --delete
+
+        manage.py --build
+
+        manage.py --reindex
+
+        Check resultaat , b.v. via
+        http://HOST:8000/zorg/typeahead/?query=y
+        of http://HOST:8000/zorg/zoek/?query=yoga
+
+        1) Indien check niet ok--> manage.py --restore_index
+
+        2) indien check ok -->manage.py --delete_backup_index
             
 #### Tags #####
    Login on <http://localhost:8000/zorg/admin> and add the required TagDefinitions.

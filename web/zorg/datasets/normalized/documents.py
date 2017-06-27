@@ -103,9 +103,10 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
 
     doc.ext_id = n.id
     # Loading locatie
-    try:
-        locatie_doc = doc_from_locatie(n.locatie)
-        doc.locatie = locatie_doc
-    except Exception:
-        raise
+    if n.locatie:
+        try:
+            locatie_doc = doc_from_locatie(n.locatie)
+            doc.locatie = locatie_doc
+        except Exception:
+            raise
     return doc
