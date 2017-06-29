@@ -1,0 +1,24 @@
+[
+  {
+            "id": "2580",
+            "naam": "Burenbond",
+            "openbare_ruimte_naam": "Keizersgracht",
+            "postcode": "1016EZ",
+            "huisnummer": "340-342",
+            "huisletter": "",
+            "huisnummer_toevoeging": "",
+            "bag_link": "https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/03630000521039/",
+            "geometrie": "SRID=28992;POINT (120749 487051)"
+        },
+        {
+            "id": "2017",
+            "naam": "Burenhulp Oost",
+            "openbare_ruimte_naam": "Kamerlingh Onneslaan",
+            "postcode": "1097DH",
+            "huisnummer": "34",
+            "huisletter": "",
+            "huisnummer_toevoeging": "",
+            "bag_link": "https://api.datapunt.amsterdam.nl/bag/nummeraanduiding/03630000158620/",
+            "geometrie": "SRID=28992;POINT (123746 485056)"
+        },
+ ]

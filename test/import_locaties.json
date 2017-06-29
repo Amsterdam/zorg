@@ -1,0 +1,32 @@
+[
+  {
+    "id": "2017",
+    "naam": "Burenhulp Oost",
+    "openbare_ruimte_naam": "Kamerlingh Onneslaan",
+    "postcode": "1097DH",
+    "huisnummer": "34",
+    "huisletter": "",
+    "huisnummer_toevoeging": "",
+    "geometrie": "SRID=28992;POINT (123746 485056)"
+  },
+  {
+    "id": "1900",
+    "naam": "Burennetwerk Amsterdam",
+    "openbare_ruimte_naam": "Nieuwe Herengracht",
+    "postcode": "1018DP",
+    "huisnummer": "18",
+    "huisletter": "",
+    "huisnummer_toevoeging": "",
+    "geometrie": "SRID=28992;POINT (122073 486568)"
+  },
+  {
+    "id": "2322",
+    "naam": "Bushido dojo",
+    "openbare_ruimte_naam": "Polderweg",
+    "postcode": "1093KP",
+    "huisnummer": "300",
+    "huisletter": "",
+    "huisnummer_toevoeging": "",
+    "geometrie": "SRID=28992;POINT (123946 485652)"
+  }
+]
