@@ -228,7 +228,7 @@ class Activiteit(ReadOptimizedModel):
 
     id = models.CharField(max_length=100)
     guid = models.CharField(max_length=255, primary_key=True)
-    naam = models.CharField(max_length=255, unique=True)
+    naam = models.CharField(max_length=255)
     beschrijving = models.TextField(blank=True)
     bron_link = models.URLField()
     contactpersoon = models.CharField(max_length=255, blank=True)
