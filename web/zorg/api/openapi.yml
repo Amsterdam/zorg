@@ -108,9 +108,18 @@ info:
 
     ### Bij het opvoeren van een activiteit kunnen een of meer labels (tags) worden meegegeven.
     De lijst met mogelijke labels is op dit moment:
-    volwassene, senior, jeugd, gratis, betaald, maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag, ochtend, middag, avond, nacht
+
+   * Leeftijdscategorie: volwassene, senior, jeugd
+
+   * Kosten: gratis, betaald
+
+   * Dag: maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag,
+
+    * Tijdstip: ochtend, middag, avond, nacht
 
     Deze kunnen ook opgevraagd worden met de API calls. `GET /zorg/tags/DAG`,  `GET /zorg/tags/TIJD`, `GET zorg/tags/BETAALD`, en `GET zorg/tags/LEEFTIJDSCATEGORIE`
+
+
     ### Voorbeelden - zoeken van gegevens
     Zoeken op vrije zoekterm
     `GET` /zorg/zoek/?query=yoga
