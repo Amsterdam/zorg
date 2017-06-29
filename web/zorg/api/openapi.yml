@@ -109,13 +109,13 @@ info:
     ### Bij het opvoeren van een activiteit kunnen een of meer labels (tags) worden meegegeven.
     De lijst met mogelijke labels is op dit moment:
 
-   * Leeftijdscategorie: volwassene, senior, jeugd
+    Leeftijdscategorie: volwassene, senior, jeugd
 
-   * Kosten: gratis, betaald
+    Kosten: gratis, betaald
 
-   * Dag: maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag,
+    Dag: maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag,
 
-    * Tijdstip: ochtend, middag, avond, nacht
+    Tijdstip: ochtend, middag, avond, nacht
 
     Deze kunnen ook opgevraagd worden met de API calls. `GET /zorg/tags/DAG`,  `GET /zorg/tags/TIJD`, `GET zorg/tags/BETAALD`, en `GET zorg/tags/LEEFTIJDSCATEGORIE`
 
