@@ -192,7 +192,7 @@ class Command(BaseCommand):
         if response.status_code != 200:
             raise Exception("Error! ", response.text)
 
-    def clean_term(term):
+    def clean_term(self, term):
         result = term
         for c in ['<br', '&gt;', '&lt;']:
             result = result.replace(c, '')
