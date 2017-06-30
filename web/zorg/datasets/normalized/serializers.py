@@ -115,10 +115,36 @@ class TagDefinitionSerializer(serializers.ModelSerializer):
         model = models.TagDefinition
 
 
+class LocatieIdSerializer(serializers.PrimaryKeyRelatedField):
+    """ Check whether the location_id is already a location guid, otherwise
+    lookup the guid taken from the user session, and prepend this.
+    """
+    def to_internal_value(self, data):
+        guid = events.guid_from_id(self.context['request'].user, data)
+
+        if data.startswith(guid[0:4]):
+            return super().to_internal_value(data)
+        else:
+            return super().to_internal_value(guid)
+
+
+class OrganisatieIdSerializer(serializers.PrimaryKeyRelatedField):
+    """ Check whether the organisation_id is already a organisation guid, otherwise
+    lookup the organisatie using the guid taken from the user session and return
+    the organisation guid.
+    """
+    def to_internal_value(self, data):
+        guid = events.guid_from_id(self.context['request'].user, '')
+        if data.startswith(guid):
+            return super().to_internal_value(data)
+        else:
+            organisatie = models.Organisatie.objects.filter(id=data, guid=guid)[0]
+            return super().to_internal_value(organisatie.guid)
+
 class ActiviteitSerializer(ZorgModelSerializer):
-    locatie_id = serializers.PrimaryKeyRelatedField(
+    locatie_id = LocatieIdSerializer(
         queryset=models.Locatie.objects, allow_null=True, required=False)
-    organisatie_id = serializers.PrimaryKeyRelatedField(
+    organisatie_id = OrganisatieIdSerializer(
         queryset=models.Organisatie.objects, allow_null=True, required=False)
     event_model = models.ActiviteitEventLog
     start_time = serializers.DateTimeField(allow_null=True, required=False)

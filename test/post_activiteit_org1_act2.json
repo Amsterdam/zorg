@@ -1,7 +1,7 @@
 {
-  "id": "3388943894839",
-  "naam": "Erg goed bezig",
-  "beschrijving": "beschrijving!",
+  "id": "22",
+  "naam": "activiteit 22",
+  "beschrijving": "activiteit 22 voor organisatie 1",
   "bron_link": "http://localhost",
   "contactpersoon": "onbekend",
   "tags": [
@@ -9,6 +9,6 @@
   ],
   "start_time": "2017-06-13T09:10:37.915Z",
   "end_time": "2017-06-13T09:10:37.915Z",
-  "locatie_id": "te01-7843278492",
-  "organisatie_id": "te01"
+  "locatie_id": "1111",
+  "organisatie_id": "org1"
 }
