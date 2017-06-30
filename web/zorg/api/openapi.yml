@@ -104,7 +104,8 @@ info:
       "organisatie_id": "te01"
     }`
 
-    De `locatie_id` en `organisatie_id` zijn de `guid`s zoals beschreven in de sectie 'Uitleg over de technische sleutels bij elke entiteit'.
+    De `locatie_id` kan zowel opgegeven worden met/zonder guid prefix, b.v. "te01-7843278492" of "7843278492". In het laatste geval zal de guid aangevuld worden.
+    Zie ook sectie 'Uitleg over de technische sleutels bij elke entiteit'.
 
     ### Bij het opvoeren van een activiteit kunnen een of meer labels (tags) worden meegegeven.
     De lijst met mogelijke labels is op dit moment:
