@@ -1,6 +1,7 @@
 # Python
 import logging
 import time
+import re
 
 import elasticsearch_dsl as es
 import requests
@@ -152,7 +153,9 @@ class Command(BaseCommand):
                     if hasattr(item, attr):
                         terms = getattr(item, attr).lower().split()
                         for term in terms:
-                            all_terms[term] = all_terms.get(term, 0) + 1
+                            term_cleaned = re.sub('\W+','', term)
+                            print(term_cleaned)
+                            all_terms[term_cleaned] = all_terms.get(term_cleaned, 0) + 1
 
         for (term, gewicht) in all_terms.items():
             doc = Term(term=term, gewicht=gewicht)
