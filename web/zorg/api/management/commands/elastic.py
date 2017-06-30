@@ -153,9 +153,9 @@ class Command(BaseCommand):
                     if hasattr(item, attr):
                         terms = getattr(item, attr).lower().split()
                         for term in terms:
-                            term_cleaned = re.sub('\W+','', term)
-                            print(term_cleaned)
-                            all_terms[term_cleaned] = all_terms.get(term_cleaned, 0) + 1
+                            term_cleaned = self.clean_term(term)
+                            if term_cleaned:
+                                all_terms[term_cleaned] = all_terms.get(term_cleaned, 0) + 1
 
         for (term, gewicht) in all_terms.items():
             doc = Term(term=term, gewicht=gewicht)
@@ -192,3 +192,9 @@ class Command(BaseCommand):
         if response.status_code != 200:
             raise Exception("Error! ", response.text)
 
+    def clean_term(term):
+        result = term
+        for c in ['<br', '&gt;', '&lt;']:
+            result = result.replace(c, '')
+        # result = re.sub('\W+', '', result)
+        return result
