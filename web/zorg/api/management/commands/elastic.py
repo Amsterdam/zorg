@@ -154,7 +154,7 @@ class Command(BaseCommand):
                         terms = getattr(item, attr);
                         soup = bs4.BeautifulSoup(terms, 'html.parser')
                         soup_2 = bs4.BeautifulSoup(soup.get_text(), 'html.parser')
-                        terms_to_process = soup_2.lower().split()
+                        terms_to_process = soup_2.get_text().lower().split()
                         for term in terms_to_process:
                             term_cleaned = re.sub('\W+', '', term)
                             if term_cleaned:
