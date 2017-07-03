@@ -194,7 +194,7 @@ class Command(BaseCommand):
 
     def clean_term(self, term):
         result = term
-        for c in ['<br', '&gt;', '&lt;']:
-            result = result.replace(c, '')
-        # result = re.sub('\W+', '', result)
+        # for c in ['<br', '&gt;', '&lt;', '/br', 'br', '&ouml;', '&eacute;', '<li>', '&iuml;']:
+        #     result = result.replace(c, '')
+        # # result = re.sub('\W+', '', result)
         return result
