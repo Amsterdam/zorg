@@ -2,7 +2,7 @@
 import logging
 import time
 import re
-
+import bs4
 import elasticsearch_dsl as es
 import requests
 import json
@@ -151,9 +151,12 @@ class Command(BaseCommand):
             for item in dataset:
                 for attr in ('naam', 'beschrijving'):
                     if hasattr(item, attr):
-                        terms = getattr(item, attr).lower().split()
-                        for term in terms:
-                            term_cleaned = self.clean_term(term)
+                        terms = getattr(item, attr);
+                        soup = bs4.BeautifulSoup(terms, 'html.parser')
+                        soup_2 = bs4.BeautifulSoup(soup.get_text(), 'html.parser')
+                        terms_to_process = soup_2.lower().split()
+                        for term in terms_to_process:
+                            term_cleaned = re.sub('\W+', '', term)
                             if term_cleaned:
                                 all_terms[term_cleaned] = all_terms.get(term_cleaned, 0) + 1
 
@@ -191,10 +194,3 @@ class Command(BaseCommand):
                       }))
         if response.status_code != 200:
             raise Exception("Error! ", response.text)
-
-    def clean_term(self, term):
-        result = term
-        # for c in ['<br', '&gt;', '&lt;', '/br', 'br', '&ouml;', '&eacute;', '<li>', '&iuml;']:
-        #     result = result.replace(c, '')
-        # # result = re.sub('\W+', '', result)
-        return result
