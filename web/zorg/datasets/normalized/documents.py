@@ -45,6 +45,7 @@ class Activiteit(es.DocType):
     bron_link = es.String(index='not_analyzed')
     tijdstip = es.String(index='not_analyzed')
     tags = es.String(index='not_analyzed')
+    centroid = es.GeoPoint()
     locatie = es.Object(
         doc_class=Locatie,
         properties={
@@ -84,7 +85,7 @@ def doc_from_locatie(n: models.Model) -> Locatie:
         lat, lon = n.geometrie.transform('wgs84', clone=True).coords
         doc.centroid = {'lat': lat, 'lon': lon}
     except AttributeError:
-        doc.centroid
+        doc.centroid = {'lat': 0, 'lon': 0}
     doc.ext_id = n.id
     return doc
 
@@ -102,11 +103,10 @@ def doc_from_activiteit(n: models.Model) -> Activiteit:
         setattr(doc, 'tags', n.es_tags)
 
     doc.ext_id = n.id
+    doc.centroid = {'lat': 0, 'lon': 0}
     # Loading locatie
     if n.locatie:
-        try:
-            locatie_doc = doc_from_locatie(n.locatie)
-            doc.locatie = locatie_doc
-        except Exception:
-            raise
+        locatie_doc = doc_from_locatie(n.locatie)
+        doc.locatie = locatie_doc
+        doc.centroid = locatie_doc.centroid
     return doc
