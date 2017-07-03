@@ -84,7 +84,7 @@ def doc_from_locatie(n: models.Model) -> Locatie:
         setattr(doc, key, getattr(n, key))
 
     try:
-        lat, lon = n.geometrie.transform('wgs84', clone=True).coords
+        lon, lat = n.geometrie.transform('wgs84', clone=True).coords
         doc.centroid = {'lat': lat, 'lon': lon}
     except AttributeError:
         doc.centroid = {'lat': 0, 'lon': 0}

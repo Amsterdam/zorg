@@ -99,12 +99,13 @@ def query(q='', doctype=None, lonlat=None, tags=None):
             bools['must'].extend({'term': {'tags': tag}} for tag in tags)
 
     if lonlat:
+        lon, lat = lonlat
         functions.append({
             'gauss': {
                 'centroid': {
                     'scale': '100m',
                     'offset': '200m',
-                    'origin': {'lon': lonlat[0], 'lat': lonlat[1]},
+                    'origin': {'lon': lon, 'lat': lat},
                     'decay': 0.9
                 }
             }
