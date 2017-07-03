@@ -52,7 +52,7 @@ class Activiteit(es.DocType):
         doc_class=Locatie,
         properties={
             'ext_id': es.String(index='not_analyzed'),
-            'naam': es.String(analyzer='not_analyzed'),
+            'naam': es.String(analyzer=dutch_analyzer),
             'centroid': es.GeoPoint(),
             'openbare_ruimte_naam': es.String(index='not_analyzed'),
             'huisnummer': es.String(index='not_analyzed'),

@@ -82,7 +82,7 @@ def query(q='', doctype=None, lonlat=None, tags=None):
         'size': '50'
     }
     bools = {}
-    functions = {}
+    functions = []
 
     if q:
         bools['should'] = {
@@ -99,14 +99,16 @@ def query(q='', doctype=None, lonlat=None, tags=None):
             bools['must'].extend({'term': {'tags': tag}} for tag in tags)
 
     if lonlat:
-        functions['gauss'] = {
-            'centroid': {
-                'scale': '100m',
-                'offset': '200m',
-                'origin': {'lon': lonlat[0], 'lat': lonlat[1]},
-                'decay': 0.9
+        functions.append({
+            'gauss': {
+                'centroid': {
+                    'scale': '100m',
+                    'offset': '200m',
+                    'origin': {'lon': lonlat[0], 'lat': lonlat[1]},
+                    'decay': 0.9
+                }
             }
-        }
+        })
 
     if bools or functions:
         query['query'] = {'function_score': dict()}
