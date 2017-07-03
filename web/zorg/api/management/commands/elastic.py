@@ -154,11 +154,12 @@ class Command(BaseCommand):
                         terms = getattr(item, attr);
                         soup = bs4.BeautifulSoup(terms, 'html.parser')
                         soup_2 = bs4.BeautifulSoup(soup.get_text(), 'html.parser')
-                        terms_to_process = soup_2.get_text().lower().split()
+                        terms_lower = soup_2.get_text().lower()
+                        terms_no_special_chars = re.sub('\W+', ' ', terms_lower)
+                        terms_to_process = terms_no_special_chars.split()
                         for term in terms_to_process:
-                            term_cleaned = re.sub('\W+', '', term)
-                            if term_cleaned:
-                                all_terms[term_cleaned] = all_terms.get(term_cleaned, 0) + 1
+                            if term:
+                                all_terms[term] = all_terms.get(term, 0) + 1
 
         for (term, gewicht) in all_terms.items():
             doc = Term(term=term, gewicht=gewicht)
