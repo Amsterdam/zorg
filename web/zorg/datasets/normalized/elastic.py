@@ -1,5 +1,4 @@
 import functools
-import itertools
 import json
 import logging
 
@@ -59,7 +58,7 @@ def typeahead(q=''):
             {
                 'gewicht': {
                     'order': 'desc'
-                    }
+                }
             }
         ]
     }
@@ -76,47 +75,54 @@ def typeahead(q=''):
     return json.dumps(suggestions)
 
 
-def search(q='', doctype=None, lonlat=None, tags=None):
-    """Generate and fire an Elastic query"""
-    bools = q and list(
-        itertools.chain.from_iterable(
-            (
-                {'term': {'naam': {'value': t, 'boost': 1.5}}},
-                {'term': {'beschrijving': t}}
-            ) for t in q.split()
-        )
-    )
-    searchfilter = (doctype and [{'type': {'value': doctype}}]) or []
-    if tags:
-        searchfilter.extend({'term': {'tags': tag}} for tag in tags)
-    sort = ['_score']
-    if lonlat:
-        sort.insert(0, {
-            '_geo_distance': {
-                'locatie.centroid': lonlat,
-                'order': 'asc',
-                'unit': 'km'
-            }
-        })
+def query(q='', doctype=None, lonlat=None, tags=None):
+    """Generate and fire an Elastic query."""
     query = {
-        'sort': sort,
-        'size': 1000
+        'sort': '_score',
+        'size': '50'
     }
-    if bools or searchfilter:
-        query['query'] = {'bool': {}}
-        boolquery = query['query']['bool']
-        if bools:
-            # if we have terms and we're sorting on geo, then we must filter
-            # the terms with "must" rather than "should"
-            booltype = (lonlat and 'must') or 'should'
-            boolquery[booltype] = bools
-        if searchfilter:
-            boolquery['filter'] = searchfilter
+    bools = {}
+    functions = {}
 
+    if q:
+        bools['should'] = {
+            'multi_match': {
+                'query': q, 'fields': ['naam^1.5', 'beschrijving']
+            }
+        }
+
+    if tags or doctype:
+        bools['must'] = []
+        if doctype:
+            bools['must'].append({'type': {'value': doctype}})
+        if tags:
+            bools['must'].extend({'term': {'tags': tag}} for tag in tags)
+
+    if lonlat:
+        functions['gauss'] = {
+            'centroid': {
+                'scale': '100m',
+                'offset': '200m',
+                'origin': {'lon': lonlat[0], 'lat': lonlat[1]},
+                'decay': 0.9
+            }
+        }
+
+    if bools or functions:
+        query['query'] = {'function_score': dict()}
+        if bools:
+            query['query']['function_score']['query'] = {'bool': bools}
+        if functions:
+            query['query']['function_score']['functions'] = functions
+
+    return query
+
+
+def search(q='', doctype=None, lonlat=None, tags=None):
     try:
         response = _elasticsearch().search(
             index=settings.ELASTIC_INDEX,
-            body=query
+            body=query(q, doctype, lonlat, tags)
         )
     except Exception as e:
         raise SearchError() from e
