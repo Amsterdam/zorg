@@ -35,22 +35,27 @@ Zie Readme.md
     <http://localhost:8000/zorg/admin>
 
 
-Token org1: b9a99d7bd94095724da58e895533e6b3a7717d59
-Token org2: 1685d1c52861f8cdfd6ae8d2d2e634a30a110538
+Token org1: b228275031158b182e48c6faee5ac90024378415
+Token org2: 1927b573ff418a15a1dfe7ec329f0a6c21a65697
+Token org3: bd92dd609c63fdb4d40c618a3a48cb4c99791cd7
 
 - [x] Create organisatie
 
 
-        curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+        curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_organisatie1.json \
         http://localhost:8000/zorg/organisatie/
 
-        curl -H "Content-Type: application/json" -H "Authorization: Token 1685d1c52861f8cdfd6ae8d2d2e634a30a110538" \
+        curl -H "Content-Type: application/json" -H "Authorization: Token 1927b573ff418a15a1dfe7ec329f0a6c21a65697" \
         -X POST  \
         -d @post_organisatie2.json \
         http://localhost:8000/zorg/organisatie/
-   
+
+        curl -H "Content-Type: application/json" -H "Authorization: Token bd92dd609c63fdb4d40c618a3a48cb4c99791cd7" \
+        -X POST  \
+        -d @post_organisatie3.json \
+        http://localhost:8000/zorg/organisatie/
         
 - [x] Read organisatie
        
@@ -65,10 +70,16 @@ Token org2: 1685d1c52861f8cdfd6ae8d2d2e634a30a110538
      in api
     
         http://localhost:8000/zorg/organisatie/
+
+     with API token (will also display contact field)
+
+         curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
+        -X GET  \
+        http://localhost:8000/zorg/organisatie/
         
 - [ ] Update organisatie
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X PUT  \
         -d @put_organisatie1.json \
         http://localhost:8000/zorg/organisatie/org1/
@@ -79,17 +90,17 @@ Token org2: 1685d1c52861f8cdfd6ae8d2d2e634a30a110538
 - [x]  Create locatie
 
 
-       curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+       curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_locatie_org1_loc1.json \
         http://localhost:8000/zorg/locatie/
 
-       curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+       curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_locatie_org1_loc2.json \
         http://localhost:8000/zorg/locatie/
 
-       curl -H "Content-Type: application/json" -H "Authorization: Token 1685d1c52861f8cdfd6ae8d2d2e634a30a110538" \
+       curl -H "Content-Type: application/json" -H "Authorization: Token 1927b573ff418a15a1dfe7ec329f0a6c21a65697" \
         -X POST  \
         -d @post_locatie_org2_loc1.json \
         http://localhost:8000/zorg/locatie/
@@ -111,7 +122,7 @@ in api
 - [ ]  Update locatie
       
       
-     curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X PUT  \
         -d @put_locatie_org1_loc1.json \
         http://localhost:8000/zorg/locatie/org1-1111/
@@ -119,7 +130,7 @@ in api
 - [ ]  Delete locatie
  
  
-       curl -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+       curl -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X DELETE  http://localhost:8000/zorg/locatie/org1-111/
 
 
@@ -130,27 +141,27 @@ nvt
 - [ ] Create activiteit
 
 
-      curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+      curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_activiteit_org1_act1.json \
         http://localhost:8000/zorg/activiteit/
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token  b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_activiteit_org1_act2.json \
         http://localhost:8000/zorg/activiteit/
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_activiteit_org1_act3.json \
         http://localhost:8000/zorg/activiteit/
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X POST  \
         -d @post_activiteit_org1_act4.json \
         http://localhost:8000/zorg/activiteit/
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token 1685d1c52861f8cdfd6ae8d2d2e634a30a110538" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token 1927b573ff418a15a1dfe7ec329f0a6c21a65697" \
         -X POST  \
         -d @post_activiteit_org2_act1.json \
         http://localhost:8000/zorg/activiteit/
@@ -171,7 +182,7 @@ in api
 - [ ] Update activiteit
 
 
-     curl -H "Content-Type: application/json" -H "Authorization: Token b9a99d7bd94095724da58e895533e6b3a7717d59" \
+     curl -H "Content-Type: application/json" -H "Authorization: Token b228275031158b182e48c6faee5ac90024378415" \
         -X PUT  \
         -d @put_activiteit_org1_act1.json \
         http://localhost:8000/zorg/activiteit/org1-11/

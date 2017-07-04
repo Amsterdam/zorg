@@ -85,9 +85,24 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         return item
 
 
+class ContactSerializer(serializers.JSONField):
+    """ Hide 'contact field' for anonymous users.
+    """
+
+    def to_representation(self, instance):
+        if self.context['request'].user.is_anonymous:
+            return {
+                "email": None,
+                "tel": None
+            }
+        else:
+            return super().to_representation(instance)
+
+
 class OrganisatieSerializer(ZorgModelSerializer):
     locatie_id = serializers.PrimaryKeyRelatedField(queryset=models.Locatie.objects, allow_null=True, required=False)
     event_model = models.OrganisatieEventLog
+    contact = ContactSerializer()
 
     def get_guid(self, **kwargs):
         return events.guid_from_id(self.context['request'].user, '')

@@ -1,0 +1,21 @@
+{
+	"id":
+		111,
+	"naam":
+		"organisatie 3",
+	"beschrijving":
+		"organisatie 3",
+	"afdeling":
+	 	"customer support",
+	"contact":
+		{
+			"telefoon": {
+				"tel1": "01234567891",
+				"tel2": "01234567891"
+			},
+			"website":{
+				"home": "http://nu.nl"
+			}
+
+		}
+}

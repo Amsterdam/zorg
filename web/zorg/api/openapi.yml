@@ -16,6 +16,9 @@ info:
     * locaties
     * activiteiten
 
+    noot: de contact informatie van een organisatie wordt alleen
+          getoond als ook een geldige API key wordt meegestuurd.
+
     Er zijn een aantal zoekingangen:
     * vrije zoekterm in naam en/of beschrijving
     * geolocatie

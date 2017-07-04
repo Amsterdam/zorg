@@ -146,13 +146,15 @@ class LocatieEventLog(EventLogMixin):
     def save(self, *args, **kwargs):
         # Setting sequence
         try:
-            prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
-            self.sequence = prev.sequence + 1
-        except IndexError:
-            self.sequence = 0
+            prev = LocatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')
+            if prev:
+                self.sequence = prev[0].sequence + 1
+            else:
+                self.sequence = 0
+
         except Exception as exp:
             log.error(repr(exp))
-            self.sequence = 0
+            raise
         # Saving
         return super(LocatieEventLog, self).save(*args, **kwargs)
 
@@ -203,8 +205,11 @@ class OrganisatieEventLog(EventLogMixin):
     def save(self, *args, **kwargs):
         # Setting sequence
         try:
-            prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')[0]
-            self.sequence = prev.sequence + 1
+            prev = OrganisatieEventLog.objects.filter(guid=self.guid).order_by('-sequence')
+            if prev:
+                self.sequence = prev[0].sequence + 1
+            else:
+                self.sequence = 0
 
             # Handling foreign key relations
             if 'locatie_id' in self.data:
@@ -212,11 +217,9 @@ class OrganisatieEventLog(EventLogMixin):
                 self.data['locatie_id'] = location.guid
                 kwargs['locatie'] = location
 
-        except IndexError:
-            self.sequence = 0
         except Exception as exp:
             log.error(repr(exp))
-            self.sequence = 0
+            raise
         # Saving
         return super(OrganisatieEventLog, self).save(*args, **kwargs)
 
@@ -310,9 +313,6 @@ class ActiviteitEventLog(EventLogMixin):
                 self.data['organisatie_id'] = organisatie.guid
                 kwargs['organisatie'] = organisatie
 
-        except IndexError as exp:
-            log.error(repr(exp))
-            raise
         except Exception as exp:
             log.error(repr(exp))
             raise
