@@ -151,7 +151,7 @@ class Command(BaseCommand):
             for item in dataset:
                 for attr in ('naam', 'beschrijving'):
                     if hasattr(item, attr):
-                        terms = getattr(item, attr);
+                        terms = getattr(item, attr)
                         soup = bs4.BeautifulSoup(terms, 'html.parser')
                         soup_2 = bs4.BeautifulSoup(soup.get_text(), 'html.parser')
                         terms_lower = soup_2.get_text().lower()
@@ -170,8 +170,9 @@ class Command(BaseCommand):
 
     def backup_index(self):
         self.delete_backup_index()
-        response = requests.post('http://{}/_reindex'.format(settings.ELASTIC_SEARCH_HOSTS[0]),
-                      data=json.dumps({
+        response = requests.post('http://{}/_reindex'.format(
+            settings.ELASTIC_SEARCH_HOSTS[0]),
+            data=json.dumps({
                           'source': {
                               'index': self.index
                           },
@@ -184,8 +185,9 @@ class Command(BaseCommand):
             raise Exception("Error! ", response.text)
 
     def restore_index(self):
-        response = requests.post('http://{}/_reindex'.format(settings.ELASTIC_SEARCH_HOSTS[0]),
-                      data=json.dumps({
+        response = requests.post('http://{}/_reindex'.format(
+            settings.ELASTIC_SEARCH_HOSTS[0]),
+            data=json.dumps({
                           'source': {
                               'index': self.index_backup
                           },

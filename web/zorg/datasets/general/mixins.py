@@ -46,6 +46,7 @@ class ReadOptimizedModel(models.Model):
             LOG.error(f'Failed to delete from elastic: {exp}')
         return item
 
+
 class EventLogMixin(models.Model):
     read_model = None  # This must be overwritten
     tags = None

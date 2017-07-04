@@ -14,7 +14,8 @@ class Command(BaseCommand):
             'dataset',
             nargs='*',
             default=self.import_datasets,
-            help="Dataset to use, choose from {}. Defaults to all the datasets.".format(', '.join(self.import_datasets))
+            help="Dataset to use, choose from {}. Defaults to all the datasets.".format(
+                ', '.join(self.import_datasets))
         )
 
     def handle(self, *args, **options):

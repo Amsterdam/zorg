@@ -68,7 +68,6 @@ def handle_event(event: EventLogMixin, model: models.Model) -> bool:
     return False
 
 
-
 def create(guid: str, data: dict, model: models.Model) -> models.Model:
     """
     In a create the event is logged
