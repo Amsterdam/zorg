@@ -86,17 +86,14 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.JSONField):
-    """ Hide 'contact field' for anonymous users.
+    """ Hide 'contact field' 
     """
 
     def to_representation(self, instance):
-        if self.context['request'].user.is_anonymous:
-            return {
-                "email": None,
-                "tel": None
-            }
-        else:
-            return super().to_representation(instance)
+        return {
+            "email": None,
+            "tel": None
+        }
 
 
 class OrganisatieSerializer(ZorgModelSerializer):
