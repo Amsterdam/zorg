@@ -30,3 +30,4 @@ urllib3==1.20
 wcwidth==0.1.7
 xmltodict==0.10.2
 beautifulsoup4==4.6.0
+flake8==3.3.0
