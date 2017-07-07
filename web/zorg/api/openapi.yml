@@ -131,6 +131,9 @@ info:
     Zoeken op geolocatie
     `GET` /zorg/zoek/?lat=4.89371750163616&lon=52.37329259288013
 
+    ## Automatische suggesties
+    Het endpoint `/zorg/typeahead/` kan gebruikt worden om op basis van een of meerdere karakters een suggestie te geven voor een zoekterm, zoals die in een 'naam' of 'beschrijving' voorkomt. Zo laat bijvoorbeeld de query `GET /zorg/typeahead?query=yog` een lijst zien met alle mogelijk termen die beginnen met 'yog'.
+
 schemes:
   - https
 
@@ -316,6 +319,7 @@ paths:
           $ref: '#/responses/200-zoek'
         500:
           $ref: '#/responses/500'
+
 
 
   /zorg/organisatie/{guid}/:
@@ -669,6 +673,24 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/error_response'
+
+  /zorg/typeahead/:
+    get:
+      tags: [ zoeksuggesties/autocomplete ]
+      summary: |
+        Geef een lijst met suggesties voor zoektermen op basis van een of meer karakters.
+      parameters:
+      - $ref: '#/parameters/query'
+      responses:
+        200:
+          description: Lijst met suggesties voor zoektermen
+          schema:
+            type: array
+            items:
+              type: string
+        500:
+          $ref: '#/responses/500'
+
 
 #  /zorg/persoon:
 #    get:
