@@ -88,14 +88,16 @@ def import_location():
     locations = xmltodict.parse(xml_resp.text)
     for location in locations['ORGANISATIONS']['ORGANISATION']:
         location_id = location['ID']
-        print('Location:', location_id)
-        # Creating a location event
-        try:
+        create_location(location_id)
 
-            location_xml = requests.get(URLS['organisatieDetails'].format(location_id=location_id))
-            location_data = xmltodict.parse(location_xml.text)['ORGANISATION']
-        except Exception as e:
-            print("Error occurred when parsing location {}: {}".format(location_id, e))
+
+def create_location(location_id):
+    print('Location:', location_id)
+    # Creating a location event
+    try:
+
+        location_xml = requests.get(URLS['organisatieDetails'].format(location_id=location_id))
+        location_data = xmltodict.parse(location_xml.text)['ORGANISATION']
         guid = f'{USER_GUID}-{location_id}'
         data = normalize_location(location_data)
         print(data)
@@ -104,6 +106,8 @@ def import_location():
             event.save()
         else:
             print("Overslaan, naam is leeg")
+    except Exception as e:
+        print("Error occurred when parsing location {}: {}".format(location_id, e))
 
 
 def import_activities():
@@ -125,6 +129,9 @@ def import_activities():
             guid = f"{USER_GUID}-{activiteit['ID']}"
             data = normalize_activity(activiteit_data)
             print(data)
+            if not models.Locatie.objects.filter(guid='{}-{}'.format(USER_GUID,activiteit_data['ORGANISATIEID'])):
+                    print('Creating locatie:')
+                    create_location(activiteit_data['ORGANISATIEID'])
             event = models.ActiviteitEventLog(event_type='C', guid=guid, data=data)
             event.save()
 
