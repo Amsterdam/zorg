@@ -79,7 +79,18 @@ def query(q='', doctype=None, lonlat=None, tags=None):
     """Generate and fire an Elastic query."""
     query = {
         'sort': '_score',
-        'size': '50'
+        'size': '50',
+        'query': {
+            'function_score': {
+                'query': {
+                    'bool': {
+                        'must_not': [
+                            {'type': {'value': 'term'}}
+                        ]
+                    }
+                }
+            }
+        }
     }
     bools = {}
     functions = []
@@ -111,12 +122,10 @@ def query(q='', doctype=None, lonlat=None, tags=None):
             }
         })
 
-    if bools or functions:
-        query['query'] = {'function_score': dict()}
-        if bools:
-            query['query']['function_score']['query'] = {'bool': bools}
-        if functions:
-            query['query']['function_score']['functions'] = functions
+    if bools:
+        query['query']['function_score']['query']['bool'].update(bools)
+    if functions:
+        query['query']['function_score']['functions'] = functions
 
     return query
 
