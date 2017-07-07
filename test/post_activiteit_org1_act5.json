@@ -1,0 +1,14 @@
+{
+  "id": "55",
+  "naam": "activiteit 55",
+  "beschrijving": "activiteit 55 voor organisatie 1",
+  "bron_link": "http://localhost",
+  "contactpersoon": "onbekend",
+  "tags": [
+    "maandag", "dinsdag", "woensdag"
+  ],
+  "start_time": "2017-06-13T09:10:37.915Z",
+  "end_time": "2017-06-13T09:10:37.915Z",
+  "locatie_id": "2222",
+  "organisatie_id": "111"
+}

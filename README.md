@@ -96,3 +96,19 @@ The **naam** of these tags can be used in the create activiteit API.
 ### Test info ####
 
 Zie test/Smoke_test.MD voor voorbeeld requests.
+
+
+#### Inladen jekuntmeer
+Na reguliere deployment van de Zorg docker via jenkins, zijn de volgende manuele stappen nodig:
+
+- login on productie/acceptatie Zorg docker
+
+./manage.py runimport jekuntmeer
+
+./manage.py elastic --backup_index
+
+./manage.py elastic --delete
+
+./manage.py elastic --build
+
+./manage.py elastic --reindex

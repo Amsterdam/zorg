@@ -103,7 +103,10 @@ class Locatie(ReadOptimizedModel):
                 'href']
         except json.JSONDecodeError:
             # Trying without house number
-            self.__get_bag_link(postcode_param, None)
+            if huisnummer_param:
+                self.__get_bag_link(postcode_param, None)
+            else:
+                self.bag_link = ''
         except IndexError:
             # No results found
             self.bag_link = ''
@@ -304,11 +307,11 @@ class ActiviteitEventLog(EventLogMixin):
                 self.sequence = 0
 
             # Handling foreign key relations
-            if 'locatie_id' in self.data:
+            if 'locatie_id' in self.data and type(self.data['locatie_id']) != str:
                 location = self.data['locatie_id']
                 self.data['locatie_id'] = location.guid
                 kwargs['locatie'] = location
-            if 'organisatie_id' in self.data:
+            if 'organisatie_id' in self.data and type(self.data['organisatie_id']) != str:
                 organisatie = self.data['organisatie_id']
                 self.data['organisatie_id'] = organisatie.guid
                 kwargs['organisatie'] = organisatie

@@ -3,6 +3,7 @@
 # Packages
 import requests
 import xmltodict
+import time
 
 # Project
 from datasets.normalized import models
@@ -13,10 +14,9 @@ OFFESET_STEP = 100
 URLS = {
     'activiteiten': 'http://amsterdam.jekuntmeer.nl/beheer/eigen-projecten/projects/inforing?c-Offset={offset}',
     'activiteitenDetails': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/detail/{activiteit_id}/2/inforing',
-    'activiteitenLink': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/detail/{activiteit_id}/',
+    'activiteitenLink': 'https://amsterdam.jekuntmeer.nl/start/show/{activiteit_id}/',
     'organisaties': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orglist/inforing',
     'organisatieDetails': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orgdetail/{location_id}/inforing',
-    'organisatieLink': 'http://amsterdam.jekuntmeer.nl/aanbod/eigen-projecten/orgdetail/{location_id}/',
 }
 
 
@@ -88,17 +88,22 @@ def import_location():
     locations = xmltodict.parse(xml_resp.text)
     for location in locations['ORGANISATIONS']['ORGANISATION']:
         location_id = location['ID']
+        print('Location:', location_id)
         # Creating a location event
         try:
 
             location_xml = requests.get(URLS['organisatieDetails'].format(location_id=location_id))
             location_data = xmltodict.parse(location_xml.text)['ORGANISATION']
         except Exception as e:
-            continue
+            print("Error occurred when parsing location {}: {}".format(location_id, e))
         guid = f'{USER_GUID}-{location_id}'
         data = normalize_location(location_data)
-        event = models.LocatieEventLog(event_type='C', guid=guid, data=data)
-        event.save()
+        print(data)
+        if data['naam']:
+            event = models.LocatieEventLog(event_type='C', guid=guid, data=data)
+            event.save()
+        else:
+            print("Overslaan, naam is leeg")
 
 
 def import_activities():
@@ -119,6 +124,7 @@ def import_activities():
                 continue
             guid = f"{USER_GUID}-{activiteit['ID']}"
             data = normalize_activity(activiteit_data)
+            print(data)
             event = models.ActiviteitEventLog(event_type='C', guid=guid, data=data)
             event.save()
 
@@ -128,10 +134,25 @@ def import_activities():
         offset += OFFESET_STEP
 
 
+def clean():
+    models.ActiviteitEventLog.objects.filter(guid__startswith=USER_GUID).all().delete()
+    models.Activiteit.objects.filter(organisatie_id=USER_GUID).delete()
+
+    models.LocatieEventLog.objects.filter(guid__startswith=USER_GUID).all().delete()
+    models.Locatie.objects.filter(guid__startswith=USER_GUID).all().delete()
+
+    models.OrganisatieEventLog.objects.filter(guid__startswith=USER_GUID).all().delete()
+    models.Organisatie.objects.filter(guid=USER_GUID).all().delete()
+
+
 def run():
+    clean()
+
     # Loading the organisatie
     load_org()
+
     # Retrieving the locations, refered to as organistaie in the xml
     import_location()
+
     # Retrieving the activities
     import_activities()
