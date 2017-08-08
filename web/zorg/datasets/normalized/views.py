@@ -3,7 +3,7 @@ import json
 
 import django_rq
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from redis import Redis
@@ -29,10 +29,11 @@ class ZorgViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk=None):
         prev_events = list(self.serializer_class.event_model.objects.filter(
             guid=pk).order_by('sequence'))
+
         if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
-            raise ValidationError('Object not found')
-        else:
-            sequence = prev_events[-1].sequence + 1
+            return HttpResponseNotFound()
+
+        sequence = prev_events[-1].sequence + 1
 
         event = self.serializer_class.event_model(
             guid=pk,
