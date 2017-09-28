@@ -28,6 +28,7 @@ class ReadOptimizedModel(models.Model):
             doc.save()
         except Exception as exp:
             LOG.error(f'Failed to send to elastic: {exp}')
+            raise
 
     class Meta(object):
         abstract = True
@@ -44,6 +45,7 @@ class ReadOptimizedModel(models.Model):
             doc.delete()
         except Exception as exp:
             LOG.error(f'Failed to delete from elastic: {exp}')
+            raise
         return item
 
 
