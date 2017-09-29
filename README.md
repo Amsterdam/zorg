@@ -125,6 +125,7 @@ Dump alle data:
 python manage.py dumpdata --indent 2 'auth' > auth.json
 python manage.py dumpdata --indent 2 'normalized.organisatie' > organisatie.json
 python manage.py dumpdata --indent 2 'normalized.tagdefinition' > tags.json
+python manage.py dumpdata --indent 2 'normalized.profile' > profile.json
 python manage.py dumpdata --indent 2 'authtoken' > token.json
 ```
 
@@ -140,6 +141,7 @@ Importeer de users etc in de database:
 python manage.py loaddata auth.json
 python manage.py loaddata organisatie.json
 python manage.py loaddata tags.json
+python manage.py loaddata profile.json
 python manage.py loaddata token.json
 ```
 
