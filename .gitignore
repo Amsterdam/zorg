@@ -95,3 +95,4 @@ keys.env
 *.iml
 .project
 .pydevproject
+.settings
