@@ -210,4 +210,25 @@ LOGGING = {
         'level': 'DEBUG',
         'handlers': ['console', 'graypy'],
     },
+
+
+    'loggers': {
+        'search': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        'elasticsearch': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        'urllib3.connectionpool': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
 }
