@@ -177,3 +177,37 @@ ELASTIC_SEARCH_HOSTS = ["{}:{}".format(
     os.getenv('ELASTICSEARCH_PORT_9200_TCP_PORT', '9200'))]
 
 ELASTIC_INDEX = 'zorg'
+
+LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', '127.0.0.1')
+LOGSTASH_PORT = os.getenv('LOGSTASH_GELF_UDP_PORT', 12201)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+
+        'graypy': {
+            'level': 'ERROR',
+            'class': 'graypy.GELFHandler',
+            'host': LOGSTASH_HOST,
+            'port': LOGSTASH_PORT,
+        },
+    },
+
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console', 'graypy'],
+    },
+}
