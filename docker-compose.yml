@@ -21,7 +21,6 @@ services:
       - elasticsearch
     ports:
       - "8005:8000"
-      - "6379:6379"
     environment:
       ELASTICSEARCH_PORT_9200_TCP_ADDR: elasticsearch
       ELASTICSEARCH_PORT_9200_TCP_PORT: 9200
