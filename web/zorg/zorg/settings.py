@@ -208,7 +208,7 @@ LOGGING = {
 
     'root': {
         'level': 'DEBUG',
-        'handlers': ['console', 'graypy'],
+        'handlers': ['console'],
     },
 
 
