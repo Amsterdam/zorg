@@ -191,7 +191,7 @@ STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'static'))
 # Elastic
 ELASTIC_SEARCH_HOSTS = ["{}:{}".format(
     os.getenv('ELASTIC_HOST_OVERRIDE', get_docker_host()),
-    os.getenv('ELASTIC_PORT_OVERRIDE', '9200'))]
+    os.getenv('ELASTIC_PORT_OVERRIDE', 9200))]
 
 ELASTIC_INDEX = 'zorg'
 
