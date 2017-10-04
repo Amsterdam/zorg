@@ -12,9 +12,12 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import re
 import os
 
-from zorg.settings_databases import LocationKey, \
-    get_docker_host, \
-    get_database_key
+
+def _get_docker_host() -> str:
+    d_host = os.getenv('DOCKER_HOST', None)
+    if d_host:
+        return re.match(r'tcp://(.*?):\d+', d_host).group(1)
+    return '127.0.0.1'
 
 
 DATAPUNT_API_URL = os.getenv('DATAPUNT_API_URL', 'https://api.data.amsterdam.nl/')
@@ -82,36 +85,16 @@ WSGI_APPLICATION = 'zorg.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASE_OPTIONS = {
-    LocationKey.docker: {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('DATABASE_NAME', 'zorg'),
-        'USER': os.getenv('DATABASE_USER', 'zorg'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'insecure'),
-        'HOST': 'database',
-        'PORT': '5432'
-    },
-    LocationKey.local: {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('DATABASE_NAME', 'zorg'),
-        'USER': os.getenv('DATABASE_USER', 'zorg'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'insecure'),
-        'HOST': get_docker_host(),
-        'PORT': '5434'
-    },
-    LocationKey.override: {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('DATABASE_NAME', 'zorg'),
-        'USER': os.getenv('DATABASE_USER', 'zorg'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'insecure'),
-        'HOST': os.getenv('DATABASE_HOST_OVERRIDE', get_docker_host()),
-        'PORT': os.getenv('DATABASE_PORT_OVERRIDE', 5434),
-        'CONN_MAX_AGE': 30,
-    }
-}
-
 DATABASES = {
-    'default': DATABASE_OPTIONS[get_database_key()]
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.getenv('DATABASE_ENV_POSTGRES_DB', 'zorg'),
+        'USER': os.getenv('DATABASE_ENV_POSTGRES_USER', 'zorg'),
+        'PASSWORD': os.getenv('DATABASE_ENV_POSTGRES_PASSWORD', insecure_key),
+        'HOST': os.getenv('DATABASE_PORT_5432_TCP_ADDR', _get_docker_host()),
+        'PORT': os.getenv('DATABASE_PORT_5432_TCP_PORT', '5445'),
+        'CONN_MAX_AGE': 60,
+    },
 }
 
 # Password validation
@@ -189,13 +172,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'static'))
 
 # Elastic
-ELASTIC_OPTIONS = {
-    LocationKey.docker: ["http://elasticsearch:9200"],
-    LocationKey.local: [f"http://{get_docker_host()}:9200"],
-    LocationKey.override: [
-        f"http://{os.getenv(OVERRIDE_EL_HOST_VAR)}:{ELK_PORT}"],    # noqa
-}
-ELASTIC_SEARCH_HOSTS = ELASTIC_OPTIONS[get_database_key()]
+ELASTIC_SEARCH_HOSTS = ["{}:{}".format(
+    os.getenv('ELASTICSEARCH_PORT_9200_TCP_ADDR', _get_docker_host()),
+    os.getenv('ELASTICSEARCH_PORT_9200_TCP_PORT', '9200'))]
 
 ELASTIC_INDEX = 'zorg'
 

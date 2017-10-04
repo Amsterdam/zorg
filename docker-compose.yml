@@ -22,10 +22,10 @@ services:
     ports:
       - "8005:8000"
     environment:
-      ELASTIC_HOST_OVERRIDE: elasticsearch
-      ELASTIC_PORT_OVERRIDE: 9200
-      DATABASE_HOST_OVERRIDE: database
-      DATABASE_PORT_OVERRIDE: 5432
+      ELASTICSEARCH_PORT_9200_TCP_ADDR: elasticsearch
+      ELASTICSEARCH_PORT_9200_TCP_PORT: 9200
+      DATABASE_PORT_5432_TCP_ADDR: database
+      DATABASE_PORT_5432_TCP_PORT: 5432
       DATABASE_NAME: zorg
       DATABASE_PASSWORD: insecure
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
