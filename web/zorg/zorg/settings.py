@@ -189,9 +189,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'static'))
 
 # Elastic
-ELASTIC_SEARCH_HOSTS = ["{}:{}".format(
-    os.getenv('ELASTIC_HOST_OVERRIDE', get_docker_host()),
-    os.getenv('ELASTIC_PORT_OVERRIDE', 9200))]
+ELASTIC_OPTIONS = {
+    LocationKey.docker: ["http://elasticsearch:9200"],
+    LocationKey.local: [f"http://{get_docker_host()}:9200"],
+    LocationKey.override: [
+        f"http://{os.getenv(OVERRIDE_EL_HOST_VAR)}:{ELK_PORT}"],    # noqa
+}
+ELASTIC_SEARCH_HOSTS = ELASTIC_OPTIONS[get_database_key()]
 
 ELASTIC_INDEX = 'zorg'
 
