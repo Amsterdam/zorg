@@ -149,3 +149,24 @@ Re-indexeer de database:
 ```
 python manage.py elastic --reindex
 ```
+
+### Alles van een bepaalde organisatie verwijderen - Postgres
+delete from normalized_activiteit_tags where activiteit_id like 'organisatie%’;
+delete from normalized_activiteit where organisatie_id like 'organisatie%’;
+delete from normalized_activiteiteventlog where guid like 'organisatie%’;
+
+delete from normalized_locatie where guid like 'organisatie%’;
+delete from normalized_locatieeventlog where guid like 'organisatie%';
+
+### Alles van een bepaalde organisatie verwijderen - ElasticSearch
+Aangezien alles in dezelfde index wordt opgeslagen, moet documenten op basis van de "_id" (GUID) verwijderd worden:
+
+curl -sS -XPOST '192.168.1.1:9200/zorg_backup/activiteit/_delete_by_query' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "wildcard": {
+      "_id": "organisatie-*"
+    }
+  }
+}
+'
