@@ -179,7 +179,7 @@ ELASTIC_SEARCH_HOSTS = ["{}:{}".format(
 ELASTIC_INDEX = 'zorg'
 
 LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', '127.0.0.1')
-LOGSTASH_PORT = os.getenv('LOGSTASH_GELF_UDP_PORT', 12201)
+LOGSTASH_PORT = int(os.getenv('LOGSTASH_GELF_UDP_PORT', 12201))
 
 LOGGING = {
     'version': 1,
@@ -208,7 +208,7 @@ LOGGING = {
 
     'root': {
         'level': 'DEBUG',
-        'handlers': ['console'],
+        'handlers': ['console', 'graypy'],
     },
 
 
@@ -216,13 +216,13 @@ LOGGING = {
         'search': {
             'handlers': ['console'],
             'level': 'ERROR',
-            'propagate': False,
+            'propagate': True,
         },
 
         'elasticsearch': {
             'handlers': ['console'],
             'level': 'ERROR',
-            'propagate': False,
+            'propagate': True,
         },
 
         'urllib3.connectionpool': {
