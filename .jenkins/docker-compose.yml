@@ -13,7 +13,6 @@ services:
     volumes:
      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
-
   zorg:
     build: ../web
     links:

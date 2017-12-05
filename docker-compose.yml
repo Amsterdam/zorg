@@ -1,5 +1,6 @@
 version: '3.0'
 services:
+
   database:
     image: build.datapunt.amsterdam.nl:5000/atlas/postgres
     ports:
@@ -8,9 +9,10 @@ services:
       POSTGRES_PASSWORD: insecure
       POSTGRES_USER: zorg
       POSTGRES_DB: zorg
+
   elasticsearch:
     image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5
-    command: elasticsearch -Enetwork.host=0.0.0.0
+    command:  elasticsearch -Ehttp.host=0.0.0.0 -Etransport.host=127.0.0.1
     ports:
       - "9200:9200"
       - "9300:9300"

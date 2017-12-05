@@ -21,6 +21,9 @@ URLS = {
 
 
 def normalize_location(data):
+    """
+    Try to deal with location data
+    """
     # Normalizing postcode to be 6 chars long
     try:
         postcode = data.get('POSTCODE', '').replace(' ', '')

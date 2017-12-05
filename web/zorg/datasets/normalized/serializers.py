@@ -21,20 +21,24 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         return extra_kwargs
 
     def get_guid(self, **kwargs):
-        return events.guid_from_id(self.context['request'].user, kwargs.get('id', ''))
+        return events.guid_from_id(
+            self.context['request'].user, kwargs.get('id', ''))
 
     def create(self, validated_data):
         # Creating the guid
         guid = self.get_guid(id=validated_data['id'])
         # If a guid is given, remove it from the data
         if 'guid' in validated_data:
-            del (validated_data['guid'])
+            del validated_data['guid']
         # There can be two cases in which create can be made:
         # 1. There is no previous entry
         # 2. The last event was  delete
-        prev_events = list(self.event_model.objects.filter(guid=guid).order_by('sequence'))
-        if len(prev_events) == 0:
+        prev_events = list(
+            self.event_model.objects.filter(guid=guid).order_by('sequence'))
+
+        if prev_events:
             sequence = 0
+
         elif prev_events[-1].event_type == 'D':
             sequence = prev_events[-1].sequence + 1
         else:
@@ -44,6 +48,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         event_data = validated_data.copy()
         if 'tags' in self.initial_data:
             event_data['tags'] = self.initial_data['tags']
+
         event = self.event_model(
             guid=guid,
             sequence=sequence,
@@ -64,8 +69,9 @@ class ZorgModelSerializer(serializers.ModelSerializer):
         # There can bew two cases in which create can be made:
         # 1. There is no previous entry
         # 2. The last event was a delete
-        prev_events = list(self.event_model.objects.filter(guid=guid).order_by('sequence'))
-        if len(prev_events) == 0 or prev_events[-1].event_type == 'D':
+        prev_events = list(
+            self.event_model.objects.filter(guid=guid).order_by('sequence'))
+        if prev_events or prev_events[-1].event_type == 'D':
             # @TODO convert to self.fail call
             raise ValidationError('Object not found')
         else:
@@ -86,7 +92,7 @@ class ZorgModelSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.JSONField):
-    """ Hide 'contact field' 
+    """ Hide 'contact field'
     """
 
     def to_representation(self, instance):
@@ -128,7 +134,8 @@ class TagDefinitionSerializer(serializers.ModelSerializer):
 
 
 class LocatieIdSerializer(serializers.PrimaryKeyRelatedField):
-    """ Check whether the location_id is already a location guid, otherwise
+    """
+    Check whether the location_id is already a location guid, otherwise
     lookup the guid taken from the user session, and prepend this.
     """
     def to_internal_value(self, data):
@@ -136,22 +143,24 @@ class LocatieIdSerializer(serializers.PrimaryKeyRelatedField):
 
         if data.startswith(guid[0:4]):
             return super().to_internal_value(data)
-        else:
-            return super().to_internal_value(guid)
+        return super().to_internal_value(guid)
 
 
 class OrganisatieIdSerializer(serializers.PrimaryKeyRelatedField):
-    """ Check whether the organisation_id is already a organisation guid, otherwise
-    lookup the organisatie using the guid taken from the user session and return
-    the organisation guid.
+    """
+    Check whether the organisation_id is already a organisation guid, otherwise
+    lookup the organisatie using the guid taken from the user session and
+    return the organisation guid.
     """
     def to_internal_value(self, data):
         guid = events.guid_from_id(self.context['request'].user, '')
+
         if data.startswith(guid):
             return super().to_internal_value(data)
-        else:
-            organisatie = models.Organisatie.objects.filter(id=data, guid=guid)[0]
-            return super().to_internal_value(organisatie.guid)
+
+        organisatie = models.Organisatie.objects.filter(id=data, guid=guid)[0]
+        return super().to_internal_value(organisatie.guid)
+
 
 class ActiviteitSerializer(ZorgModelSerializer):
     locatie_id = LocatieIdSerializer(
@@ -171,14 +180,16 @@ class ActiviteitSerializer(ZorgModelSerializer):
         models.Activiteit.objects.get(pk=self.data['guid']).tags.clear()
         if 'tags' in self.initial_data:
             for tag_name in self.initial_data['tags']:
-                fetched_tags = models.TagDefinition.objects.filter(naam=tag_name)
+                fetched_tags = (
+                    models.TagDefinition.objects
+                    .filter(naam=tag_name))
                 if fetched_tags.count() > 0:
                     valid_tags.append(fetched_tags.first())
 
-            if len(valid_tags) > 0:
-                models.Activiteit.objects.get(pk=self.data['guid']).tags.add(*valid_tags)
+            if valid_tags:
+                models.Activiteit.objects.get(
+                    pk=self.data['guid']).tags.add(*valid_tags)
 
     class Meta(object):
         exclude = ('locatie', 'organisatie',)
         model = models.Activiteit
-
