@@ -44,12 +44,9 @@ INSTALLED_APPS = [
     # Packages
     'rest_framework',
     'rest_framework.authtoken',
-    "django_rq",
     # Project
     'api',
     'datasets.normalized',
-    'datasets.general',
-    'datasets.jekuntmeer',
 ]
 
 MIDDLEWARE = [
