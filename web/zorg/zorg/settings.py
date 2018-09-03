@@ -230,5 +230,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
+
+        'urllib3.util': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
     },
 }
