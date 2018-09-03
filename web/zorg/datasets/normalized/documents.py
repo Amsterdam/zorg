@@ -1,6 +1,5 @@
 import elasticsearch_dsl as es
 from django.conf import settings
-from django.db import models
 from elasticsearch_dsl import analyzer, tokenizer
 
 dutch_analyzer = es.analyzer(
@@ -60,55 +59,3 @@ class Activiteit(es.DocType):
             'postcode': es.String(index='not_analyzed')
         }
     )
-
-
-def doc_from_organisatie(n: models.Model) -> Organisatie:
-    """
-    Create an elastic Organisate doc
-    """
-    doc = Organisatie(_id=n.guid)
-    for key in ('naam', 'beschrijving', 'afdeling'):
-        setattr(doc, key, getattr(n, key))
-    doc.ext_id = n.id
-
-    return doc
-
-
-def doc_from_locatie(n: models.Model) -> Locatie:
-    """
-    Create an elastic Locatie doc
-    """
-    doc = Locatie(_id=n.guid)
-
-    for key in ('naam', 'openbare_ruimte_naam', 'huisnummer', 'huisnummer_toevoeging', 'postcode'):
-        setattr(doc, key, getattr(n, key))
-
-    try:
-        lon, lat = n.geometrie.transform('wgs84', clone=True).coords
-        doc.centroid = {'lat': lat, 'lon': lon}
-    except AttributeError:
-        doc.centroid = {'lat': 0, 'lon': 0}
-    doc.ext_id = n.id
-    return doc
-
-
-def doc_from_activiteit(n: models.Model) -> Activiteit:
-    """
-    Create an elastic Activiteit doc
-    """
-    doc = Activiteit(_id=n.guid)
-    for key in ('naam', 'beschrijving', 'bron_link'):
-        setattr(doc, key, getattr(n, key))
-
-    # add tags
-    if n.es_tags:
-        setattr(doc, 'tags', n.es_tags)
-
-    doc.ext_id = n.id
-    doc.centroid = {'lat': 0, 'lon': 0}
-    # Loading locatie
-    if n.locatie:
-        locatie_doc = doc_from_locatie(n.locatie)
-        doc.locatie = locatie_doc
-        doc.centroid = locatie_doc.centroid
-    return doc

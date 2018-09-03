@@ -25,4 +25,3 @@ urlpatterns = [
 
 urlpatterns += a_urlpatterns
 urlpatterns += n_urlpatterns
-urlpatterns +=  url(r'^zorg/rq/', include('django_rq.urls')),

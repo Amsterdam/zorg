@@ -21,7 +21,6 @@ RUN apt-get install -y \
 
 WORKDIR /app/
 COPY requirements.txt /app/
-COPY zorg/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN pip install --no-cache-dir -r requirements.txt
 USER zorg
