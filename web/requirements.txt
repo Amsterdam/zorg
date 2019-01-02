@@ -29,7 +29,7 @@ pyparsing==2.2.0
 python-dateutil==2.6.0
 PyYAML==3.12
 redis==2.10.5
-requests==2.13.0
+requests==2.20.0
 rq==0.7.1
 simplegeneric==0.8.1
 six==1.10.0
