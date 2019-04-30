@@ -1,14 +1,14 @@
 version: '3.0'
 services:
   database:
-    image: amsterdam/postgres
+    image: amsterdam/postgres11
     environment:
       POSTGRES_PASSWORD: insecure
       POSTGRES_USER: zorg
       POSTGRES_DB: zorg
 
   elasticsearch:
-    image: amsterdam/elasticsearch5
+    image: amsterdam/elasticsearch6
     command: elasticsearch -Enetwork.host=0.0.0.0
     volumes:
      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
