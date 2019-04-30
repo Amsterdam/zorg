@@ -44,6 +44,7 @@ if (BRANCH == "master") {
                     def image = docker.image("datapunt/zorg:${env.BUILD_NUMBER}")
                     image.pull()
                     image.push("acceptance")
+                }
             }
         }
     }
