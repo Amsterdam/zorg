@@ -25,8 +25,8 @@ node {
 
     stage("Build image") {
         tryStep "build", {
-            docker.withRegistry('https://repo.data.amsterdam.nl','docker-registry') {
-                def image = docker.build("datapunt/zorg:${env.BUILD_NUMBER}", "--build-arg http_proxy=${JENKINS_HTTP_PROXY_STRING} --build-arg https_proxy=${JENKINS_HTTP_PROXY_STRING} web")
+                docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
+                def image = docker.build("datapunt/zorg:${env.BUILD_NUMBER}", "web")
                 image.push()
             }
         }
@@ -40,7 +40,7 @@ if (BRANCH == "master") {
     node {
         stage('Push acceptance image') {
             tryStep "image tagging", {
-                docker.withRegistry('https://repo.data.amsterdam.nl','docker-registry') {
+                docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
                     def image = docker.image("datapunt/zorg:${env.BUILD_NUMBER}")
                     image.pull()
                     image.push("acceptance")
@@ -69,7 +69,7 @@ if (BRANCH == "master") {
     node {
         stage('Push production image') {
             tryStep "image tagging", {
-                docker.withRegistry('https://repo.data.amsterdam.nl','docker-registry') {
+                docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
                     def image = docker.image("datapunt/zorg:${env.BUILD_NUMBER}")
                     image.pull()
                     image.push("production")
